@@ -1,32 +1,37 @@
 [
   {
     "id": 1,
-    "title": "General Knowledge",
+    "name": "General Knowledge",
     "folder": "general-knowledge",
-    "icon": "📚"
+    "icon": "📚",
+    "description": "History, Geography, Polity, Economics"
   },
   {
     "id": 2,
-    "title": "General Science",
+    "name": "General Science",
     "folder": "general-science",
-    "icon": "🔬"
+    "icon": "🔬",
+    "description": "Physics, Chemistry, Biology"
   },
   {
     "id": 3,
-    "title": "Mathematics",
+    "name": "Mathematics",
     "folder": "mathematics",
-    "icon": "📐"
+    "icon": "📐",
+    "description": "Arithmetic, Algebra, Geometry"
   },
   {
     "id": 4,
-    "title": "Reasoning",
+    "name": "Reasoning",
     "folder": "reasoning",
-    "icon": "🧠"
+    "icon": "🧠",
+    "description": "Verbal, Non-verbal, Analytical"
   },
   {
     "id": 5,
-    "title": "Previous Year",
+    "name": "Previous Year",
     "folder": "previous-year",
-    "icon": "📄"
+    "icon": "📄",
+    "description": "Previous question papers"
   }
 ]

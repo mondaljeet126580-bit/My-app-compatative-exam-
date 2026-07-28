@@ -2,26 +2,31 @@
   {
     "title": "History",
     "folder": "history",
-    "icon": "🏛️"
+    "icon": "🏛️",
+    "description": "Ancient, Medieval, Modern History"
   },
   {
     "title": "Geography",
     "folder": "geography",
-    "icon": "🗺️"
+    "icon": "🗺️",
+    "description": "Physical, Indian, World Geography"
   },
   {
     "title": "Polity",
     "folder": "polity",
-    "icon": "⚖️"
+    "icon": "⚖️",
+    "description": "Constitution, Rights, Parliament"
   },
   {
     "title": "Economics",
     "folder": "economics",
-    "icon": "💰"
+    "icon": "💰",
+    "description": "Money, Banking, Budget"
   },
   {
     "title": "Static GK",
     "folder": "static-gk",
-    "icon": "📚"
+    "icon": "📚",
+    "description": "Important static facts"
   }
 ]

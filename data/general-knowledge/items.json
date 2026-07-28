@@ -1,2 +1,27 @@
 [
+  {
+    "title": "History",
+    "folder": "history",
+    "icon": "🏛️"
+  },
+  {
+    "title": "Geography",
+    "folder": "geography",
+    "icon": "🗺️"
+  },
+  {
+    "title": "Polity",
+    "folder": "polity",
+    "icon": "⚖️"
+  },
+  {
+    "title": "Economics",
+    "folder": "economics",
+    "icon": "💰"
+  },
+  {
+    "title": "Static GK",
+    "folder": "static-gk",
+    "icon": "📚"
+  }
 ]

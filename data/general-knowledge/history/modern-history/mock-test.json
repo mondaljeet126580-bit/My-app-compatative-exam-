@@ -1,1 +1,19 @@
-[]
+{
+  "title": "Modern History Mock Test",
+  "settings": {
+    "time": 15,
+    "questionsPerPage": 1,
+    "negativeMarking": true,
+    "negativeMarks": 0.25,
+    "shuffleQuestions": true,
+    "shuffleOptions": true,
+    "showExplanation": true,
+    "showResult": true,
+    "showReview": true,
+    "showQuestionPalette": true,
+    "allowPrevious": true,
+    "autoSubmit": true,
+    "passPercentage": 40
+  },
+  "questions": []
+}

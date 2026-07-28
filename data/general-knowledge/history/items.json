@@ -2,5 +2,13 @@
   {
     "title": "Ancient History",
     "folder": "ancient-history"
+  },
+  {
+    "title": "Medieval History",
+    "folder": "medieval-history"
+  },
+  {
+    "title": "Modern History",
+    "folder": "modern-history"
   }
 ]

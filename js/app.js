@@ -1,7 +1,7 @@
 /* ==========================================
    SSC Smart Study
    Core App Engine
-   Final Version
+   Final Version (UI-enhanced)
 ========================================== */
 
 "use strict";
@@ -54,6 +54,187 @@ function getPageName() {
   return location.pathname.split("/").pop() || "index.html";
 }
 
+/* ---------- UI Enhancement Layer ----------
+   Everything in this block is purely presentational:
+   injected keyframes/classes, a fade transition for
+   setAppHTML, a toast helper, skeleton placeholders,
+   and a button ripple. No app logic lives here, and
+   nothing here is referenced by the data/scoring code.
+------------------------------------------------ */
+
+function injectUIStyles() {
+  if ($("#ui-enhancements-style")) return;
+
+  const style = document.createElement("style");
+  style.id = "ui-enhancements-style";
+  style.textContent = `
+    #app { transition: opacity 0.22s ease, transform 0.22s ease; }
+    #app.app-fade { opacity: 0; transform: translateY(6px); }
+    #app.app-fade-in { opacity: 1; transform: translateY(0); }
+
+    .card, .question-box, .list-item {
+      animation: uiFadeInUp 0.35s ease both;
+    }
+    .card-grid .card:nth-child(1) { animation-delay: 0.02s; }
+    .card-grid .card:nth-child(2) { animation-delay: 0.06s; }
+    .card-grid .card:nth-child(3) { animation-delay: 0.10s; }
+    .card-grid .card:nth-child(4) { animation-delay: 0.14s; }
+    .card-grid .card:nth-child(5) { animation-delay: 0.18s; }
+    .card-grid .card:nth-child(6) { animation-delay: 0.22s; }
+
+    @keyframes uiFadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      position: relative;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { transform: scale(0.97); }
+    .ui-ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      background: rgba(255, 255, 255, 0.55);
+      pointer-events: none;
+      animation: uiRipple 0.55s ease-out;
+    }
+    .btn-outline .ui-ripple { background: rgba(11, 61, 145, 0.18); }
+    @keyframes uiRipple {
+      to { transform: scale(2.6); opacity: 0; }
+    }
+
+    .option { transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease; }
+    .option:active { transform: scale(0.99); }
+
+    .ui-skeleton {
+      background: linear-gradient(90deg, #eceff3 25%, #f6f7f9 37%, #eceff3 63%);
+      background-size: 400% 100%;
+      animation: uiShimmer 1.3s ease infinite;
+      border-radius: 10px;
+    }
+    @keyframes uiShimmer {
+      0% { background-position: 100% 50%; }
+      100% { background-position: 0 50%; }
+    }
+    .ui-skeleton-line { height: 14px; margin-bottom: 10px; }
+    .ui-skeleton-icon { width: 44px; height: 44px; border-radius: 12px; margin-bottom: 14px; }
+
+    #ui-toast-stack {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      pointer-events: none;
+    }
+    .ui-toast {
+      pointer-events: auto;
+      min-width: 180px;
+      max-width: 90vw;
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: #101828;
+      color: #fff;
+      font-size: 0.92rem;
+      font-weight: 500;
+      box-shadow: 0 10px 24px rgba(16, 24, 40, 0.25);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .ui-toast.show { opacity: 1; transform: translateY(0); }
+    .ui-toast.success { background: #16814f; }
+    .ui-toast.error { background: #cf3b3b; }
+
+    @media (prefers-reduced-motion: reduce) {
+      #app, .card, .question-box, .list-item, .ui-toast, .ui-ripple, .ui-skeleton {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function showToast(message, type = "") {
+  let stack = $("#ui-toast-stack");
+  if (!stack) {
+    stack = document.createElement("div");
+    stack.id = "ui-toast-stack";
+    document.body.appendChild(stack);
+  }
+
+  const toast = document.createElement("div");
+  toast.className = `ui-toast${type ? " " + type : ""}`;
+  toast.textContent = message;
+  stack.appendChild(toast);
+
+  requestAnimationFrame(() => toast.classList.add("show"));
+
+  window.setTimeout(() => {
+    toast.classList.remove("show");
+    window.setTimeout(() => toast.remove(), 220);
+  }, 2200);
+}
+
+function skeletonCardsHTML(count = 6) {
+  let out = "";
+  for (let i = 0; i < count; i++) {
+    out += `
+      <div class="card">
+        <div class="ui-skeleton ui-skeleton-icon"></div>
+        <div class="ui-skeleton ui-skeleton-line" style="width:70%;"></div>
+        <div class="ui-skeleton ui-skeleton-line" style="width:90%;"></div>
+        <div class="ui-skeleton ui-skeleton-line" style="width:40%;height:36px;border-radius:12px;margin-top:6px;"></div>
+      </div>
+    `;
+  }
+  return `<section class="section"><div class="card-grid">${out}</div></section>`;
+}
+
+function skeletonBlockHTML() {
+  return `
+    <section class="section">
+      <div class="notes-box">
+        <div class="ui-skeleton ui-skeleton-line" style="width:50%;height:22px;"></div>
+        <div class="ui-skeleton ui-skeleton-line" style="width:100%;"></div>
+        <div class="ui-skeleton ui-skeleton-line" style="width:95%;"></div>
+        <div class="ui-skeleton ui-skeleton-line" style="width:80%;"></div>
+      </div>
+    </section>
+  `;
+}
+
+function bindRippleEffect() {
+  document.addEventListener(
+    "click",
+    (e) => {
+      const btn = e.target.closest(".btn");
+      if (!btn) return;
+
+      const rect = btn.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const ripple = document.createElement("span");
+      ripple.className = "ui-ripple";
+      ripple.style.width = ripple.style.height = `${size}px`;
+      ripple.style.left = `${(e.clientX ?? rect.left + rect.width / 2) - rect.left - size / 2}px`;
+      ripple.style.top = `${(e.clientY ?? rect.top + rect.height / 2) - rect.top - size / 2}px`;
+      btn.appendChild(ripple);
+      window.setTimeout(() => ripple.remove(), 600);
+    },
+    true
+  );
+}
+
+/* ---------- End UI Enhancement Layer ---------- */
+
 function setAppHTML(html) {
   let root = $("#app");
   if (!root) {
@@ -61,7 +242,18 @@ function setAppHTML(html) {
     root.id = "app";
     document.body.appendChild(root);
   }
+
+  // Visual-only fade transition; content is still assigned synchronously
+  // below so any code that queries the DOM right after calling this
+  // function keeps working exactly as before.
+  root.classList.add("app-fade");
   root.innerHTML = html;
+  requestAnimationFrame(() => {
+    root.classList.add("app-fade-in");
+  });
+  window.setTimeout(() => {
+    root.classList.remove("app-fade", "app-fade-in");
+  }, 260);
 }
 
 async function loadJSON(path) {
@@ -127,6 +319,8 @@ window.goTo = goTo;
 /* ---------- Home ---------- */
 
 async function renderHome() {
+  setAppHTML(skeletonCardsHTML(6));
+
   const menu = await loadJSON(dataPath("menu.json"));
   if (!Array.isArray(menu)) {
     setAppHTML(`
@@ -176,6 +370,7 @@ async function renderStudyPage() {
 
   // Level 1: category items
   if (category && !subject) {
+    setAppHTML(skeletonCardsHTML(6));
     const items = await loadJSON(dataPath(category, "items.json"));
 
     if (!Array.isArray(items)) {
@@ -215,6 +410,7 @@ async function renderStudyPage() {
 
   // Level 2: subject items
   if (category && subject && !chapter) {
+    setAppHTML(skeletonCardsHTML(6));
     const items = await loadJSON(dataPath(category, subject, "items.json"));
 
     if (!Array.isArray(items)) {
@@ -296,6 +492,8 @@ async function renderStudyPage() {
 
 async function renderNotesPage() {
   const { category, subject, chapter } = APP.params;
+  setAppHTML(skeletonBlockHTML());
+
   const path = dataPath(category, subject, chapter, "notes.json");
   const data = await loadJSON(path);
 
@@ -338,6 +536,8 @@ async function renderNotesPage() {
 
 async function renderMCQPage() {
   const { category, subject, chapter } = APP.params;
+  setAppHTML(skeletonBlockHTML());
+
   const path = dataPath(category, subject, chapter, "mcq.json");
   const data = await loadJSON(path);
 
@@ -428,6 +628,8 @@ function shuffleArray(arr = []) {
 
 async function renderMockTestPage() {
   const { category, subject, chapter } = APP.params;
+  setAppHTML(skeletonBlockHTML());
+
   const path = dataPath(category, subject, chapter, "mock-test.json");
   const data = await loadJSON(path);
 
@@ -528,6 +730,10 @@ async function renderMockTestPage() {
       </section>
     `);
 
+    // Visual-only: keep the learner oriented at the top of the question
+    // when moving between questions in this single-page view.
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
     document.querySelectorAll('input[name="mock-option"]').forEach((el) => {
       el.addEventListener("change", () => {
         APP.mock.selected[APP.mock.index] = Number(el.value);
@@ -581,7 +787,7 @@ async function renderMockTestPage() {
       timeLeft: APP.mock.timeLeft,
       questions: APP.mock.data.questions,
     });
-    alert("Progress saved");
+    showToast("Progress saved", "success");
   };
 
   window.goMockSubmit = (auto = false) => {
@@ -725,6 +931,9 @@ function renderResultPage() {
 /* ---------- Boot ---------- */
 
 async function boot() {
+  injectUIStyles();
+  bindRippleEffect();
+
   APP.currentPage = getPageName();
   APP.params = getParams();
   APP.state.category = APP.params.category || null;

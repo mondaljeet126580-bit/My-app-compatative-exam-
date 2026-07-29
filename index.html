@@ -2,53 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>SSC Smart Study</title>
+  <meta name="description" content="Study, practice MCQs, and take timed mock tests for SSC exam preparation." />
 
-  <meta name="theme-color" content="#1565c0" />
+  <!-- Matches the new premium palette in css/style.css -->
+  <meta name="theme-color" content="#0b3d91" />
+
+  <!-- App-like feel when added to a phone home screen -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SSC Smart Study" />
+
+  <!-- Simple inline favicon so the app has a tab icon (no extra file needed) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230b3d91%22/><text x=%2250%22 y=%2266%22 font-size=%2258%22 text-anchor=%22middle%22>📘</text></svg>" />
+
+  <!-- Faster font loading for the Lexend / Inter / JetBrains Mono used in css/style.css -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
   <link rel="stylesheet" href="css/style.css" />
 </head>
-
 <body>
-
-  <!-- Header -->
   <header class="header">
-
     <div class="brand">
-
-      <div class="brand-icon">
-        📘
-      </div>
-
-      <div class="brand-text">
+      <div class="brand-icon">📘</div>
+      <div>
         <h1>SSC Smart Study</h1>
-        <p>Your Complete SSC Preparation Platform</p>
+        <p>Study • Practice • Test • Improve</p>
       </div>
-
     </div>
-
   </header>
 
-
-  <!-- Main Content -->
   <main class="main">
-
-    <!-- All content will be loaded by app.js -->
     <section id="app"></section>
-
   </main>
 
+  <noscript>
+    <div style="max-width:1100px;margin:24px auto;padding:16px;">
+      Please enable JavaScript to use SSC Smart Study.
+    </div>
+  </noscript>
 
-  <!-- Footer -->
-  <footer class="footer">
-      <p>© 2026 SSC Smart Study</p>
-  </footer>
-
-
-  <!-- Main JavaScript -->
   <script src="js/app.js"></script>
-
 </body>
 </html>

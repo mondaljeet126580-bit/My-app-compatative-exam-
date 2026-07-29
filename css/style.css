@@ -244,8 +244,8 @@ textarea:focus-visible {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: linear-gradient(160deg, #ffffff 0%, #f5f3ff 55%, #f0f4ff 100%);
+  border: 1px solid rgba(124, 58, 237, 0.12);
   border-radius: var(--radius-lg);
   padding: 18px 14px;
   box-shadow: var(--shadow-sm);
@@ -410,8 +410,8 @@ textarea:focus {
 }
 
 .list-item {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: linear-gradient(160deg, #ffffff 0%, #f6f4ff 100%);
+  border: 1px solid rgba(124, 58, 237, 0.12);
   border-left: 3px solid var(--primary);
   border-radius: 14px;
   padding: 14px 16px;
@@ -440,8 +440,8 @@ textarea:focus {
    NOTES
 ========================= */
 .notes-box {
-  background: rgba(255, 255, 255, 0.97);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: linear-gradient(165deg, #ffffff 0%, #f6f4ff 60%, #f2f7ff 100%);
+  border: 1px solid rgba(124, 58, 237, 0.12);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: 22px;
@@ -505,8 +505,8 @@ textarea:focus {
 }
 
 .question-box {
-  background: rgba(255, 255, 255, 0.97);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: linear-gradient(165deg, #ffffff 0%, #f6f4ff 55%, #f2f7ff 100%);
+  border: 1px solid rgba(124, 58, 237, 0.12);
   border-left: 4px solid var(--primary);
   border-radius: var(--radius-lg);
   padding: 22px;
@@ -529,7 +529,7 @@ textarea:focus {
 
 .option {
   display: block;
-  background: #f9fafb;
+  background: linear-gradient(160deg, #fbfaff, #f5f3ff);
   border: 1.5px solid var(--border);
   border-radius: 12px;
   padding: 13px 16px;
@@ -565,8 +565,8 @@ textarea:focus {
    RESULT
 ========================= */
 .result-card {
-  background: linear-gradient(180deg, #ffffff, #fbfbff);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: linear-gradient(165deg, #ffffff 0%, #f6f4ff 55%, #f2f7ff 100%);
+  border: 1px solid rgba(124, 58, 237, 0.12);
   border-top: 4px solid var(--gold);
   border-radius: 20px;
   box-shadow: var(--shadow-lg);
@@ -587,7 +587,7 @@ textarea:focus {
 }
 
 .result-item {
-  background: #f9fafb;
+  background: linear-gradient(160deg, #fbfaff, #f5f3ff);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 16px 14px;

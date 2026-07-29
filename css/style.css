@@ -156,7 +156,8 @@ textarea:focus-visible {
   animation: fadeInUp 0.35s ease both;
 }
 
-.section-title {
+.section-title,
+.page-title {
   font-size: 1.22rem;
   font-weight: 700;
   margin-bottom: 12px;
@@ -165,7 +166,8 @@ textarea:focus-visible {
   padding-left: 14px;
 }
 
-.section-title::before {
+.section-title::before,
+.page-title::before {
   content: "";
   position: absolute;
   left: 0;

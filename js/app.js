@@ -736,10 +736,6 @@ async function renderMockTestPage() {
       </section>
     `);
 
-    // Visual-only: keep the learner oriented at the top of the question
-    // when moving between questions in this single-page view.
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
     document.querySelectorAll('input[name="mock-option"]').forEach((el) => {
       el.addEventListener("change", () => {
         APP.mock.selected[APP.mock.index] = Number(el.value);

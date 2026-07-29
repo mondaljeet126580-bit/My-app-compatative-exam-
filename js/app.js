@@ -401,6 +401,7 @@ async function renderStudyPage() {
 
     setAppHTML(`
       <section class="section">
+        <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
         <h2 class="page-title">${escapeHTML(formatTitle(category))}</h2>
         <div class="card-grid">${html}</div>
       </section>
@@ -442,6 +443,7 @@ async function renderStudyPage() {
 
     setAppHTML(`
       <section class="section">
+        <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
         <h2 class="page-title">${escapeHTML(formatTitle(subject))}</h2>
         <div class="card-grid">${html}</div>
       </section>
@@ -453,6 +455,7 @@ async function renderStudyPage() {
   if (category && subject && chapter) {
     setAppHTML(`
       <section class="section">
+        <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
         <h2 class="page-title">${escapeHTML(formatTitle(chapter))}</h2>
         <div class="card-grid">
           <div class="card">
@@ -521,6 +524,7 @@ async function renderNotesPage() {
 
   setAppHTML(`
     <section class="section">
+      <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
       <h2 class="page-title">${escapeHTML(data.title || formatTitle(chapter) || "Notes")}</h2>
       <div class="notes-box">
         ${content}
@@ -572,6 +576,7 @@ async function renderMCQPage() {
 
   setAppHTML(`
     <section class="section">
+      <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
       <h2 class="page-title">${escapeHTML(data.title || formatTitle(chapter) || "MCQ Practice")}</h2>
       ${html}
       <div class="mt-20">
@@ -713,6 +718,7 @@ async function renderMockTestPage() {
 
     setAppHTML(`
       <section class="section">
+        <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
         <h2 class="page-title">${escapeHTML(APP.mock.data.title)}</h2>
         ${timerHTML}
         <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
@@ -900,6 +906,7 @@ function renderResultPage() {
 
   setAppHTML(`
     <section class="section">
+      <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
       <h2 class="page-title">Mock Test Result</h2>
 
       <div class="result-card">

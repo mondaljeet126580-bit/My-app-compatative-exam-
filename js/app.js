@@ -1,5 +1,11 @@
 "use strict";
 
+/* ==========================================
+   SSC Smart Study
+   Recursive App Engine
+   Unlimited nested folders support
+========================================== */
+
 /* ---------- Global State ---------- */
 
 const APP = {
@@ -8,9 +14,7 @@ const APP = {
   params: {},
   state: {
     category: null,
-    subject: null,
-    chapter: null,
-    topic: null,
+    path: [],
   },
   mock: {
     data: null,
@@ -36,6 +40,28 @@ function escapeHTML(str = "") {
     .replaceAll("'", "&#39;");
 }
 
+function sanitizeSegment(segment = "") {
+  return String(segment || "")
+    .trim()
+    .replace(/[\\/]+/g, "")
+    .replace(/\s+/g, " ");
+}
+
+function joinPath(...parts) {
+  return parts
+    .flat()
+    .map(sanitizeSegment)
+    .filter(Boolean)
+    .join("/");
+}
+
+function splitPath(path = "") {
+  return String(path || "")
+    .split("/")
+    .map((p) => sanitizeSegment(p))
+    .filter(Boolean);
+}
+
 function dataPath(...parts) {
   return [APP.dataFolder, ...parts].filter(Boolean).join("/");
 }
@@ -55,8 +81,27 @@ function formatTitle(text) {
     .replace(/\b\w/g, (m) => m.toUpperCase());
 }
 
-function getLeafFolder() {
-  return APP.params.topic || APP.params.chapter || "";
+function getCurrentPathSegments() {
+  const fromPath = splitPath(APP.params.path || "");
+  if (fromPath.length) return fromPath;
+
+  const legacy = [APP.params.subject, APP.params.chapter, APP.params.topic]
+    .map((x) => sanitizeSegment(x))
+    .filter(Boolean);
+  return legacy;
+}
+
+function currentDirTitle(category, segments) {
+  if (segments && segments.length) return formatTitle(segments[segments.length - 1]);
+  return formatTitle(category);
+}
+
+function currentDirPath(category, segments = []) {
+  return dataPath(category, ...segments);
+}
+
+function currentStorageKey(category, segments = []) {
+  return joinPath(category, segments);
 }
 
 function itemLabel(item, fallback = "Item") {
@@ -65,6 +110,41 @@ function itemLabel(item, fallback = "Item") {
 
 function itemNote(item, fallback = "") {
   return item.note || item.description || fallback;
+}
+
+function jsParams(params) {
+  return JSON.stringify(params);
+}
+
+function breadcrumbsHTML(category, segments = []) {
+  const crumbs = [
+    {
+      label: formatTitle(category),
+      params: { category },
+    },
+  ];
+
+  const acc = [];
+  for (const seg of segments) {
+    acc.push(seg);
+    crumbs.push({
+      label: formatTitle(seg),
+      params: { category, path: joinPath(acc) },
+    });
+  }
+
+  return `
+    <div class="breadcrumbs">
+      ${crumbs
+        .map(
+          (c, idx) => `
+            ${idx > 0 ? '<span class="crumb-sep">/</span>' : ""}
+            <button class="crumb-btn" onclick='goTo("study.html", ${jsParams(c.params)})'>${escapeHTML(c.label)}</button>
+          `
+        )
+        .join("")}
+    </div>
+  `;
 }
 
 /* ---------- UI Enhancement Layer ---------- */
@@ -79,9 +159,7 @@ function injectUIStyles() {
     #app.app-fade { opacity: 0; transform: translateY(6px); }
     #app.app-fade-in { opacity: 1; transform: translateY(0); }
 
-    .card, .question-box, .list-item {
-      animation: uiFadeInUp 0.35s ease both;
-    }
+    .card, .question-box, .list-item { animation: uiFadeInUp 0.35s ease both; }
     .card-grid .card:nth-child(1) { animation-delay: 0.02s; }
     .card-grid .card:nth-child(2) { animation-delay: 0.06s; }
     .card-grid .card:nth-child(3) { animation-delay: 0.10s; }
@@ -159,6 +237,23 @@ function injectUIStyles() {
     .ui-toast.show { opacity: 1; transform: translateY(0); }
     .ui-toast.success { background: #16814f; }
     .ui-toast.error { background: #cf3b3b; }
+
+    .breadcrumbs {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin: 4px 0 14px;
+    }
+    .crumb-btn {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .crumb-sep { opacity: 0.5; }
 
     @media (prefers-reduced-motion: reduce) {
       #app, .card, .question-box, .list-item, .ui-toast, .ui-ripple, .ui-skeleton {
@@ -240,7 +335,18 @@ function bindRippleEffect() {
   );
 }
 
-/* ---------- End UI Enhancement Layer ---------- */
+/* ---------- Content Helpers ---------- */
+
+async function loadJSON(path, { silent = false } = {}) {
+  try {
+    const res = await fetch(path, { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    if (!silent) console.error(err);
+    return null;
+  }
+}
 
 function setAppHTML(html) {
   let root = $("#app");
@@ -258,17 +364,6 @@ function setAppHTML(html) {
   window.setTimeout(() => {
     root.classList.remove("app-fade", "app-fade-in");
   }, 260);
-}
-
-async function loadJSON(path) {
-  try {
-    const res = await fetch(path);
-    if (!res.ok) throw new Error(`Failed to load: ${path}`);
-    return await res.json();
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
 }
 
 function makeLink(page, params = {}) {
@@ -348,9 +443,9 @@ async function renderHome() {
         <div class="icon">${escapeHTML(item.icon || "📁")}</div>
         <h3>${escapeHTML(item.name || item.title || "Item")}</h3>
         <p>${escapeHTML(item.description || "Open section")}</p>
-        <button class="btn mt-16" onclick="goTo('study.html', { category: '${escapeHTML(
-          item.folder || item.slug || ""
-        )}' })">Open</button>
+        <button class="btn mt-16" onclick='goTo("study.html", ${jsParams({
+          category: String(item.folder || item.slug || ""),
+        })})'>Open</button>
       </div>
     `
     )
@@ -366,174 +461,117 @@ async function renderHome() {
   `);
 }
 
-/* ---------- Study Navigator ---------- */
+/* ---------- Recursive Study Navigator ---------- */
 
 async function renderStudyPage() {
-  const { category, subject, chapter, topic } = APP.params;
+  const category = APP.params.category || "";
+  const segments = getCurrentPathSegments();
 
   if (!category) {
     await renderHome();
     return;
   }
 
-  // Level 1: show subjects inside a category
-  if (category && !subject) {
-    setAppHTML(skeletonCardsHTML(6));
-    const items = await loadJSON(dataPath(category, "items.json"));
+  setAppHTML(skeletonCardsHTML(6));
 
-    if (!Array.isArray(items)) {
-      setAppHTML(`
-        <div class="card">
-          <h3>Coming Soon</h3>
-          <p>No items found for <b>${escapeHTML(formatTitle(category))}</b>.</p>
-        </div>
-      `);
-      return;
-    }
+  const dirPath = currentDirPath(category, segments);
+  const itemsPath = dataPath(category, ...segments, "items.json");
+  const items = await loadJSON(itemsPath);
 
-    const html = items
-      .map(
-        (item) => `
-        <div class="card">
-          <div class="icon">${escapeHTML(item.icon || "📄")}</div>
-          <h3>${escapeHTML(itemLabel(item))}</h3>
-          <p>${escapeHTML(itemNote(item, "Open next level"))}</p>
-          <button class="btn mt-16" onclick="goTo('study.html', { category: '${escapeHTML(category)}', subject: '${escapeHTML(item.folder || item.slug || '')}' })">Open</button>
-        </div>
-      `
-      )
-      .join("");
+  const leafDefs = [
+    { key: "notes", title: "Notes", icon: "📖", description: "Read chapter notes", page: "notes.html", file: "notes.json" },
+    { key: "mcq", title: "MCQ Practice", icon: "📝", description: "Practice questions", page: "mcq.html", file: "mcq.json" },
+    { key: "mock", title: "Mock Test", icon: "🎯", description: "Chapter test with timer", page: "mock-test.html", file: "mock-test.json" },
+    { key: "pyq", title: "Previous Year", icon: "📄", description: "Previous year questions", page: "previous-year.html", file: "previous-year.json" },
+  ];
 
+  const leafStates = await Promise.all(
+    leafDefs.map(async (def) => ({
+      ...def,
+      exists: !!(await loadJSON(dataPath(category, ...segments, def.file), { silent: true })),
+    }))
+  );
+
+  const hasItems = Array.isArray(items) && items.length > 0;
+  const hasLeaves = leafStates.some((x) => x.exists);
+
+  if (!hasItems && !hasLeaves) {
     setAppHTML(`
       <section class="section">
         <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
-        <h2 class="page-title">${escapeHTML(formatTitle(category))}</h2>
-        <div class="card-grid">${html}</div>
+        <h2 class="page-title">${escapeHTML(currentDirTitle(category, segments))}</h2>
+        <p>No content found here.</p>
+        <p style="opacity:.7; margin-top:8px;">${escapeHTML(dirPath)}</p>
       </section>
     `);
     return;
   }
 
-  // Level 2: show chapters inside a subject
-  if (category && subject && !chapter) {
-    setAppHTML(skeletonCardsHTML(6));
-    const items = await loadJSON(dataPath(category, subject, "items.json"));
-
-    if (!Array.isArray(items)) {
-      setAppHTML(`
-        <div class="card">
-          <h3>Coming Soon</h3>
-          <p>No chapters found for <b>${escapeHTML(formatTitle(subject))}</b>.</p>
-        </div>
-      `);
-      return;
-    }
-
-    const html = items
-      .map(
-        (item) => `
-        <div class="card">
-          <div class="icon">${escapeHTML(item.icon || "📚")}</div>
-          <h3>${escapeHTML(itemLabel(item, "Chapter"))}</h3>
-          <p>${escapeHTML(itemNote(item, "Open chapter"))}</p>
-          <button class="btn mt-16" onclick="goTo('study.html', { category: '${escapeHTML(category)}', subject: '${escapeHTML(subject)}', chapter: '${escapeHTML(item.folder || item.slug || '')}' })">Open</button>
-        </div>
-      `
-      )
-      .join("");
-
-    setAppHTML(`
-      <section class="section">
-        <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
-        <h2 class="page-title">${escapeHTML(formatTitle(subject))}</h2>
-        <div class="card-grid">${html}</div>
-      </section>
-    `);
-    return;
-  }
-
-  // Level 3: if this chapter has its own sub-list, show that list first.
-  if (category && subject && chapter && !topic) {
-    setAppHTML(skeletonCardsHTML(6));
-    const subItems = await loadJSON(dataPath(category, subject, chapter, "items.json"));
-
-    if (Array.isArray(subItems) && subItems.length) {
-      const html = subItems
+  const childCards = hasItems
+    ? items
         .map(
-          (item) => `
-          <div class="card">
-            <div class="icon">${escapeHTML(item.icon || "📄")}</div>
-            <h3>${escapeHTML(itemLabel(item))}</h3>
-            <p>${escapeHTML(itemNote(item, "Open topic"))}</p>
-            <button class="btn mt-16" onclick="goTo('study.html', { category: '${escapeHTML(category)}', subject: '${escapeHTML(subject)}', chapter: '${escapeHTML(chapter)}', topic: '${escapeHTML(item.folder || item.slug || '')}' })">Open</button>
-          </div>
-        `
+          (item) => {
+            const nextPath = joinPath(segments, item.folder || item.slug || "");
+            return `
+              <div class="card">
+                <div class="icon">${escapeHTML(item.icon || "📄")}</div>
+                <h3>${escapeHTML(itemLabel(item))}</h3>
+                <p>${escapeHTML(itemNote(item, "Open next level"))}</p>
+                <button class="btn mt-16" onclick='goTo("study.html", ${jsParams({
+                  category,
+                  path: nextPath,
+                })})'>Open</button>
+              </div>
+            `;
+          }
         )
-        .join("");
+        .join("")
+    : "";
 
-      setAppHTML(`
-        <section class="section">
-          <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
-          <h2 class="page-title">${escapeHTML(formatTitle(chapter))}</h2>
-          <div class="card-grid">${html}</div>
-        </section>
-      `);
-      return;
-    }
-  }
+  const leafCards = hasLeaves
+    ? leafStates
+        .filter((x) => x.exists)
+        .map(
+          (leaf) => `
+            <div class="card">
+              <div class="icon">${escapeHTML(leaf.icon)}</div>
+              <h3>${escapeHTML(leaf.title)}</h3>
+              <p>${escapeHTML(leaf.description)}</p>
+              <button class="btn mt-16" onclick='goTo("${leaf.page}", ${jsParams({
+                category,
+                path: joinPath(segments),
+              })})'>Open</button>
+            </div>
+          `
+        )
+        .join("")
+    : "";
 
-  // Level 4: leaf topic actions (Notes / MCQ / Mock Test)
-  if (category && subject && chapter) {
-    const leaf = getLeafFolder();
-    setAppHTML(`
-      <section class="section">
-        <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
-        <h2 class="page-title">${escapeHTML(formatTitle(leaf || chapter))}</h2>
-        <div class="card-grid">
-          <div class="card">
-            <div class="icon">📖</div>
-            <h3>Notes</h3>
-            <p>Read chapter notes</p>
-            <button class="btn mt-16" onclick="goTo('notes.html', { category: '${escapeHTML(category)}', subject: '${escapeHTML(subject)}', chapter: '${escapeHTML(chapter)}'${leaf ? `, topic: '${escapeHTML(leaf)}'` : ""} })">Open</button>
-          </div>
+  setAppHTML(`
+    <section class="section">
+      <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
+      <h2 class="page-title">${escapeHTML(currentDirTitle(category, segments))}</h2>
+      ${breadcrumbsHTML(category, segments)}
 
-          <div class="card">
-            <div class="icon">📝</div>
-            <h3>MCQ Practice</h3>
-            <p>Practice questions</p>
-            <button class="btn mt-16" onclick="goTo('mcq.html', { category: '${escapeHTML(category)}', subject: '${escapeHTML(subject)}', chapter: '${escapeHTML(chapter)}'${leaf ? `, topic: '${escapeHTML(leaf)}'` : ""} })">Open</button>
-          </div>
+      ${hasItems ? `<div class="card-grid">${childCards}</div>` : ""}
 
-          <div class="card">
-            <div class="icon">🎯</div>
-            <h3>Mock Test</h3>
-            <p>Chapter test with timer</p>
-            <button class="btn mt-16" onclick="goTo('mock-test.html', { category: '${escapeHTML(category)}', subject: '${escapeHTML(subject)}', chapter: '${escapeHTML(chapter)}'${leaf ? `, topic: '${escapeHTML(leaf)}'` : ""} })">Open</button>
-          </div>
-
-          <div class="card">
-            <div class="icon">📄</div>
-            <h3>Previous Year</h3>
-            <p>Previous year questions</p>
-            <button class="btn mt-16" onclick="goTo('previous-year.html', { category: '${escapeHTML(category)}', subject: '${escapeHTML(subject)}', chapter: '${escapeHTML(chapter)}'${leaf ? `, topic: '${escapeHTML(leaf)}'` : ""} })">Open</button>
-          </div>
-        </div>
-      </section>
-    `);
-  }
+      ${hasLeaves ? `<div class="card-grid mt-20">${leafCards}</div>` : ""}
+    </section>
+  `);
 }
 
-/* ---------- Notes ---------- */
+/* ---------- Generic Content Page ---------- */
 
-async function renderNotesPage() {
-  const { category, subject, chapter, topic } = APP.params;
+async function renderGenericContentPage(fileName, defaultTitle, pageEmptyLabel) {
+  const category = APP.params.category || "";
+  const segments = getCurrentPathSegments();
   setAppHTML(skeletonBlockHTML());
 
-  const path = dataPath(category, subject, chapter, topic, "notes.json");
+  const path = dataPath(category, ...segments, fileName);
   const data = await loadJSON(path);
 
   if (!data) {
-    setAppHTML(`<div class="card"><h3>Notes Not Available</h3><p>${escapeHTML(path)}</p></div>`);
+    setAppHTML(`<div class="card"><h3>${escapeHTML(pageEmptyLabel)}</h3><p>${escapeHTML(path)}</p></div>`);
     return;
   }
 
@@ -543,21 +581,26 @@ async function renderNotesPage() {
     content = data.sections
       .map(
         (sec) => `
-        <h3>${escapeHTML(sec.heading || "")}</h3>
-        <p>${escapeHTML(sec.content || "")}</p>
-      `
+          <h3>${escapeHTML(sec.heading || "")}</h3>
+          <p>${escapeHTML(sec.content || "")}</p>
+        `
       )
+      .join("");
+  } else if (Array.isArray(data)) {
+    content = data
+      .map((item) => `<p>${escapeHTML(typeof item === "string" ? item : JSON.stringify(item))}</p>`)
       .join("");
   } else if (data.content) {
     content = `<p>${escapeHTML(data.content)}</p>`;
   } else {
-    content = `<p>No notes content found.</p>`;
+    content = `<p>No content found.</p>`;
   }
 
   setAppHTML(`
     <section class="section">
       <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
-      <h2 class="page-title">${escapeHTML(data.title || formatTitle(topic || chapter) || "Notes")}</h2>
+      <h2 class="page-title">${escapeHTML(data.title || defaultTitle)}</h2>
+      ${breadcrumbsHTML(category, segments)}
       <div class="notes-box">
         ${content}
       </div>
@@ -571,10 +614,11 @@ async function renderNotesPage() {
 /* ---------- MCQ Practice ---------- */
 
 async function renderMCQPage() {
-  const { category, subject, chapter, topic } = APP.params;
+  const category = APP.params.category || "";
+  const segments = getCurrentPathSegments();
   setAppHTML(skeletonBlockHTML());
 
-  const path = dataPath(category, subject, chapter, topic, "mcq.json");
+  const path = dataPath(category, ...segments, "mcq.json");
   const data = await loadJSON(path);
 
   const questions = Array.isArray(data) ? data : Array.isArray(data?.questions) ? data.questions : [];
@@ -588,11 +632,11 @@ async function renderMCQPage() {
       const opts = (q.options || [])
         .map(
           (opt, idx) => `
-          <label class="option">
-            <input type="radio" name="q_${i}" value="${idx}" />
-            ${escapeHTML(opt)}
-          </label>
-        `
+            <label class="option">
+              <input type="radio" name="q_${i}" value="${idx}" />
+              ${escapeHTML(opt)}
+            </label>
+          `
         )
         .join("");
 
@@ -609,7 +653,8 @@ async function renderMCQPage() {
   setAppHTML(`
     <section class="section">
       <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
-      <h2 class="page-title">${escapeHTML(data.title || formatTitle(topic || chapter) || "MCQ Practice")}</h2>
+      <h2 class="page-title">${escapeHTML(data.title || currentDirTitle(category, segments) || "MCQ Practice")}</h2>
+      ${breadcrumbsHTML(category, segments)}
       ${html}
       <div class="mt-20">
         <button class="btn" onclick="checkMCQ()">Submit Practice</button>
@@ -660,10 +705,11 @@ function getMockDefaults(settings = {}) {
 }
 
 async function renderMockTestPage() {
-  const { category, subject, chapter, topic } = APP.params;
+  const category = APP.params.category || "";
+  const segments = getCurrentPathSegments();
   setAppHTML(skeletonBlockHTML());
 
-  const path = dataPath(category, subject, chapter, topic, "mock-test.json");
+  const path = dataPath(category, ...segments, "mock-test.json");
   const data = await loadJSON(path);
 
   if (!data) {
@@ -694,13 +740,13 @@ async function renderMockTestPage() {
     });
   }
 
-  APP.mock.data = { settings, questions, title: data.title || formatTitle(topic || chapter) };
+  APP.mock.data = { settings, questions, title: data.title || currentDirTitle(category, segments) };
   APP.mock.index = 0;
   APP.mock.selected = {};
   APP.mock.timeLeft = settings.time ? settings.time * 60 : 0;
   APP.mock.startedAt = Date.now();
 
-  const saved = getProgress(`mock:${category}:${subject}:${chapter}:${topic || ""}`);
+  const saved = getProgress(`mock:${currentStorageKey(category, segments)}`);
   if (saved && saved.questions) {
     APP.mock = {
       ...APP.mock,
@@ -725,8 +771,8 @@ async function renderMockTestPage() {
              ${APP.mock.data.questions
                .map(
                  (_, idx) => `
-                 <button class="btn ${idx === APP.mock.index ? "" : "btn-outline"}" style="min-width:44px;padding:10px 12px;" onclick="goMockQuestion(${idx})">${idx + 1}</button>
-               `
+                   <button class="btn ${idx === APP.mock.index ? "" : "btn-outline"}" style="min-width:44px;padding:10px 12px;" onclick="goMockQuestion(${idx})">${idx + 1}</button>
+                 `
                )
                .join("")}
            </div>
@@ -736,11 +782,11 @@ async function renderMockTestPage() {
     const optionsHTML = (q.options || [])
       .map(
         (opt, idx) => `
-        <label class="option ${APP.mock.selected[APP.mock.index] === idx ? "selected" : ""}">
-          <input type="radio" name="mock-option" value="${idx}" ${APP.mock.selected[APP.mock.index] === idx ? "checked" : ""}/>
-          ${escapeHTML(opt)}
-        </label>
-      `
+          <label class="option ${APP.mock.selected[APP.mock.index] === idx ? "selected" : ""}">
+            <input type="radio" name="mock-option" value="${idx}" ${APP.mock.selected[APP.mock.index] === idx ? "checked" : ""} />
+            ${escapeHTML(opt)}
+          </label>
+        `
       )
       .join("");
 
@@ -748,6 +794,7 @@ async function renderMockTestPage() {
       <section class="section">
         <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
         <h2 class="page-title">${escapeHTML(APP.mock.data.title)}</h2>
+        ${breadcrumbsHTML(category, segments)}
         ${timerHTML}
         <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
         ${paletteHTML}
@@ -767,7 +814,7 @@ async function renderMockTestPage() {
     document.querySelectorAll('input[name="mock-option"]').forEach((el) => {
       el.addEventListener("change", () => {
         APP.mock.selected[APP.mock.index] = Number(el.value);
-        saveProgress(`mock:${category}:${subject}:${chapter}:${topic || ""}`, {
+        saveProgress(`mock:${currentStorageKey(category, segments)}`, {
           index: APP.mock.index,
           selected: APP.mock.selected,
           timeLeft: APP.mock.timeLeft,
@@ -811,7 +858,7 @@ async function renderMockTestPage() {
   };
 
   window.goMockSave = () => {
-    saveProgress(`mock:${category}:${subject}:${chapter}:${topic || ""}`, {
+    saveProgress(`mock:${currentStorageKey(category, segments)}`, {
       index: APP.mock.index,
       selected: APP.mock.selected,
       timeLeft: APP.mock.timeLeft,
@@ -831,18 +878,18 @@ async function renderMockTestPage() {
       ...summary,
       title: APP.mock.data.title,
       category,
-      subject,
-      chapter,
-      topic,
-      timeTaken: settings.time ? settings.time * 60 - APP.mock.timeLeft : Math.floor((Date.now() - APP.mock.startedAt) / 1000),
+      path: joinPath(segments),
+      timeTaken: settings.time
+        ? settings.time * 60 - APP.mock.timeLeft
+        : Math.floor((Date.now() - APP.mock.startedAt) / 1000),
       auto,
       questions: APP.mock.data.questions,
       selected: APP.mock.selected,
     };
 
     saveResult(result);
-    localStorage.removeItem(`ssc-smart-study:mock:${category}:${subject}:${chapter}:${topic || ""}`);
-    goTo("result.html", { category, subject, chapter, topic });
+    localStorage.removeItem(`ssc-smart-study:mock:${currentStorageKey(category, segments)}`);
+    goTo("result.html", { category, path: joinPath(segments) });
   };
 
   render();
@@ -911,9 +958,7 @@ function renderResultPage() {
       (r, idx) => `
       <div class="question-box">
         <h3>Q${idx + 1}. ${escapeHTML(r.question || "")}</h3>
-        <p class="${r.correct ? "correct" : "wrong"}">
-          ${r.correct ? "Correct" : "Wrong"}
-        </p>
+        <p class="${r.correct ? "correct" : "wrong"}">${r.correct ? "Correct" : "Wrong"}</p>
         <p><b>Your Answer:</b> ${escapeHTML(r.options[r.chosen] || "Not Answered")}</p>
         <p><b>Correct Answer:</b> ${escapeHTML(r.options[r.answer] || "N/A")}</p>
         ${r.explanation ? `<p class="mt-10"><b>Explanation:</b> ${escapeHTML(r.explanation)}</p>` : ""}
@@ -962,9 +1007,7 @@ async function boot() {
   APP.currentPage = getPageName();
   APP.params = getParams();
   APP.state.category = APP.params.category || null;
-  APP.state.subject = APP.params.subject || null;
-  APP.state.chapter = APP.params.chapter || null;
-  APP.state.topic = APP.params.topic || null;
+  APP.state.path = getCurrentPathSegments();
 
   if (APP.currentPage === "index.html" || APP.currentPage === "") {
     await renderHome();
@@ -977,7 +1020,12 @@ async function boot() {
   }
 
   if (APP.currentPage === "notes.html") {
-    await renderNotesPage();
+    await renderGenericContentPage("notes.json", currentDirTitle(APP.params.category || "", getCurrentPathSegments()) || "Notes", "Notes Not Available");
+    return;
+  }
+
+  if (APP.currentPage === "previous-year.html") {
+    await renderGenericContentPage("previous-year.json", currentDirTitle(APP.params.category || "", getCurrentPathSegments()) || "Previous Year", "Previous Year Not Available");
     return;
   }
 

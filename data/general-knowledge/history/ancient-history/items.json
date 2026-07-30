@@ -16,17 +16,5 @@
     "folder": "mahajanapadas",
     "icon": "🏰",
     "description": "The sixteen great kingdoms of ancient India"
-  },
-  {
-    "title": "Maurya Empire",
-    "folder": "maurya-empire",
-    "icon": "👑",
-    "description": "The first large empire in ancient India"
-  },
-  {
-    "title": "Gupta Empire",
-    "folder": "gupta-empire",
-    "icon": "🌟",
-    "description": "The Golden Age of ancient India"
   }
 ]

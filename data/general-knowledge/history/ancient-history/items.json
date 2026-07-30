@@ -1,22 +1,32 @@
 [
   {
-    "id": "indus-valley-civilization",
-    "name": "Indus Valley Civilization"
+    "title": "Indus Valley Civilization",
+    "folder": "indus-valley-civilization",
+    "icon": "🏺",
+    "description": "The earliest urban civilization of India"
   },
   {
-    "id": "vedic-age",
-    "name": "Vedic Age"
+    "title": "Vedic Age",
+    "folder": "vedic-age",
+    "icon": "📖",
+    "description": "Society and culture during the Vedic period"
   },
   {
-    "id": "mahajanapadas",
-    "name": "Mahajanapadas"
+    "title": "Mahajanapadas",
+    "folder": "mahajanapadas",
+    "icon": "🏰",
+    "description": "The sixteen great kingdoms of ancient India"
   },
   {
-    "id": "maurya-empire",
-    "name": "Maurya Empire"
+    "title": "Maurya Empire",
+    "folder": "maurya-empire",
+    "icon": "👑",
+    "description": "The first large empire in ancient India"
   },
   {
-    "id": "gupta-empire",
-    "name": "Gupta Empire"
+    "title": "Gupta Empire",
+    "folder": "gupta-empire",
+    "icon": "🌟",
+    "description": "The Golden Age of ancient India"
   }
 ]

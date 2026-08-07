@@ -1,10 +1,20 @@
 [
   {
     "title": "Chapter 1",
-    "file": "First Chapter/content.json"
+    "folder": "chapter-1",
+    "icon": "📖",
+    "description": "Introduction to Obituaries"
   },
   {
     "title": "Chapter 2",
-    "file": "Second Chapter/content.json"
+    "folder": "chapter-2",
+    "icon": "📖",
+    "description": "Important Personalities"
+  },
+  {
+    "title": "Chapter 3",
+    "folder": "chapter-3",
+    "icon": "📖",
+    "description": "Practice Questions"
   }
 ]

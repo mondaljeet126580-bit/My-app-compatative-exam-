@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "title": "Chapter 1",
+    "file": "First Chapter/content.json"
+  },
+  {
+    "title": "Chapter 2",
+    "file": "Second Chapter/content.json"
+  }
+]

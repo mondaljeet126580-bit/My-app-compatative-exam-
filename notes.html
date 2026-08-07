@@ -5,6 +5,153 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Notes</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ==========================================================
+       Colorful Handwriting Style — শুধু ডিজাইন যোগ করা হয়েছে
+       app.js এর কোনো ফাংশন/লজিক টাচ করা হয়নি
+       ========================================================== */
+
+    @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Caveat:wght@600;700&display=swap');
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Kalam', cursive;
+      background: repeating-linear-gradient(-3deg, #fffbe9, #fffbe9 40px, #fdf3d0 41px);
+      color: #3a2e2e;
+      padding: 24px 16px 60px;
+    }
+
+    #app {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* হেডিং (h1/h2/title জাতীয় যেকোনো কিছু) */
+    #app h1, #app h2 {
+      font-family: 'Caveat', cursive;
+      font-size: 2.8rem;
+      text-align: center;
+      color: #ff6b6b;
+      text-shadow: 2px 2px 0px #ffd93d;
+      transform: rotate(-1deg);
+      margin-bottom: 20px;
+    }
+
+    /* ইনপুট / টেক্সটএরিয়া — সব রকম নাম ধরার জন্য ট্যাগ সিলেক্টর */
+    #app input[type="text"],
+    #app textarea {
+      width: 100%;
+      font-family: 'Kalam', cursive;
+      font-size: 1.1rem;
+      padding: 12px 14px;
+      border: 2px dashed #4d96ff;
+      border-radius: 12px;
+      background: #ffffffcc;
+      color: #3a2e2e;
+      outline: none;
+      margin-bottom: 14px;
+      transition: 0.2s ease;
+    }
+    #app input[type="text"]:focus,
+    #app textarea:focus {
+      border-color: #ff6b6b;
+      background: #fffef8;
+      box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.15);
+    }
+
+    /* বাটন — যেকোনো button ট্যাগ */
+    #app button {
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      color: #fff;
+      background: linear-gradient(135deg, #ff6b6b, #c77dff);
+      box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      margin: 4px 2px;
+    }
+    #app button:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.15); }
+    #app button:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
+
+    /* নোট লিস্ট — ul/ol যাই হোক */
+    #app ul, #app ol {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      counter-reset: note-counter;
+    }
+
+    /* প্রতিটা নোট আইটেম — li অথবা div, ক্লাস নাম যাই হোক */
+    #app li,
+    #app ul > div,
+    #app ol > div {
+      position: relative;
+      background: #fffef2;
+      border-radius: 14px;
+      padding: 18px 20px 18px 52px;
+      font-size: 1.15rem;
+      line-height: 1.5;
+      box-shadow: 3px 4px 10px rgba(0,0,0,0.15);
+      border-left: 8px solid #6bcb77;
+      transform: rotate(-0.4deg);
+      counter-increment: note-counter;
+    }
+
+    /* সিরিয়াল নাম্বার বৃত্ত — সিকুয়েন্স বোঝানোর জন্য */
+    #app li::before,
+    #app ul > div::before,
+    #app ol > div::before {
+      content: counter(note-counter);
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%) rotate(-8deg);
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: #ff6b6b;
+      background: #fff;
+      border: 2px solid #ff6b6b;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* সিকুয়েন্স অনুযায়ী আলাদা রঙ (৫টা রঙ পালা করে) */
+    #app li:nth-child(5n+1) { border-left-color: #ff6b6b; background: #fff5f5; }
+    #app li:nth-child(5n+2) { border-left-color: #ffd93d; background: #fffdf0; }
+    #app li:nth-child(5n+3) { border-left-color: #6bcb77; background: #f2fff4; }
+    #app li:nth-child(5n+4) { border-left-color: #4d96ff; background: #f0f7ff; }
+    #app li:nth-child(5n+5) { border-left-color: #c77dff; background: #f9f0ff; }
+
+    /* স্ক্রলবার */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(#4d96ff, #c77dff);
+      border-radius: 10px;
+    }
+
+    @media (max-width: 480px) {
+      #app h1, #app h2 { font-size: 2.2rem; }
+      #app li, #app ul > div, #app ol > div {
+        padding: 14px 16px 14px 46px;
+        font-size: 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <div id="app"></div>

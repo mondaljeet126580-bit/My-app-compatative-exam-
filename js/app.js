@@ -348,6 +348,18 @@ async function loadJSON(path, { silent = false } = {}) {
   }
 }
 
+async function loadText(path, { silent = false } = {}) {
+  try {
+    const res = await fetch(path, { cache: "no-store" });
+    if (!res.ok) return null;
+    const text = await res.text();
+    return text && text.trim() ? text : null;
+  } catch (err) {
+    if (!silent) console.error(err);
+    return null;
+  }
+}
+
 function setAppHTML(html) {
   let root = $("#app");
   if (!root) {
@@ -479,16 +491,19 @@ async function renderStudyPage() {
   const items = await loadJSON(itemsPath);
 
   const leafDefs = [
-    { key: "notes", title: "Notes", icon: "📖", description: "Read chapter notes", page: "notes.html", file: "notes.json" },
-    { key: "mcq", title: "MCQ Practice", icon: "📝", description: "Practice questions", page: "mcq.html", file: "mcq.json" },
-    { key: "mock", title: "Mock Test", icon: "🎯", description: "Chapter test with timer", page: "mock-test.html", file: "mock-test.json" },
-    { key: "pyq", title: "Previous Year", icon: "📄", description: "Previous year questions", page: "previous-year.html", file: "previous-year.json" },
+    { key: "notes", title: "Notes", icon: "📖", description: "Read chapter notes", page: "notes.html", file: "notes.html", type: "html" },
+    { key: "mcq", title: "MCQ Practice", icon: "📝", description: "Practice questions", page: "mcq.html", file: "mcq.json", type: "json" },
+    { key: "mock", title: "Mock Test", icon: "🎯", description: "Chapter test with timer", page: "mock-test.html", file: "mock-test.json", type: "json" },
+    { key: "pyq", title: "Previous Year", icon: "📄", description: "Previous year questions", page: "previous-year.html", file: "previous-year.html", type: "html" },
   ];
 
   const leafStates = await Promise.all(
     leafDefs.map(async (def) => ({
       ...def,
-      exists: !!(await loadJSON(dataPath(category, ...segments, def.file), { silent: true })),
+      exists:
+        def.type === "html"
+          ? !!(await loadText(dataPath(category, ...segments, def.file), { silent: true }))
+          : !!(await loadJSON(dataPath(category, ...segments, def.file), { silent: true })),
     }))
   );
 
@@ -560,49 +575,28 @@ async function renderStudyPage() {
   `);
 }
 
-/* ---------- Generic Content Page ---------- */
+/* ---------- Generic HTML Content Page (Notes / Previous Year) ---------- */
 
-async function renderGenericContentPage(fileName, defaultTitle, pageEmptyLabel) {
+async function renderHTMLContentPage(fileName, defaultTitle, pageEmptyLabel) {
   const category = APP.params.category || "";
   const segments = getCurrentPathSegments();
   setAppHTML(skeletonBlockHTML());
 
   const path = dataPath(category, ...segments, fileName);
-  const data = await loadJSON(path);
+  const html = await loadText(path);
 
-  if (!data) {
+  if (!html) {
     setAppHTML(`<div class="card"><h3>${escapeHTML(pageEmptyLabel)}</h3><p>${escapeHTML(path)}</p></div>`);
     return;
-  }
-
-  let content = "";
-
-  if (Array.isArray(data.sections)) {
-    content = data.sections
-      .map(
-        (sec) => `
-          <h3>${escapeHTML(sec.heading || "")}</h3>
-          <p>${escapeHTML(sec.content || "")}</p>
-        `
-      )
-      .join("");
-  } else if (Array.isArray(data)) {
-    content = data
-      .map((item) => `<p>${escapeHTML(typeof item === "string" ? item : JSON.stringify(item))}</p>`)
-      .join("");
-  } else if (data.content) {
-    content = `<p>${escapeHTML(data.content)}</p>`;
-  } else {
-    content = `<p>No content found.</p>`;
   }
 
   setAppHTML(`
     <section class="section">
       <div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div>
-      <h2 class="page-title">${escapeHTML(data.title || defaultTitle)}</h2>
+      <h2 class="page-title">${escapeHTML(defaultTitle)}</h2>
       ${breadcrumbsHTML(category, segments)}
       <div class="notes-box">
-        ${content}
+        ${html}
       </div>
       <div class="mt-20">
         <button class="btn btn-outline" onclick="history.back()">Back</button>
@@ -1020,12 +1014,12 @@ async function boot() {
   }
 
   if (APP.currentPage === "notes.html") {
-    await renderGenericContentPage("notes.json", currentDirTitle(APP.params.category || "", getCurrentPathSegments()) || "Notes", "Notes Not Available");
+    await renderHTMLContentPage("notes.html", currentDirTitle(APP.params.category || "", getCurrentPathSegments()) || "Notes", "Notes Not Available");
     return;
   }
 
   if (APP.currentPage === "previous-year.html") {
-    await renderGenericContentPage("previous-year.json", currentDirTitle(APP.params.category || "", getCurrentPathSegments()) || "Previous Year", "Previous Year Not Available");
+    await renderHTMLContentPage("previous-year.html", currentDirTitle(APP.params.category || "", getCurrentPathSegments()) || "Previous Year", "Previous Year Not Available");
     return;
   }
 

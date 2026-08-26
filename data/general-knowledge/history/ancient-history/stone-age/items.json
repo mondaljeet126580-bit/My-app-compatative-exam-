@@ -1,14 +1,4 @@
 [
-  {
-    "title": "Theory",
-    "folder": "theory",
-    "icon": "📖",
-    "description": "Stone Age theory and study notes"
-  },
-  {
-    "title": "Mock Test",
-    "folder": "mock-test",
-    "icon": "🎯",
-    "description": "Stone Age timed mock tests"
-  }
+  {"title":"Theory","folder":"theory","icon":"📖","description":"Content Coming Soon"},
+  {"title":"Mock Test","folder":"mock-test","icon":"🎯","description":"Content Coming Soon"}
 ]

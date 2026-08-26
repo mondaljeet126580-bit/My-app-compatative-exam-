@@ -4,12 +4,10 @@
    SSC Smart Study
    Recursive App Engine
    Unlimited nested folders support
-   Premium navigation transition
 ========================================== */
 
 const APP = {
-  dataFolder: "data", currentPage: "", params: {},
-  state: { category: null, path: [] },
+  dataFolder: "data", currentPage: "", params: {}, state: { category: null, path: [] },
   mock: { data: null, index: 0, selected: {}, timer: null, timeLeft: 0, startedAt: null },
 };
 
@@ -28,6 +26,7 @@ function currentDirTitle(category, segments) { return segments && segments.lengt
 function currentDirPath(category, segments = []) { return dataPath(category, ...segments); }
 function currentStorageKey(category, segments = []) { return joinPath(category, segments); }
 function itemLabel(item, fallback = "Item") { return item.title || item.name || item.label || fallback; }
+function itemNote(item, fallback = "") { return item.note || item.description || fallback; }
 function jsParams(params) { return JSON.stringify(params); }
 
 function breadcrumbsHTML(category, segments = []) {
@@ -61,101 +60,59 @@ function injectUIStyles() {
     .category-card,.leaf-card{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}.category-card:focus-visible,.leaf-card:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
     .category-card:active,.leaf-card:active{transform:translateY(-1px) scale(.995)}
 
-    /* Premium first-launch branded animation */
-    #jeet-intro {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 50%, rgba(242,201,76,.19), transparent 24%),
-        radial-gradient(circle at 17% 22%, rgba(34,197,94,.16), transparent 33%),
-        radial-gradient(circle at 84% 78%, rgba(132,204,22,.12), transparent 35%),
-        linear-gradient(145deg,#04140b 0%,#0a2f1c 52%,#071b11 100%);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .2s ease;
-    }
-    #jeet-intro.show { opacity: 1; pointer-events: auto; }
-    #jeet-intro::before,
-    #jeet-intro::after {
-      content: "";
-      position: absolute;
-      width: 58vmax;
-      height: 58vmax;
-      border-radius: 50%;
-      border: 1px solid rgba(242,201,76,.20);
-      box-shadow: 0 0 60px rgba(22,163,74,.15) inset, 0 0 80px rgba(242,201,76,.08);
-      animation: jeetOrbit 3.2s linear infinite;
-    }
-    #jeet-intro::after { width:78vmax; height:78vmax; border-color:rgba(34,197,94,.14); animation-duration:4.4s; animation-direction:reverse; }
-    .jeet-intro-particles {
-      position:absolute; inset:0;
-      background:
-        radial-gradient(circle at 15% 30%,rgba(242,201,76,.9) 0 1px,transparent 2px),
-        radial-gradient(circle at 72% 22%,rgba(134,239,172,.8) 0 1px,transparent 2px),
-        radial-gradient(circle at 84% 67%,rgba(242,201,76,.75) 0 1.2px,transparent 2px),
-        radial-gradient(circle at 28% 78%,rgba(134,239,172,.75) 0 1px,transparent 2px),
-        radial-gradient(circle at 54% 15%,rgba(242,201,76,.75) 0 1px,transparent 2px),
-        radial-gradient(circle at 45% 88%,rgba(34,197,94,.65) 0 1px,transparent 2px);
-      animation:jeetDrift 2.6s ease-in-out infinite alternate;
-    }
-    .jeet-intro-content { position:relative; text-align:center; transform:translateY(24px) scale(.94); opacity:0; }
-    #jeet-intro.show .jeet-intro-content { animation:jeetReveal 1.05s cubic-bezier(.16,1,.3,1) .10s forwards; }
-    .jeet-intro-name { position:relative; margin:0; font-family:'Lexend','Inter',Arial,sans-serif; font-size:clamp(2.3rem,10vw,6rem); font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#fff; text-shadow:0 0 24px rgba(255,255,255,.12),0 0 54px rgba(34,197,94,.18); }
-    .jeet-intro-name::after { content:""; position:absolute; left:-10%; right:-10%; top:0; bottom:0; transform:translateX(-120%); background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.80) 48%,rgba(242,201,76,.95) 52%,transparent 66%); mix-blend-mode:screen; filter:blur(2px); opacity:.9; }
-    #jeet-intro.show .jeet-intro-name::after { animation:jeetShine 1.35s cubic-bezier(.2,.8,.2,1) .35s forwards; }
-    .jeet-intro-line { width:0; height:2px; margin:18px auto 0; background:linear-gradient(90deg,transparent,var(--gold),#fff,var(--gold),transparent); box-shadow:0 0 18px rgba(242,201,76,.55); }
-    #jeet-intro.show .jeet-intro-line { animation:jeetLine 1.05s cubic-bezier(.22,1,.36,1) .60s forwards; }
-    .jeet-intro-sub { margin:12px 0 0; color:rgba(255,255,255,.66); font-size:.78rem; letter-spacing:.42em; text-transform:uppercase; }
-    @keyframes jeetReveal { 0%{opacity:0;transform:translateY(32px) scale(.88);filter:blur(14px)} 55%{opacity:1;filter:blur(0);transform:translateY(0) scale(1.02)} 100%{opacity:1;transform:translateY(0) scale(1)} }
-    @keyframes jeetShine { 0%{transform:translateX(-120%)} 100%{transform:translateX(120%)} }
-    @keyframes jeetLine { from{width:0;opacity:0} to{width:min(320px,58vw);opacity:1} }
-    @keyframes jeetOrbit { from{transform:rotate(0deg) scale(1)} to{transform:rotate(360deg) scale(1.04)} }
-    @keyframes jeetDrift { from{transform:scale(1) translate3d(0,0,0);opacity:.65} to{transform:scale(1.08) translate3d(0,-10px,0);opacity:1} }
-    @media (prefers-reduced-motion: reduce){
-      #app,.card,.question-box,.list-item,.ui-toast,.ui-ripple,.ui-skeleton,#jeet-intro,#jeet-intro::before,#jeet-intro::after,.jeet-intro-particles,.jeet-intro-content,.jeet-intro-line,.jeet-intro-name::after{animation:none!important;transition:none!important}
-      #jeet-intro.show{opacity:1}.jeet-intro-content{opacity:1;transform:none}.jeet-intro-line{width:min(320px,58vw);opacity:1}.jeet-intro-name::after{display:none}
-    }
+    /* First-launch-only branded intro. Navigation never uses this layer. */
+    #jeet-intro{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 50%,rgba(242,201,76,.18),transparent 24%),radial-gradient(circle at 17% 22%,rgba(34,197,94,.15),transparent 33%),radial-gradient(circle at 84% 78%,rgba(132,204,22,.10),transparent 35%),linear-gradient(145deg,#04140b 0%,#0a2f1c 52%,#071b11 100%);opacity:0;pointer-events:none;transition:opacity .22s ease}
+    #jeet-intro.show{opacity:1;pointer-events:auto}
+    #jeet-intro::before,#jeet-intro::after{content:"";position:absolute;width:58vmax;height:58vmax;border-radius:50%;border:1px solid rgba(242,201,76,.18);box-shadow:0 0 60px rgba(22,163,74,.14) inset,0 0 80px rgba(242,201,76,.07);animation:jeetOrbit 4.2s linear infinite}
+    #jeet-intro::after{width:78vmax;height:78vmax;border-color:rgba(34,197,94,.12);animation-duration:5.6s;animation-direction:reverse}
+    .jeet-intro-particles{position:absolute;inset:0;background:radial-gradient(circle at 15% 30%,rgba(242,201,76,.9) 0 1px,transparent 2px),radial-gradient(circle at 72% 22%,rgba(134,239,172,.8) 0 1px,transparent 2px),radial-gradient(circle at 84% 67%,rgba(242,201,76,.75) 0 1.2px,transparent 2px),radial-gradient(circle at 28% 78%,rgba(134,239,172,.75) 0 1px,transparent 2px),radial-gradient(circle at 54% 15%,rgba(242,201,76,.75) 0 1px,transparent 2px),radial-gradient(circle at 45% 88%,rgba(34,197,94,.65) 0 1px,transparent 2px);animation:jeetDrift 3.2s ease-in-out infinite alternate}
+    .jeet-intro-content{position:relative;text-align:center;transform:translateY(20px) scale(.96);opacity:0}
+    #jeet-intro.show .jeet-intro-content{animation:jeetReveal .95s cubic-bezier(.16,1,.3,1) .08s forwards}
+    .jeet-intro-name{position:relative;margin:0;font-family:'Lexend','Inter',Arial,sans-serif;font-size:clamp(2.3rem,10vw,6rem);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#fff;text-shadow:0 0 24px rgba(255,255,255,.12),0 0 54px rgba(34,197,94,.18)}
+    .jeet-intro-name::after{content:"";position:absolute;left:-10%;right:-10%;top:0;bottom:0;transform:translateX(-120%);background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.76) 48%,rgba(242,201,76,.92) 52%,transparent 66%);mix-blend-mode:screen;filter:blur(2px);opacity:.9}
+    #jeet-intro.show .jeet-intro-name::after{animation:jeetShine 1.25s cubic-bezier(.2,.8,.2,1) .30s forwards}
+    .jeet-intro-line{width:0;height:2px;margin:18px auto 0;background:linear-gradient(90deg,transparent,var(--gold),#fff,var(--gold),transparent);box-shadow:0 0 18px rgba(242,201,76,.5)}
+    #jeet-intro.show .jeet-intro-line{animation:jeetLine .9s cubic-bezier(.22,1,.36,1) .55s forwards}
+    .jeet-intro-sub{margin:12px 0 0;color:rgba(255,255,255,.66);font-size:.76rem;letter-spacing:.38em;text-transform:uppercase}
+    @keyframes jeetReveal{0%{opacity:0;transform:translateY(28px) scale(.90);filter:blur(13px)}55%{opacity:1;filter:blur(0);transform:translateY(0) scale(1.02)}100%{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes jeetShine{0%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+    @keyframes jeetLine{from{width:0;opacity:0}to{width:min(320px,58vw);opacity:1}}
+    @keyframes jeetOrbit{from{transform:rotate(0deg) scale(1)}to{transform:rotate(360deg) scale(1.035)}}
+    @keyframes jeetDrift{from{transform:scale(1) translate3d(0,0,0);opacity:.62}to{transform:scale(1.06) translate3d(0,-8px,0);opacity:.95}}
+    @media (prefers-reduced-motion:reduce){#jeet-intro,#jeet-intro::before,#jeet-intro::after,.jeet-intro-particles,.jeet-intro-content,.jeet-intro-line,.jeet-intro-name::after{animation:none!important;transition:none!important}#jeet-intro.show{opacity:1}.jeet-intro-content{opacity:1;transform:none}.jeet-intro-line{width:min(320px,58vw);opacity:1}.jeet-intro-name::after{display:none}}
   `;
   document.head.appendChild(style);
 }
 
 function showJeetIntroOnce() {
-  if (sessionStorage.getItem("exam-vault-jeet-intro-shown") === "1") return;
-  sessionStorage.setItem("exam-vault-jeet-intro-shown", "1");
-  let overlay = $("#jeet-intro");
-  if (!overlay) {
-    overlay = document.createElement("div");
-    overlay.id = "jeet-intro";
-    overlay.innerHTML = `<div class="jeet-intro-particles"></div><div class="jeet-intro-content"><h1 class="jeet-intro-name">Jeet Mondal</h1><div class="jeet-intro-line"></div><p class="jeet-intro-sub">Exam Vault</p></div>`;
-    document.body.appendChild(overlay);
-  }
-  overlay.classList.add("show");
-  window.setTimeout(() => {
-    overlay.classList.remove("show");
-    window.setTimeout(() => overlay.remove(), 260);
-  }, 1800);
+  const key = "exam-vault-jeet-intro-shown-v2";
+  if (sessionStorage.getItem(key) === "1") return;
+  sessionStorage.setItem(key, "1");
+  const overlay = document.createElement("div");
+  overlay.id = "jeet-intro";
+  overlay.innerHTML = `<div class="jeet-intro-particles"></div><div class="jeet-intro-content"><h1 class="jeet-intro-name">Jeet Mondal</h1><div class="jeet-intro-line"></div><p class="jeet-intro-sub">Exam Vault</p></div>`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add("show"));
+  window.setTimeout(() => { overlay.classList.remove("show"); window.setTimeout(() => overlay.remove(), 240); }, 1750);
 }
 
-function showTransitionThenGo(page, params = {}) { window.location.href = makeLink(page, params); }
-function goTo(page, params = {}) { showTransitionThenGo(page, params); }
-window.goTo = goTo;
+function showToast(message, type = "") { let stack = $("#ui-toast-stack"); if (!stack) { stack = document.createElement("div"); stack.id = "ui-toast-stack"; document.body.appendChild(stack); } const toast = document.createElement("div"); toast.className = `ui-toast${type ? " " + type : ""}`; toast.textContent = message; stack.appendChild(toast); requestAnimationFrame(() => toast.classList.add("show")); window.setTimeout(() => { toast.classList.remove("show"); window.setTimeout(() => toast.remove(), 220); }, 2200); }
+function skeletonCardsHTML(count = 6) { let out = ""; for (let i=0;i<count;i++) out += `<div class="card"><div class="ui-skeleton ui-skeleton-icon"></div><div class="ui-skeleton ui-skeleton-line" style="width:70%;"></div><div class="ui-skeleton ui-skeleton-line" style="width:90%;"></div><div class="ui-skeleton ui-skeleton-line" style="width:40%;height:36px;border-radius:12px;margin-top:6px;"></div></div>`; return `<section class="section"><div class="card-grid">${out}</div></section>`; }
+function skeletonBlockHTML() { return `<section class="section"><div class="notes-box"><div class="ui-skeleton ui-skeleton-line" style="width:50%;height:22px;"></div><div class="ui-skeleton ui-skeleton-line" style="width:100%;"></div><div class="ui-skeleton ui-skeleton-line" style="width:95%;"></div><div class="ui-skeleton ui-skeleton-line" style="width:80%;"></div></div></section>`; }
+function bindRippleEffect() { document.addEventListener("click", (e) => { const btn = e.target.closest(".btn"); if (!btn) return; const rect = btn.getBoundingClientRect(); const size = Math.max(rect.width, rect.height); const ripple = document.createElement("span"); ripple.className = "ui-ripple"; ripple.style.width = ripple.style.height = `${size}px`; ripple.style.left = `${(e.clientX ?? rect.left + rect.width/2)-rect.left-size/2}px`; ripple.style.top = `${(e.clientY ?? rect.top + rect.height/2)-rect.top-size/2}px`; btn.appendChild(ripple); window.setTimeout(() => ripple.remove(), 600); }, true); }
 
-function bindClickableCards(root = document) {
-  root.querySelectorAll(".category-card").forEach(card => {
-    const open = () => showTransitionThenGo("study.html", { category: card.dataset.category, path: card.dataset.nextPath || "" });
-    card.addEventListener("click", open);
-    card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(); } });
-  });
-  root.querySelectorAll(".leaf-card").forEach(card => {
-    const open = () => showTransitionThenGo(card.dataset.page, { category: card.dataset.category, path: card.dataset.path || "" });
-    card.addEventListener("click", open);
-    card.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(); } });
-  });
-}
+async function loadJSON(path,{silent=false}={}){try{const res=await fetch(path,{cache:"no-store"});if(!res.ok)return null;return await res.json()}catch(err){if(!silent)console.error(err);return null}}
+async function loadText(path,{silent=false}={}){try{const res=await fetch(path,{cache:"no-store"});if(!res.ok)return null;const text=await res.text();return text&&text.trim()?text:null}catch(err){if(!silent)console.error(err);return null}}
+function setAppHTML(html){let root=$("#app");if(!root){root=document.createElement("section");root.id="app";document.body.appendChild(root)}root.classList.add("app-fade");root.innerHTML=html;requestAnimationFrame(()=>root.classList.add("app-fade-in"));window.setTimeout(()=>root.classList.remove("app-fade","app-fade-in"),260)}
+function makeLink(page,params={}){const url=new URL(page,window.location.href);Object.entries(params).forEach(([key,value])=>{if(value!==null&&value!==undefined&&value!=="")url.searchParams.set(key,value)});return url.pathname.split("/").pop()+url.search}
+function saveResult(result){localStorage.setItem("ssc-smart-study:last-result",JSON.stringify(result))}
+function getLastResult(){try{return JSON.parse(localStorage.getItem("ssc-smart-study:last-result"))||null}catch{return null}}
+function saveProgress(key,value){localStorage.setItem(`ssc-smart-study:${key}`,JSON.stringify(value))}
+function getProgress(key,fallback=null){try{const data=localStorage.getItem(`ssc-smart-study:${key}`);return data?JSON.parse(data):fallback}catch{return fallback}}
+function formatTime(sec){const s=Math.max(0,Number(sec||0));const mm=String(Math.floor(s/60)).padStart(2,"0");const ss=String(s%60).padStart(2,"0");return `${mm}:${ss}`}
+function shuffleArray(arr=[]){return [...arr].sort(()=>Math.random()-.5)}
+function goTo(page,params={}){window.location.href=makeLink(page,params)}
+window.goTo=goTo;
 
 async function renderHome(){
   setAppHTML(skeletonCardsHTML(6));
@@ -167,26 +124,22 @@ async function renderHome(){
     return `<div class="card category-card" role="button" tabindex="0" aria-label="Open ${escapeHTML(title)}" data-category="${escapeHTML(category)}"><div class="icon">${escapeHTML(item.icon||"📁")}</div><h3>${escapeHTML(title)}</h3></div>`;
   }).join("");
   setAppHTML(`<section class="section"><h2 class="page-title">Select Category</h2><div class="card-grid">${cards}</div></section>`);
-  bindClickableCards($("#app"));
+  $$(".category-card").forEach(card=>{const open=()=>goTo("study.html",{category:card.dataset.category});card.addEventListener("click",open);card.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();open()}})});
 }
 
 async function renderStudyPage(){
   const category=APP.params.category||""; const segments=getCurrentPathSegments(); if(!category){await renderHome();return}
   setAppHTML(skeletonCardsHTML(6));
   const dirPath=currentDirPath(category,segments); const itemsPath=dataPath(category,...segments,"items.json"); const items=await loadJSON(itemsPath);
-  const leafDefs=[
-    {key:"notes",title:"Notes",icon:"📖",page:"notes.html",file:"notes.html",type:"html"},
-    {key:"mcq",title:"MCQ Practice",icon:"📝",page:"mcq.html",file:"mcq.json",type:"json"},
-    {key:"mock",title:"Mock Test",icon:"🎯",page:"mock-test.html",file:"mock-test.json",type:"json"},
-    {key:"pyq",title:"Previous Year",icon:"📄",page:"previous-year.html",file:"previous-year.html",type:"html"},
-  ];
+  const leafDefs=[{key:"notes",title:"Notes",icon:"📖",description:"Read chapter notes",page:"notes.html",file:"notes.html",type:"html"},{key:"mcq",title:"MCQ Practice",icon:"📝",description:"Practice questions",page:"mcq.html",file:"mcq.json",type:"json"},{key:"mock",title:"Mock Test",icon:"🎯",description:"Chapter test with timer",page:"mock-test.html",file:"mock-test.json",type:"json"},{key:"pyq",title:"Previous Year",icon:"📄",description:"Previous year questions",page:"previous-year.html",file:"previous-year.html",type:"html"}];
   const leafStates=await Promise.all(leafDefs.map(async def=>({...def,exists:def.type==="html"?!!(await loadText(dataPath(category,...segments,def.file),{silent:true})):!!(await loadJSON(dataPath(category,...segments,def.file),{silent:true}))})));
   const hasItems=Array.isArray(items)&&items.length>0; const hasLeaves=leafStates.some(x=>x.exists);
   if(!hasItems&&!hasLeaves){setAppHTML(`<section class="section"><div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div><h2 class="page-title">${escapeHTML(currentDirTitle(category,segments))}</h2><p>No content found here.</p><p style="opacity:.7;margin-top:8px;">${escapeHTML(dirPath)}</p></section>`);return}
-  const childCards=hasItems?items.map(item=>{const nextPath=joinPath(segments,item.folder||item.slug||""); return `<div class="card category-card" role="button" tabindex="0" data-next-path="${escapeHTML(nextPath)}" data-category="${escapeHTML(category)}"><div class="icon">${escapeHTML(item.icon||"📄")}</div><h3>${escapeHTML(itemLabel(item))}</h3></div>`}).join(""):"";
+  const childCards=hasItems?items.map(item=>{const nextPath=joinPath(segments,item.folder||item.slug||"");return `<div class="card category-card" role="button" tabindex="0" data-next-path="${escapeHTML(nextPath)}" data-category="${escapeHTML(category)}"><div class="icon">${escapeHTML(item.icon||"📄")}</div><h3>${escapeHTML(itemLabel(item))}</h3></div>`}).join(""):"";
   const leafCards=hasLeaves?leafStates.filter(x=>x.exists).map(leaf=>`<div class="card leaf-card" role="button" tabindex="0" data-page="${escapeHTML(leaf.page)}" data-category="${escapeHTML(category)}" data-path="${escapeHTML(joinPath(segments))}"><div class="icon">${escapeHTML(leaf.icon)}</div><h3>${escapeHTML(leaf.title)}</h3></div>`).join(""):"";
   setAppHTML(`<section class="section"><div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div><h2 class="page-title">${escapeHTML(currentDirTitle(category,segments))}</h2>${breadcrumbsHTML(category,segments)}${hasItems?`<div class="card-grid">${childCards}</div>`:""}${hasLeaves?`<div class="card-grid mt-20">${leafCards}</div>`:""}</section>`);
-  bindClickableCards($("#app"));
+  $$(".category-card").forEach(card=>{const open=()=>goTo("study.html",{category:card.dataset.category,path:card.dataset.nextPath||""});card.addEventListener("click",open);card.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();open()}})});
+  $$(".leaf-card").forEach(card=>{const open=()=>goTo(card.dataset.page,{category:card.dataset.category,path:card.dataset.path||""});card.addEventListener("click",open);card.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();open()}})});
 }
 
 async function renderHTMLContentPage(fileName,defaultTitle,pageEmptyLabel){
@@ -195,27 +148,18 @@ async function renderHTMLContentPage(fileName,defaultTitle,pageEmptyLabel){
   setAppHTML(`<section class="section"><div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div><h2 class="page-title">${escapeHTML(defaultTitle)}</h2>${breadcrumbsHTML(category,segments)}<div class="notes-box">${html}</div><div class="mt-20"><button class="btn btn-outline" onclick="history.back()">Back</button></div></section>`);
 }
 
-/* ---------- MCQ Practice ---------- */
-
-async function renderMCQPage() {
-  /* Existing MCQ/test implementation remains unchanged. */
-}
-
-async function renderMockPage() {
-  /* Existing mock-test implementation remains unchanged. */
-}
+async function renderMCQPage() { /* Existing MCQ/test implementation remains unchanged. */ }
+async function renderMockPage() { /* Existing mock-test implementation remains unchanged. */ }
 
 function init() {
   injectUIStyles();
   bindRippleEffect();
   APP.params = getParams();
   APP.currentPage = getPageName();
-
   if (APP.currentPage === "index.html") {
-    showJeetIntroOnce();
     renderHome();
-  }
-  else if (APP.currentPage === "study.html") renderStudyPage();
+    window.setTimeout(showJeetIntroOnce, 120);
+  } else if (APP.currentPage === "study.html") renderStudyPage();
   else if (APP.currentPage === "notes.html") renderHTMLContentPage("notes.html", "Notes", "Notes not found");
   else if (APP.currentPage === "previous-year.html") renderHTMLContentPage("previous-year.html", "Previous Year", "Previous year content not found");
   else if (APP.currentPage === "mcq.html") renderMCQPage();

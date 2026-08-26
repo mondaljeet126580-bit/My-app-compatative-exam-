@@ -1,4 +1,14 @@
 [
-  {"title":"Theory","folder":"theory","icon":"📖","description":"Content Coming Soon"},
-  {"title":"Mock Test","folder":"mock-test","icon":"🎯","description":"Content Coming Soon"}
+  {
+    "title": "Theory",
+    "folder": "theory",
+    "icon": "📖",
+    "description": "Content Coming Soon"
+  },
+  {
+    "title": "Mock Test",
+    "folder": "mock-test",
+    "icon": "🎯",
+    "description": "Content Coming Soon"
+  }
 ]

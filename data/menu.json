@@ -1,44 +1,8 @@
 [
-  {
-    "id": 1,
-    "name": "General Knowledge",
-    "folder": "general-knowledge",
-    "icon": "📚",
-    "description": "History, Geography, Polity, Economics"
-  },
-  {
-    "id": 2,
-    "name": "General Science",
-    "folder": "general-science",
-    "icon": "🔬",
-    "description": "Physics, Chemistry, Biology"
-  },
-  {
-    "id": 3,
-    "name": "Mathematics",
-    "folder": "mathematics",
-    "icon": "📐",
-    "description": "Arithmetic, Algebra, Geometry"
-  },
-  {
-    "id": 4,
-    "name": "Reasoning",
-    "folder": "reasoning",
-    "icon": "🧠",
-    "description": "Verbal, Non-verbal, Analytical"
-  },
-  {
-    "id": 5,
-    "name": "Previous Year",
-    "folder": "previous-year",
-    "icon": "📄",
-    "description": "Previous question papers"
-  },
-{
-  "id": 6,
-  "name": "Current Affairs",
-  "folder": "current-affairs",
-  "icon": "📰",
-  "description": "Daily, Monthly"
-}
-    ]
+  {"id":1,"name":"General Knowledge","folder":"general-knowledge","icon":"📚"},
+  {"id":2,"name":"General Science","folder":"general-science","icon":"🔬"},
+  {"id":3,"name":"Mathematics","folder":"mathematics","icon":"📐"},
+  {"id":4,"name":"Reasoning","folder":"reasoning","icon":"🧠"},
+  {"id":5,"name":"Previous Year","folder":"previous-year","icon":"📄"},
+  {"id":6,"name":"Current Affairs","folder":"current-affairs","icon":"📰"}
+]

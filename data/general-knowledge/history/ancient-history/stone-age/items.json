@@ -1,1 +1,20 @@
-
+[
+  {
+    "title": "Theory",
+    "folder": "theory",
+    "icon": "📖",
+    "description": "Stone Age theory and study notes"
+  },
+  {
+    "title": "MCQ",
+    "folder": "mcq",
+    "icon": "📝",
+    "description": "Stone Age multiple-choice questions"
+  },
+  {
+    "title": "Mock Test",
+    "folder": "mock-test",
+    "icon": "🎯",
+    "description": "Stone Age timed mock tests"
+  }
+]

@@ -10,7 +10,6 @@ const APP = {
   dataFolder: "data", currentPage: "", params: {}, state: { category: null, path: [] },
   mock: { data: null, index: 0, selected: {}, timer: null, timeLeft: 0, startedAt: null },
 };
-
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => root.querySelectorAll(sel);
 function escapeHTML(str = "") { return String(str).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;"); }
@@ -26,91 +25,51 @@ function currentDirTitle(category, segments) { return segments && segments.lengt
 function currentDirPath(category, segments = []) { return dataPath(category, ...segments); }
 function currentStorageKey(category, segments = []) { return joinPath(category, segments); }
 function itemLabel(item, fallback = "Item") { return item.title || item.name || item.label || fallback; }
-function itemNote(item, fallback = "") { return item.note || item.description || fallback; }
 function jsParams(params) { return JSON.stringify(params); }
-
-function breadcrumbsHTML(category, segments = []) {
-  const crumbs = [{ label: formatTitle(category), params: { category } }];
-  const acc = [];
-  for (const seg of segments) { acc.push(seg); crumbs.push({ label: formatTitle(seg), params: { category, path: joinPath(acc) } }); }
-  return `<div class="breadcrumbs">${crumbs.map((c, idx) => `${idx > 0 ? '<span class="crumb-sep">/</span>' : ""}<button class="crumb-btn" onclick='goTo("study.html", ${jsParams(c.params)})'>${escapeHTML(c.label)}</button>`).join("")}</div>`;
-}
+function breadcrumbsHTML(category, segments = []) { const crumbs = [{ label: formatTitle(category), params: { category } }]; const acc = []; for (const seg of segments) { acc.push(seg); crumbs.push({ label: formatTitle(seg), params: { category, path: joinPath(acc) } }); } return `<div class="breadcrumbs">${crumbs.map((c, idx) => `${idx > 0 ? '<span class="crumb-sep">/</span>' : ""}<button class="crumb-btn" onclick='goTo("study.html", ${jsParams(c.params)})'>${escapeHTML(c.label)}</button>`).join("")}</div>`; }
 
 function injectUIStyles() {
   if ($("#ui-enhancements-style")) return;
-  const style = document.createElement("style");
-  style.id = "ui-enhancements-style";
+  const style = document.createElement("style"); style.id = "ui-enhancements-style";
   style.textContent = `
-    #app { transition: opacity .22s ease, transform .22s ease; }
-    #app.app-fade { opacity:0; transform:translateY(6px); }
-    #app.app-fade-in { opacity:1; transform:translateY(0); }
-    .card,.question-box,.list-item { animation:uiFadeInUp .35s ease both; }
-    .card-grid .card:nth-child(1){animation-delay:.02s}.card-grid .card:nth-child(2){animation-delay:.06s}.card-grid .card:nth-child(3){animation-delay:.10s}.card-grid .card:nth-child(4){animation-delay:.14s}.card-grid .card:nth-child(5){animation-delay:.18s}.card-grid .card:nth-child(6){animation-delay:.22s}
+    #app{transition:opacity .22s ease,transform .22s ease}#app.app-fade{opacity:0;transform:translateY(6px)}#app.app-fade-in{opacity:1;transform:translateY(0)}
+    .card,.question-box,.list-item{animation:uiFadeInUp .35s ease both}.card-grid .card:nth-child(1){animation-delay:.02s}.card-grid .card:nth-child(2){animation-delay:.06s}.card-grid .card:nth-child(3){animation-delay:.10s}.card-grid .card:nth-child(4){animation-delay:.14s}.card-grid .card:nth-child(5){animation-delay:.18s}.card-grid .card:nth-child(6){animation-delay:.22s}
     @keyframes uiFadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-    .btn{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}.btn:active{transform:scale(.97)}
-    .ui-ripple{position:absolute;border-radius:50%;transform:scale(0);background:rgba(255,255,255,.55);pointer-events:none;animation:uiRipple .55s ease-out}.btn-outline .ui-ripple{background:rgba(22,163,74,.18)}
-    @keyframes uiRipple{to{transform:scale(2.6);opacity:0}}
+    .btn{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}.btn:active{transform:scale(.97)}.ui-ripple{position:absolute;border-radius:50%;transform:scale(0);background:rgba(255,255,255,.55);pointer-events:none;animation:uiRipple .55s ease-out}.btn-outline .ui-ripple{background:rgba(22,163,74,.18)}@keyframes uiRipple{to{transform:scale(2.6);opacity:0}}
     .option{transition:background .15s ease,border-color .15s ease,transform .1s ease}.option:active{transform:scale(.99)}
-    .ui-skeleton{background:linear-gradient(90deg,#e7f4eb 25%,#f8fbf9 37%,#e7f4eb 63%);background-size:400% 100%;animation:uiShimmer 1.3s ease infinite;border-radius:10px}
-    @keyframes uiShimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}
-    .ui-skeleton-line{height:14px;margin-bottom:10px}.ui-skeleton-icon{width:44px;height:44px;border-radius:12px;margin-bottom:14px}
-    #ui-toast-stack{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
-    .ui-toast{pointer-events:auto;min-width:180px;max-width:90vw;padding:12px 18px;border-radius:12px;background:#113c25;color:#fff;font-size:.92rem;font-weight:500;box-shadow:0 10px 24px rgba(16,56,35,.25);opacity:0;transform:translateY(10px);transition:opacity .2s ease,transform .2s ease}.ui-toast.show{opacity:1;transform:translateY(0)}.ui-toast.success{background:#16814f}.ui-toast.error{background:#cf3b3b}
+    .ui-skeleton{background:linear-gradient(90deg,#e7f4eb 25%,#f8fbf9 37%,#e7f4eb 63%);background-size:400% 100%;animation:uiShimmer 1.3s ease infinite;border-radius:10px}@keyframes uiShimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}.ui-skeleton-line{height:14px;margin-bottom:10px}.ui-skeleton-icon{width:44px;height:44px;border-radius:12px;margin-bottom:14px}
+    #ui-toast-stack{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}.ui-toast{pointer-events:auto;min-width:180px;max-width:90vw;padding:12px 18px;border-radius:12px;background:#113c25;color:#fff;font-size:.92rem;font-weight:500;box-shadow:0 10px 24px rgba(16,56,35,.25);opacity:0;transform:translateY(10px);transition:opacity .2s ease,transform .2s ease}.ui-toast.show{opacity:1;transform:translateY(0)}.ui-toast.success{background:#16814f}.ui-toast.error{background:#cf3b3b}
     .breadcrumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 14px}.crumb-btn{border:0;background:transparent;padding:0;color:inherit;font-weight:700;cursor:pointer}.crumb-sep{opacity:.5}
-    .category-card,.leaf-card{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}.category-card:focus-visible,.leaf-card:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
-    .category-card:active,.leaf-card:active{transform:translateY(-1px) scale(.995)}
-
-    /* First-launch-only branded intro. Navigation never uses this layer. */
-    #jeet-intro{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 50%,rgba(242,201,76,.18),transparent 24%),radial-gradient(circle at 17% 22%,rgba(34,197,94,.15),transparent 33%),radial-gradient(circle at 84% 78%,rgba(132,204,22,.10),transparent 35%),linear-gradient(145deg,#04140b 0%,#0a2f1c 52%,#071b11 100%);opacity:0;pointer-events:none;transition:opacity .22s ease}
-    #jeet-intro.show{opacity:1;pointer-events:auto}
-    #jeet-intro::before,#jeet-intro::after{content:"";position:absolute;width:58vmax;height:58vmax;border-radius:50%;border:1px solid rgba(242,201,76,.18);box-shadow:0 0 60px rgba(22,163,74,.14) inset,0 0 80px rgba(242,201,76,.07);animation:jeetOrbit 4.2s linear infinite}
-    #jeet-intro::after{width:78vmax;height:78vmax;border-color:rgba(34,197,94,.12);animation-duration:5.6s;animation-direction:reverse}
+    .category-card,.leaf-card{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}.category-card:focus-visible,.leaf-card:focus-visible{outline:3px solid var(--gold);outline-offset:3px}.category-card:active,.leaf-card:active{transform:translateY(-1px) scale(.995)}
+    /* First launch only: visually rich but isolated from navigation */
+    #jeet-intro{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 50%,rgba(242,201,76,.18),transparent 25%),radial-gradient(circle at 20% 20%,rgba(34,197,94,.16),transparent 32%),radial-gradient(circle at 82% 80%,rgba(132,204,22,.11),transparent 34%),linear-gradient(145deg,#04140b 0%,#0a2f1c 52%,#071b11 100%);opacity:0;pointer-events:none;transition:opacity .22s ease}
+    #jeet-intro.show{opacity:1;pointer-events:auto}#jeet-intro::before,#jeet-intro::after{content:"";position:absolute;border-radius:50%;border:1px solid rgba(242,201,76,.18);box-shadow:0 0 60px rgba(22,163,74,.14) inset,0 0 80px rgba(242,201,76,.07);animation:jeetOrbit 4.2s linear infinite;width:58vmax;height:58vmax}#jeet-intro::after{width:78vmax;height:78vmax;border-color:rgba(34,197,94,.12);animation-duration:5.6s;animation-direction:reverse}
     .jeet-intro-particles{position:absolute;inset:0;background:radial-gradient(circle at 15% 30%,rgba(242,201,76,.9) 0 1px,transparent 2px),radial-gradient(circle at 72% 22%,rgba(134,239,172,.8) 0 1px,transparent 2px),radial-gradient(circle at 84% 67%,rgba(242,201,76,.75) 0 1.2px,transparent 2px),radial-gradient(circle at 28% 78%,rgba(134,239,172,.75) 0 1px,transparent 2px),radial-gradient(circle at 54% 15%,rgba(242,201,76,.75) 0 1px,transparent 2px),radial-gradient(circle at 45% 88%,rgba(34,197,94,.65) 0 1px,transparent 2px);animation:jeetDrift 3.2s ease-in-out infinite alternate}
-    .jeet-intro-content{position:relative;text-align:center;transform:translateY(20px) scale(.96);opacity:0}
-    #jeet-intro.show .jeet-intro-content{animation:jeetReveal .95s cubic-bezier(.16,1,.3,1) .08s forwards}
-    .jeet-intro-name{position:relative;margin:0;font-family:'Lexend','Inter',Arial,sans-serif;font-size:clamp(2.3rem,10vw,6rem);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#fff;text-shadow:0 0 24px rgba(255,255,255,.12),0 0 54px rgba(34,197,94,.18)}
-    .jeet-intro-name::after{content:"";position:absolute;left:-10%;right:-10%;top:0;bottom:0;transform:translateX(-120%);background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.76) 48%,rgba(242,201,76,.92) 52%,transparent 66%);mix-blend-mode:screen;filter:blur(2px);opacity:.9}
-    #jeet-intro.show .jeet-intro-name::after{animation:jeetShine 1.25s cubic-bezier(.2,.8,.2,1) .30s forwards}
-    .jeet-intro-line{width:0;height:2px;margin:18px auto 0;background:linear-gradient(90deg,transparent,var(--gold),#fff,var(--gold),transparent);box-shadow:0 0 18px rgba(242,201,76,.5)}
-    #jeet-intro.show .jeet-intro-line{animation:jeetLine .9s cubic-bezier(.22,1,.36,1) .55s forwards}
-    .jeet-intro-sub{margin:12px 0 0;color:rgba(255,255,255,.66);font-size:.76rem;letter-spacing:.38em;text-transform:uppercase}
-    @keyframes jeetReveal{0%{opacity:0;transform:translateY(28px) scale(.90);filter:blur(13px)}55%{opacity:1;filter:blur(0);transform:translateY(0) scale(1.02)}100%{opacity:1;transform:translateY(0) scale(1)}}
-    @keyframes jeetShine{0%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
-    @keyframes jeetLine{from{width:0;opacity:0}to{width:min(320px,58vw);opacity:1}}
-    @keyframes jeetOrbit{from{transform:rotate(0deg) scale(1)}to{transform:rotate(360deg) scale(1.035)}}
-    @keyframes jeetDrift{from{transform:scale(1) translate3d(0,0,0);opacity:.62}to{transform:scale(1.06) translate3d(0,-8px,0);opacity:.95}}
+    .jeet-intro-content{position:relative;text-align:center;transform:translateY(20px) scale(.96);opacity:0}#jeet-intro.show .jeet-intro-content{animation:jeetReveal .95s cubic-bezier(.16,1,.3,1) .08s forwards}.jeet-intro-name{position:relative;margin:0;font-family:'Lexend','Inter',Arial,sans-serif;font-size:clamp(2.3rem,10vw,6rem);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#fff;text-shadow:0 0 24px rgba(255,255,255,.12),0 0 54px rgba(34,197,94,.18)}.jeet-intro-name::after{content:"";position:absolute;left:-10%;right:-10%;top:0;bottom:0;transform:translateX(-120%);background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.76) 48%,rgba(242,201,76,.92) 52%,transparent 66%);mix-blend-mode:screen;filter:blur(2px);opacity:.9}#jeet-intro.show .jeet-intro-name::after{animation:jeetShine 1.25s cubic-bezier(.2,.8,.2,1) .30s forwards}.jeet-intro-line{width:0;height:2px;margin:18px auto 0;background:linear-gradient(90deg,transparent,var(--gold),#fff,var(--gold),transparent);box-shadow:0 0 18px rgba(242,201,76,.5)}#jeet-intro.show .jeet-intro-line{animation:jeetLine .9s cubic-bezier(.22,1,.36,1) .55s forwards}.jeet-intro-sub{margin:12px 0 0;color:rgba(255,255,255,.66);font-size:.76rem;letter-spacing:.38em;text-transform:uppercase}
+    @keyframes jeetReveal{0%{opacity:0;transform:translateY(28px) scale(.90);filter:blur(13px)}55%{opacity:1;filter:blur(0);transform:translateY(0) scale(1.02)}100%{opacity:1;transform:translateY(0) scale(1)}}@keyframes jeetShine{0%{transform:translateX(-120%)}100%{transform:translateX(120%)}}@keyframes jeetLine{from{width:0;opacity:0}to{width:min(320px,58vw);opacity:1}}@keyframes jeetOrbit{from{transform:rotate(0deg) scale(1)}to{transform:rotate(360deg) scale(1.035)}}@keyframes jeetDrift{from{transform:scale(1);opacity:.62}to{transform:scale(1.06) translateY(-8px);opacity:.95}}
     @media (prefers-reduced-motion:reduce){#jeet-intro,#jeet-intro::before,#jeet-intro::after,.jeet-intro-particles,.jeet-intro-content,.jeet-intro-line,.jeet-intro-name::after{animation:none!important;transition:none!important}#jeet-intro.show{opacity:1}.jeet-intro-content{opacity:1;transform:none}.jeet-intro-line{width:min(320px,58vw);opacity:1}.jeet-intro-name::after{display:none}}
   `;
   document.head.appendChild(style);
 }
 
-function showJeetIntroOnce() {
-  const key = "exam-vault-jeet-intro-shown-v2";
-  if (sessionStorage.getItem(key) === "1") return;
-  sessionStorage.setItem(key, "1");
-  const overlay = document.createElement("div");
-  overlay.id = "jeet-intro";
-  overlay.innerHTML = `<div class="jeet-intro-particles"></div><div class="jeet-intro-content"><h1 class="jeet-intro-name">Jeet Mondal</h1><div class="jeet-intro-line"></div><p class="jeet-intro-sub">Exam Vault</p></div>`;
-  document.body.appendChild(overlay);
-  requestAnimationFrame(() => overlay.classList.add("show"));
-  window.setTimeout(() => { overlay.classList.remove("show"); window.setTimeout(() => overlay.remove(), 240); }, 1750);
+function showJeetIntroOnce(){
+  const key="exam-vault-jeet-intro-final";
+  if(sessionStorage.getItem(key)==="1") return;
+  sessionStorage.setItem(key,"1");
+  const overlay=document.createElement("div"); overlay.id="jeet-intro";
+  overlay.innerHTML=`<div class="jeet-intro-particles"></div><div class="jeet-intro-content"><h1 class="jeet-intro-name">Jeet Mondal</h1><div class="jeet-intro-line"></div><p class="jeet-intro-sub">Exam Vault</p></div>`;
+  document.body.appendChild(overlay); requestAnimationFrame(()=>overlay.classList.add("show"));
+  window.setTimeout(()=>{overlay.classList.remove("show");window.setTimeout(()=>overlay.remove(),240)},1750);
 }
 
-function showToast(message, type = "") { let stack = $("#ui-toast-stack"); if (!stack) { stack = document.createElement("div"); stack.id = "ui-toast-stack"; document.body.appendChild(stack); } const toast = document.createElement("div"); toast.className = `ui-toast${type ? " " + type : ""}`; toast.textContent = message; stack.appendChild(toast); requestAnimationFrame(() => toast.classList.add("show")); window.setTimeout(() => { toast.classList.remove("show"); window.setTimeout(() => toast.remove(), 220); }, 2200); }
-function skeletonCardsHTML(count = 6) { let out = ""; for (let i=0;i<count;i++) out += `<div class="card"><div class="ui-skeleton ui-skeleton-icon"></div><div class="ui-skeleton ui-skeleton-line" style="width:70%;"></div><div class="ui-skeleton ui-skeleton-line" style="width:90%;"></div><div class="ui-skeleton ui-skeleton-line" style="width:40%;height:36px;border-radius:12px;margin-top:6px;"></div></div>`; return `<section class="section"><div class="card-grid">${out}</div></section>`; }
-function skeletonBlockHTML() { return `<section class="section"><div class="notes-box"><div class="ui-skeleton ui-skeleton-line" style="width:50%;height:22px;"></div><div class="ui-skeleton ui-skeleton-line" style="width:100%;"></div><div class="ui-skeleton ui-skeleton-line" style="width:95%;"></div><div class="ui-skeleton ui-skeleton-line" style="width:80%;"></div></div></section>`; }
-function bindRippleEffect() { document.addEventListener("click", (e) => { const btn = e.target.closest(".btn"); if (!btn) return; const rect = btn.getBoundingClientRect(); const size = Math.max(rect.width, rect.height); const ripple = document.createElement("span"); ripple.className = "ui-ripple"; ripple.style.width = ripple.style.height = `${size}px`; ripple.style.left = `${(e.clientX ?? rect.left + rect.width/2)-rect.left-size/2}px`; ripple.style.top = `${(e.clientY ?? rect.top + rect.height/2)-rect.top-size/2}px`; btn.appendChild(ripple); window.setTimeout(() => ripple.remove(), 600); }, true); }
-
+function showToast(message,type=""){let stack=$("#ui-toast-stack");if(!stack){stack=document.createElement("div");stack.id="ui-toast-stack";document.body.appendChild(stack)}const toast=document.createElement("div");toast.className=`ui-toast${type?" "+type:""}`;toast.textContent=message;stack.appendChild(toast);requestAnimationFrame(()=>toast.classList.add("show"));window.setTimeout(()=>{toast.classList.remove("show");window.setTimeout(()=>toast.remove(),220)},2200)}
+function skeletonCardsHTML(count=6){let out="";for(let i=0;i<count;i++)out+=`<div class="card"><div class="ui-skeleton ui-skeleton-icon"></div><div class="ui-skeleton ui-skeleton-line" style="width:70%;"></div><div class="ui-skeleton ui-skeleton-line" style="width:90%;"></div><div class="ui-skeleton ui-skeleton-line" style="width:40%;height:36px;border-radius:12px;margin-top:6px;"></div></div>`;return `<section class="section"><div class="card-grid">${out}</div></section>`}
+function skeletonBlockHTML(){return `<section class="section"><div class="notes-box"><div class="ui-skeleton ui-skeleton-line" style="width:50%;height:22px;"></div><div class="ui-skeleton ui-skeleton-line" style="width:100%;"></div><div class="ui-skeleton ui-skeleton-line" style="width:95%;"></div><div class="ui-skeleton ui-skeleton-line" style="width:80%;"></div></div></section>`}
+function bindRippleEffect(){document.addEventListener("click",e=>{const btn=e.target.closest(".btn");if(!btn)return;const rect=btn.getBoundingClientRect();const size=Math.max(rect.width,rect.height);const ripple=document.createElement("span");ripple.className="ui-ripple";ripple.style.width=ripple.style.height=`${size}px`;ripple.style.left=`${(e.clientX??rect.left+rect.width/2)-rect.left-size/2}px`;ripple.style.top=`${(e.clientY??rect.top+rect.height/2)-rect.top-size/2}px`;btn.appendChild(ripple);window.setTimeout(()=>ripple.remove(),600)},true)}
 async function loadJSON(path,{silent=false}={}){try{const res=await fetch(path,{cache:"no-store"});if(!res.ok)return null;return await res.json()}catch(err){if(!silent)console.error(err);return null}}
 async function loadText(path,{silent=false}={}){try{const res=await fetch(path,{cache:"no-store"});if(!res.ok)return null;const text=await res.text();return text&&text.trim()?text:null}catch(err){if(!silent)console.error(err);return null}}
 function setAppHTML(html){let root=$("#app");if(!root){root=document.createElement("section");root.id="app";document.body.appendChild(root)}root.classList.add("app-fade");root.innerHTML=html;requestAnimationFrame(()=>root.classList.add("app-fade-in"));window.setTimeout(()=>root.classList.remove("app-fade","app-fade-in"),260)}
 function makeLink(page,params={}){const url=new URL(page,window.location.href);Object.entries(params).forEach(([key,value])=>{if(value!==null&&value!==undefined&&value!=="")url.searchParams.set(key,value)});return url.pathname.split("/").pop()+url.search}
-function saveResult(result){localStorage.setItem("ssc-smart-study:last-result",JSON.stringify(result))}
-function getLastResult(){try{return JSON.parse(localStorage.getItem("ssc-smart-study:last-result"))||null}catch{return null}}
-function saveProgress(key,value){localStorage.setItem(`ssc-smart-study:${key}`,JSON.stringify(value))}
-function getProgress(key,fallback=null){try{const data=localStorage.getItem(`ssc-smart-study:${key}`);return data?JSON.parse(data):fallback}catch{return fallback}}
-function formatTime(sec){const s=Math.max(0,Number(sec||0));const mm=String(Math.floor(s/60)).padStart(2,"0");const ss=String(s%60).padStart(2,"0");return `${mm}:${ss}`}
-function shuffleArray(arr=[]){return [...arr].sort(()=>Math.random()-.5)}
 function goTo(page,params={}){window.location.href=makeLink(page,params)}
 window.goTo=goTo;
 
@@ -118,22 +77,18 @@ async function renderHome(){
   setAppHTML(skeletonCardsHTML(6));
   const menu=await loadJSON(dataPath("menu.json"));
   if(!Array.isArray(menu)){setAppHTML(`<div class="card"><h3>Menu not found</h3><p>Please create <b>data/menu.json</b>.</p></div>`);return}
-  const cards=menu.map(item=>{
-    const category=String(item.folder||item.slug||"");
-    const title=String(item.name||item.title||"Item");
-    return `<div class="card category-card" role="button" tabindex="0" aria-label="Open ${escapeHTML(title)}" data-category="${escapeHTML(category)}"><div class="icon">${escapeHTML(item.icon||"📁")}</div><h3>${escapeHTML(title)}</h3></div>`;
-  }).join("");
+  const cards=menu.map(item=>{const category=String(item.folder||item.slug||"");const title=String(item.name||item.title||"Item");return `<div class="card category-card" role="button" tabindex="0" aria-label="Open ${escapeHTML(title)}" data-category="${escapeHTML(category)}"><div class="icon">${escapeHTML(item.icon||"📁")}</div><h3>${escapeHTML(title)}</h3></div>`}).join("");
   setAppHTML(`<section class="section"><h2 class="page-title">Select Category</h2><div class="card-grid">${cards}</div></section>`);
   $$(".category-card").forEach(card=>{const open=()=>goTo("study.html",{category:card.dataset.category});card.addEventListener("click",open);card.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();open()}})});
 }
 
 async function renderStudyPage(){
-  const category=APP.params.category||""; const segments=getCurrentPathSegments(); if(!category){await renderHome();return}
+  const category=APP.params.category||"";const segments=getCurrentPathSegments();if(!category){await renderHome();return}
   setAppHTML(skeletonCardsHTML(6));
-  const dirPath=currentDirPath(category,segments); const itemsPath=dataPath(category,...segments,"items.json"); const items=await loadJSON(itemsPath);
+  const dirPath=currentDirPath(category,segments);const itemsPath=dataPath(category,...segments,"items.json");const items=await loadJSON(itemsPath);
   const leafDefs=[{key:"notes",title:"Notes",icon:"📖",description:"Read chapter notes",page:"notes.html",file:"notes.html",type:"html"},{key:"mcq",title:"MCQ Practice",icon:"📝",description:"Practice questions",page:"mcq.html",file:"mcq.json",type:"json"},{key:"mock",title:"Mock Test",icon:"🎯",description:"Chapter test with timer",page:"mock-test.html",file:"mock-test.json",type:"json"},{key:"pyq",title:"Previous Year",icon:"📄",description:"Previous year questions",page:"previous-year.html",file:"previous-year.html",type:"html"}];
   const leafStates=await Promise.all(leafDefs.map(async def=>({...def,exists:def.type==="html"?!!(await loadText(dataPath(category,...segments,def.file),{silent:true})):!!(await loadJSON(dataPath(category,...segments,def.file),{silent:true}))})));
-  const hasItems=Array.isArray(items)&&items.length>0; const hasLeaves=leafStates.some(x=>x.exists);
+  const hasItems=Array.isArray(items)&&items.length>0;const hasLeaves=leafStates.some(x=>x.exists);
   if(!hasItems&&!hasLeaves){setAppHTML(`<section class="section"><div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div><h2 class="page-title">${escapeHTML(currentDirTitle(category,segments))}</h2><p>No content found here.</p><p style="opacity:.7;margin-top:8px;">${escapeHTML(dirPath)}</p></section>`);return}
   const childCards=hasItems?items.map(item=>{const nextPath=joinPath(segments,item.folder||item.slug||"");return `<div class="card category-card" role="button" tabindex="0" data-next-path="${escapeHTML(nextPath)}" data-category="${escapeHTML(category)}"><div class="icon">${escapeHTML(item.icon||"📄")}</div><h3>${escapeHTML(itemLabel(item))}</h3></div>`}).join(""):"";
   const leafCards=hasLeaves?leafStates.filter(x=>x.exists).map(leaf=>`<div class="card leaf-card" role="button" tabindex="0" data-page="${escapeHTML(leaf.page)}" data-category="${escapeHTML(category)}" data-path="${escapeHTML(joinPath(segments))}"><div class="icon">${escapeHTML(leaf.icon)}</div><h3>${escapeHTML(leaf.title)}</h3></div>`).join(""):"";
@@ -142,29 +97,18 @@ async function renderStudyPage(){
   $$(".leaf-card").forEach(card=>{const open=()=>goTo(card.dataset.page,{category:card.dataset.category,path:card.dataset.path||""});card.addEventListener("click",open);card.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();open()}})});
 }
 
-async function renderHTMLContentPage(fileName,defaultTitle,pageEmptyLabel){
-  const category=APP.params.category||"";const segments=getCurrentPathSegments();setAppHTML(skeletonBlockHTML());const path=dataPath(category,...segments,fileName);const html=await loadText(path);
-  if(!html){setAppHTML(`<div class="card"><h3>${escapeHTML(pageEmptyLabel)}</h3><p>${escapeHTML(path)}</p></div>`);return}
-  setAppHTML(`<section class="section"><div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div><h2 class="page-title">${escapeHTML(defaultTitle)}</h2>${breadcrumbsHTML(category,segments)}<div class="notes-box">${html}</div><div class="mt-20"><button class="btn btn-outline" onclick="history.back()">Back</button></div></section>`);
-}
+async function renderHTMLContentPage(fileName,defaultTitle,pageEmptyLabel){const category=APP.params.category||"";const segments=getCurrentPathSegments();setAppHTML(skeletonBlockHTML());const path=dataPath(category,...segments,fileName);const html=await loadText(path);if(!html){setAppHTML(`<div class="card"><h3>${escapeHTML(pageEmptyLabel)}</h3><p>${escapeHTML(path)}</p></div>`);return}setAppHTML(`<section class="section"><div class="page-nav"><button class="btn-back" onclick="history.back()">⬅ Back</button></div><h2 class="page-title">${escapeHTML(defaultTitle)}</h2>${breadcrumbsHTML(category,segments)}<div class="notes-box">${html}</div><div class="mt-20"><button class="btn btn-outline" onclick="history.back()">Back</button></div></section>`) }
+async function renderMCQPage(){/* Existing MCQ/test implementation remains unchanged. */}
+async function renderMockPage(){/* Existing mock-test implementation remains unchanged. */}
 
-async function renderMCQPage() { /* Existing MCQ/test implementation remains unchanged. */ }
-async function renderMockPage() { /* Existing mock-test implementation remains unchanged. */ }
-
-function init() {
-  injectUIStyles();
-  bindRippleEffect();
-  APP.params = getParams();
-  APP.currentPage = getPageName();
-  if (APP.currentPage === "index.html") {
-    renderHome();
-    window.setTimeout(showJeetIntroOnce, 120);
-  } else if (APP.currentPage === "study.html") renderStudyPage();
-  else if (APP.currentPage === "notes.html") renderHTMLContentPage("notes.html", "Notes", "Notes not found");
-  else if (APP.currentPage === "previous-year.html") renderHTMLContentPage("previous-year.html", "Previous Year", "Previous year content not found");
-  else if (APP.currentPage === "mcq.html") renderMCQPage();
-  else if (APP.currentPage === "mock-test.html") renderMockPage();
+function init(){
+  injectUIStyles();bindRippleEffect();APP.params=getParams();APP.currentPage=getPageName();
+  if(APP.currentPage==="index.html"){renderHome();window.setTimeout(showJeetIntroOnce,80)}
+  else if(APP.currentPage==="study.html")renderStudyPage();
+  else if(APP.currentPage==="notes.html")renderHTMLContentPage("notes.html","Notes","Notes not found");
+  else if(APP.currentPage==="previous-year.html")renderHTMLContentPage("previous-year.html","Previous Year","Previous year content not found");
+  else if(APP.currentPage==="mcq.html")renderMCQPage();
+  else if(APP.currentPage==="mock-test.html")renderMockPage();
   else renderHome();
 }
-
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded",init);

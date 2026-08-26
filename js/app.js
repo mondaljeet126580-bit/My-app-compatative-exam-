@@ -61,8 +61,8 @@ function injectUIStyles() {
     .category-card,.leaf-card{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}.category-card:focus-visible,.leaf-card:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
     .category-card:active,.leaf-card:active{transform:translateY(-1px) scale(.995)}
 
-    /* Premium branded transition overlay */
-    #jeet-transition {
+    /* Premium first-launch branded animation */
+    #jeet-intro {
       position: fixed;
       inset: 0;
       z-index: 99999;
@@ -70,17 +70,17 @@ function injectUIStyles() {
       place-items: center;
       overflow: hidden;
       background:
-        radial-gradient(circle at 50% 48%, rgba(242,201,76,.20), transparent 28%),
-        radial-gradient(circle at 25% 20%, rgba(34,197,94,.18), transparent 34%),
-        radial-gradient(circle at 80% 80%, rgba(132,204,22,.14), transparent 36%),
-        linear-gradient(145deg, #04140b 0%, #0a2f1c 52%, #071b11 100%);
+        radial-gradient(circle at 50% 50%, rgba(242,201,76,.19), transparent 24%),
+        radial-gradient(circle at 17% 22%, rgba(34,197,94,.16), transparent 33%),
+        radial-gradient(circle at 84% 78%, rgba(132,204,22,.12), transparent 35%),
+        linear-gradient(145deg,#04140b 0%,#0a2f1c 52%,#071b11 100%);
       opacity: 0;
       pointer-events: none;
-      transition: opacity .18s ease;
+      transition: opacity .2s ease;
     }
-    #jeet-transition.show { opacity: 1; pointer-events: auto; }
-    #jeet-transition::before,
-    #jeet-transition::after {
+    #jeet-intro.show { opacity: 1; pointer-events: auto; }
+    #jeet-intro::before,
+    #jeet-intro::after {
       content: "";
       position: absolute;
       width: 58vmax;
@@ -90,99 +90,57 @@ function injectUIStyles() {
       box-shadow: 0 0 60px rgba(22,163,74,.15) inset, 0 0 80px rgba(242,201,76,.08);
       animation: jeetOrbit 3.2s linear infinite;
     }
-    #jeet-transition::after {
-      width: 78vmax;
-      height: 78vmax;
-      border-color: rgba(34,197,94,.14);
-      animation-duration: 4.4s;
-      animation-direction: reverse;
-    }
-    .jeet-transition-particles {
-      position: absolute;
-      inset: 0;
+    #jeet-intro::after { width:78vmax; height:78vmax; border-color:rgba(34,197,94,.14); animation-duration:4.4s; animation-direction:reverse; }
+    .jeet-intro-particles {
+      position:absolute; inset:0;
       background:
-        radial-gradient(circle at 15% 30%, rgba(242,201,76,.9) 0 1px, transparent 2px),
-        radial-gradient(circle at 72% 22%, rgba(134,239,172,.8) 0 1px, transparent 2px),
-        radial-gradient(circle at 84% 67%, rgba(242,201,76,.75) 0 1.2px, transparent 2px),
-        radial-gradient(circle at 28% 78%, rgba(134,239,172,.75) 0 1px, transparent 2px),
-        radial-gradient(circle at 54% 15%, rgba(242,201,76,.75) 0 1px, transparent 2px),
-        radial-gradient(circle at 45% 88%, rgba(34,197,94,.65) 0 1px, transparent 2px);
-      animation: jeetDrift 2.6s ease-in-out infinite alternate;
+        radial-gradient(circle at 15% 30%,rgba(242,201,76,.9) 0 1px,transparent 2px),
+        radial-gradient(circle at 72% 22%,rgba(134,239,172,.8) 0 1px,transparent 2px),
+        radial-gradient(circle at 84% 67%,rgba(242,201,76,.75) 0 1.2px,transparent 2px),
+        radial-gradient(circle at 28% 78%,rgba(134,239,172,.75) 0 1px,transparent 2px),
+        radial-gradient(circle at 54% 15%,rgba(242,201,76,.75) 0 1px,transparent 2px),
+        radial-gradient(circle at 45% 88%,rgba(34,197,94,.65) 0 1px,transparent 2px);
+      animation:jeetDrift 2.6s ease-in-out infinite alternate;
     }
-    .jeet-transition-content { position: relative; text-align: center; transform: translateY(24px) scale(.94); opacity: 0; }
-    #jeet-transition.show .jeet-transition-content { animation: jeetReveal 1.05s cubic-bezier(.16,1,.3,1) .10s forwards; }
-    .jeet-transition-line {
-      width: 0;
-      height: 2px;
-      margin: 18px auto 0;
-      background: linear-gradient(90deg, transparent, var(--gold), #fff, var(--gold), transparent);
-      box-shadow: 0 0 18px rgba(242,201,76,.55);
-    }
-    #jeet-transition.show .jeet-transition-line { animation: jeetLine 1.05s cubic-bezier(.22,1,.36,1) .60s forwards; }
-    .jeet-transition-name {
-      position: relative;
-      margin: 0;
-      font-family: 'Lexend', 'Inter', Arial, sans-serif;
-      font-size: clamp(2.3rem, 10vw, 6rem);
-      font-weight: 800;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: #fff;
-      text-shadow: 0 0 24px rgba(255,255,255,.12), 0 0 54px rgba(34,197,94,.18);
-    }
-    .jeet-transition-name::after {
-      content: "";
-      position: absolute;
-      left: -10%;
-      right: -10%;
-      top: 0;
-      bottom: 0;
-      transform: translateX(-120%);
-      background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.80) 48%, rgba(242,201,76,.95) 52%, transparent 66%);
-      mix-blend-mode: screen;
-      filter: blur(2px);
-      opacity: .9;
-    }
-    #jeet-transition.show .jeet-transition-name::after { animation: jeetShine 1.35s cubic-bezier(.2,.8,.2,1) .35s forwards; }
-    .jeet-transition-sub { margin: 12px 0 0; color: rgba(255,255,255,.66); font-size: .78rem; letter-spacing: .42em; text-transform: uppercase; }
+    .jeet-intro-content { position:relative; text-align:center; transform:translateY(24px) scale(.94); opacity:0; }
+    #jeet-intro.show .jeet-intro-content { animation:jeetReveal 1.05s cubic-bezier(.16,1,.3,1) .10s forwards; }
+    .jeet-intro-name { position:relative; margin:0; font-family:'Lexend','Inter',Arial,sans-serif; font-size:clamp(2.3rem,10vw,6rem); font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#fff; text-shadow:0 0 24px rgba(255,255,255,.12),0 0 54px rgba(34,197,94,.18); }
+    .jeet-intro-name::after { content:""; position:absolute; left:-10%; right:-10%; top:0; bottom:0; transform:translateX(-120%); background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.80) 48%,rgba(242,201,76,.95) 52%,transparent 66%); mix-blend-mode:screen; filter:blur(2px); opacity:.9; }
+    #jeet-intro.show .jeet-intro-name::after { animation:jeetShine 1.35s cubic-bezier(.2,.8,.2,1) .35s forwards; }
+    .jeet-intro-line { width:0; height:2px; margin:18px auto 0; background:linear-gradient(90deg,transparent,var(--gold),#fff,var(--gold),transparent); box-shadow:0 0 18px rgba(242,201,76,.55); }
+    #jeet-intro.show .jeet-intro-line { animation:jeetLine 1.05s cubic-bezier(.22,1,.36,1) .60s forwards; }
+    .jeet-intro-sub { margin:12px 0 0; color:rgba(255,255,255,.66); font-size:.78rem; letter-spacing:.42em; text-transform:uppercase; }
     @keyframes jeetReveal { 0%{opacity:0;transform:translateY(32px) scale(.88);filter:blur(14px)} 55%{opacity:1;filter:blur(0);transform:translateY(0) scale(1.02)} 100%{opacity:1;transform:translateY(0) scale(1)} }
     @keyframes jeetShine { 0%{transform:translateX(-120%)} 100%{transform:translateX(120%)} }
     @keyframes jeetLine { from{width:0;opacity:0} to{width:min(320px,58vw);opacity:1} }
     @keyframes jeetOrbit { from{transform:rotate(0deg) scale(1)} to{transform:rotate(360deg) scale(1.04)} }
     @keyframes jeetDrift { from{transform:scale(1) translate3d(0,0,0);opacity:.65} to{transform:scale(1.08) translate3d(0,-10px,0);opacity:1} }
     @media (prefers-reduced-motion: reduce){
-      #app,.card,.question-box,.list-item,.ui-toast,.ui-ripple,.ui-skeleton,#jeet-transition,#jeet-transition::before,#jeet-transition::after,.jeet-transition-particles,.jeet-transition-content,.jeet-transition-line,.jeet-transition-name::after{animation:none!important;transition:none!important}
-      #jeet-transition.show{opacity:1}.jeet-transition-content{opacity:1;transform:none}.jeet-transition-line{width:min(320px,58vw);opacity:1}.jeet-transition-name::after{display:none}
+      #app,.card,.question-box,.list-item,.ui-toast,.ui-ripple,.ui-skeleton,#jeet-intro,#jeet-intro::before,#jeet-intro::after,.jeet-intro-particles,.jeet-intro-content,.jeet-intro-line,.jeet-intro-name::after{animation:none!important;transition:none!important}
+      #jeet-intro.show{opacity:1}.jeet-intro-content{opacity:1;transform:none}.jeet-intro-line{width:min(320px,58vw);opacity:1}.jeet-intro-name::after{display:none}
     }
   `;
   document.head.appendChild(style);
 }
 
-function showJeetTransition(targetPage, params = {}) {
-  let overlay = $("#jeet-transition");
+function showJeetIntroOnce() {
+  if (sessionStorage.getItem("exam-vault-jeet-intro-shown") === "1") return;
+  sessionStorage.setItem("exam-vault-jeet-intro-shown", "1");
+  let overlay = $("#jeet-intro");
   if (!overlay) {
     overlay = document.createElement("div");
-    overlay.id = "jeet-transition";
-    overlay.innerHTML = `
-      <div class="jeet-transition-particles"></div>
-      <div class="jeet-transition-content">
-        <h1 class="jeet-transition-name">Jeet Mondal</h1>
-        <div class="jeet-transition-line"></div>
-        <p class="jeet-transition-sub">Entering Exam Vault</p>
-      </div>
-    `;
+    overlay.id = "jeet-intro";
+    overlay.innerHTML = `<div class="jeet-intro-particles"></div><div class="jeet-intro-content"><h1 class="jeet-intro-name">Jeet Mondal</h1><div class="jeet-intro-line"></div><p class="jeet-intro-sub">Exam Vault</p></div>`;
     document.body.appendChild(overlay);
   }
-  overlay.classList.remove("show");
-  void overlay.offsetWidth;
   overlay.classList.add("show");
-  window.setTimeout(() => { window.location.href = makeLink(targetPage, params); }, 1450);
+  window.setTimeout(() => {
+    overlay.classList.remove("show");
+    window.setTimeout(() => overlay.remove(), 260);
+  }, 1800);
 }
 
-function showTransitionThenGo(page, params = {}) {
-  showJeetTransition(page, params);
-}
-
+function showTransitionThenGo(page, params = {}) { window.location.href = makeLink(page, params); }
 function goTo(page, params = {}) { showTransitionThenGo(page, params); }
 window.goTo = goTo;
 
@@ -206,10 +164,7 @@ async function renderHome(){
   const cards=menu.map(item=>{
     const category=String(item.folder||item.slug||"");
     const title=String(item.name||item.title||"Item");
-    return `<div class="card category-card" role="button" tabindex="0" aria-label="Open ${escapeHTML(title)}" data-category="${escapeHTML(category)}">
-      <div class="icon">${escapeHTML(item.icon||"📁")}</div>
-      <h3>${escapeHTML(title)}</h3>
-    </div>`;
+    return `<div class="card category-card" role="button" tabindex="0" aria-label="Open ${escapeHTML(title)}" data-category="${escapeHTML(category)}"><div class="icon">${escapeHTML(item.icon||"📁")}</div><h3>${escapeHTML(title)}</h3></div>`;
   }).join("");
   setAppHTML(`<section class="section"><h2 class="page-title">Select Category</h2><div class="card-grid">${cards}</div></section>`);
   bindClickableCards($("#app"));
@@ -256,7 +211,10 @@ function init() {
   APP.params = getParams();
   APP.currentPage = getPageName();
 
-  if (APP.currentPage === "index.html") renderHome();
+  if (APP.currentPage === "index.html") {
+    showJeetIntroOnce();
+    renderHome();
+  }
   else if (APP.currentPage === "study.html") renderStudyPage();
   else if (APP.currentPage === "notes.html") renderHTMLContentPage("notes.html", "Notes", "Notes not found");
   else if (APP.currentPage === "previous-year.html") renderHTMLContentPage("previous-year.html", "Previous Year", "Previous year content not found");

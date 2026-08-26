@@ -2,13 +2,11 @@
   {
     "title": "Theory",
     "folder": "theory",
-    "icon": "📖",
-    "description": "Content Coming Soon"
+    "icon": "📖"
   },
   {
     "title": "Mock Test",
     "folder": "mock-test",
-    "icon": "🎯",
-    "description": "Content Coming Soon"
+    "icon": "🎯"
   }
 ]

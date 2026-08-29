@@ -27,17 +27,16 @@
     background:#f4efe2;
     min-height:100vh;
     padding:22px 14px 60px;
-    font-family:'Atma', cursive;
+    font-family:'Atma', cursive !important;
   }
 
   .wrap{ max-width:640px; margin:0 auto; }
 
-  /* ---------------- BACK BUTTON ---------------- */
   .back-btn{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    font-family:'Baloo Da 2', cursive;
+    font-family:'Baloo Da 2', cursive !important;
     font-weight:700;
     font-size:17px;
     color:#fff;
@@ -52,7 +51,6 @@
   }
   .back-btn:active{ transform:translateY(1px); }
 
-  /* ---------------- HEADING ---------------- */
   .heading-row{
     display:flex;
     align-items:stretch;
@@ -65,7 +63,7 @@
     background:linear-gradient(180deg, var(--accent-green), var(--accent-yellow));
   }
   .heading-text{
-    font-family:'Baloo Da 2', cursive;
+    font-family:'Baloo Da 2', cursive !important;
     font-weight:800;
     font-size:32px;
     line-height:1.2;
@@ -79,7 +77,6 @@
   }
   .heading-text .rock{ -webkit-text-stroke:0; }
 
-  /* ---------------- NOTEBOOK PAGE (plain white paper, no ruled lines) ---------------- */
   .page{
     position:relative;
     background:var(--paper);
@@ -88,7 +85,6 @@
     padding:28px 22px 32px 54px;
   }
   .page::before{
-    /* plain-paper margin line, like a school exercise book */
     content:"";
     position:absolute;
     left:36px; top:0; bottom:0;
@@ -98,7 +94,7 @@
   }
 
   .sub-heading{
-    font-family:'Baloo Da 2', cursive;
+    font-family:'Baloo Da 2', cursive !important;
     font-weight:700;
     font-size:24px;
     color:var(--ink-black);
@@ -117,17 +113,19 @@
   }
 
   p{
+    font-family:'Atma', cursive !important;
     font-size:22px;
     line-height:1.65;
     margin:0 0 16px;
+    font-weight:400 !important;
   }
   .ink-black{ color:var(--ink-black); }
   .ink-blue{ color:var(--ink-blue); }
 
-  /* IMPORTANT text — bold + red, used automatically via ==...== syntax */
   .imp{
     color:var(--imp-red);
-    font-weight:700;
+    font-weight:700 !important;
+    font-family:'Atma', cursive !important;
   }
 
   .section{ margin-bottom:6px; }
@@ -137,12 +135,17 @@
     padding-left:26px;
   }
   .stage-list li{
+    font-family:'Atma', cursive !important;
     font-size:22px;
     line-height:1.65;
     color:var(--ink-blue);
     margin-bottom:4px;
+    font-weight:400 !important;
   }
-  .stage-list li b{ color:var(--ink-black); }
+  .stage-list li b{ color:var(--ink-black); font-family:'Atma', cursive !important; font-weight:700 !important; }
+
+  #noteBody,#noteBody p,#noteBody li{ font-family:'Atma', cursive !important; }
+  #noteBody .sub-heading{ font-family:'Baloo Da 2', cursive !important; }
 
   @media (max-width:420px){
     .heading-text{ font-size:26px; }
@@ -179,23 +182,6 @@
 </div>
 
 <script>
-/* ============================================================
-   REUSABLE NOTE RENDERER
-   Every note page in the app should use this same block.
-   Write note content as plain text below using this syntax:
-
-     ## subheading text          -> sub-heading (bold, highlighter underline)
-     - list item text            -> bullet point
-     **bold text**                -> bold, black (normal emphasis)
-     ==important text==           -> bold, RED (use for things to
-                                      remember / exam-important lines)
-     (a blank line new paragraph) -> plain paragraph, ink color
-                                      auto-alternates black/blue
-
-   To add a new note: copy this whole file, change NOTE_CONTENT
-   and the heading text/emoji at the top. Nothing else needs editing.
-   ============================================================ */
-
 const NOTE_CONTENT = `
 মানুষের ইতিহাসের যে সময়ে মানুষ প্রধানত পাথরের তৈরি অস্ত্র ও সরঞ্জাম ব্যবহার করত, সেই সময়কে ==প্রস্তর যুগ বা Stone Age== বলা হয়। এটি মানব ইতিহাসের প্রাচীনতম পর্যায়গুলির মধ্যে অন্যতম।
 
@@ -212,10 +198,15 @@ const NOTE_CONTENT = `
 প্রতিটি পর্যায়ে মানুষের হাতিয়ার তৈরির কৌশল এবং জীবনযাত্রার ধরন ক্রমশ উন্নত হয়েছে, যা পরবর্তীকালে ==সভ্যতার ভিত== গড়ে তুলতে সাহায্য করেছে।
 `;
 
+function escHtml(text){
+  return String(text).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+}
+
 function parseInline(text){
-  text = text.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
-  text = text.replace(/==(.+?)==/g, '<span class="imp">$1</span>');
-  return text;
+  let safe = escHtml(text);
+  safe = safe.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  safe = safe.replace(/==(.+?)==/g, '<span class="imp">$1</span>');
+  return safe;
 }
 
 function renderNote(raw){

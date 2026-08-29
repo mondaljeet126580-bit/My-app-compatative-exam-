@@ -6,155 +6,55 @@
   <title>Notes</title>
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    /* ==========================================================
-       Colorful Handwriting Style — শুধু ডিজাইন যোগ করা হয়েছে
-       app.js এর কোনো ফাংশন/লজিক টাচ করা হয়নি
-       ========================================================== */
-
-    @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Caveat:wght@600;700&display=swap');
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: 'Kalam', cursive;
-      background: repeating-linear-gradient(-3deg, #fffbe9, #fffbe9 40px, #fdf3d0 41px);
-      color: #3a2e2e;
-      padding: 24px 16px 60px;
-    }
-
-    #app {
-      max-width: 720px;
-      margin: 0 auto;
-    }
-
-    /* হেডিং (h1/h2/title জাতীয় যেকোনো কিছু) */
-    #app h1, #app h2 {
-      font-family: 'Caveat', cursive;
-      font-size: 2.8rem;
-      text-align: center;
-      color: #ff6b6b;
-      text-shadow: 2px 2px 0px #ffd93d;
-      transform: rotate(-1deg);
-      margin-bottom: 20px;
-    }
-
-    /* ইনপুট / টেক্সটএরিয়া — সব রকম নাম ধরার জন্য ট্যাগ সিলেক্টর */
-    #app input[type="text"],
-    #app textarea {
-      width: 100%;
-      font-family: 'Kalam', cursive;
-      font-size: 1.1rem;
-      padding: 12px 14px;
-      border: 2px dashed #4d96ff;
-      border-radius: 12px;
-      background: #ffffffcc;
-      color: #3a2e2e;
-      outline: none;
-      margin-bottom: 14px;
-      transition: 0.2s ease;
-    }
-    #app input[type="text"]:focus,
-    #app textarea:focus {
-      border-color: #ff6b6b;
-      background: #fffef8;
-      box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.15);
-    }
-
-    /* বাটন — যেকোনো button ট্যাগ */
-    #app button {
-      font-family: 'Kalam', cursive;
-      font-weight: 700;
-      font-size: 1rem;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
-      color: #fff;
-      background: linear-gradient(135deg, #ff6b6b, #c77dff);
-      box-shadow: 0 4px 0 rgba(0,0,0,0.15);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      margin: 4px 2px;
-    }
-    #app button:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.15); }
-    #app button:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
-
-    /* নোট লিস্ট — ul/ol যাই হোক */
-    #app ul, #app ol {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      counter-reset: note-counter;
-    }
-
-    /* প্রতিটা নোট আইটেম — li অথবা div, ক্লাস নাম যাই হোক */
-    #app li,
-    #app ul > div,
-    #app ol > div {
-      position: relative;
-      background: #fffef2;
-      border-radius: 14px;
-      padding: 18px 20px 18px 52px;
-      font-size: 1.15rem;
-      line-height: 1.5;
-      box-shadow: 3px 4px 10px rgba(0,0,0,0.15);
-      border-left: 8px solid #6bcb77;
-      transform: rotate(-0.4deg);
-      counter-increment: note-counter;
-    }
-
-    /* সিরিয়াল নাম্বার বৃত্ত — সিকুয়েন্স বোঝানোর জন্য */
-    #app li::before,
-    #app ul > div::before,
-    #app ol > div::before {
-      content: counter(note-counter);
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%) rotate(-8deg);
-      font-family: 'Caveat', cursive;
-      font-weight: 700;
-      font-size: 1.6rem;
-      color: #ff6b6b;
-      background: #fff;
-      border: 2px solid #ff6b6b;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* সিকুয়েন্স অনুযায়ী আলাদা রঙ (৫টা রঙ পালা করে) */
-    #app li:nth-child(5n+1) { border-left-color: #ff6b6b; background: #fff5f5; }
-    #app li:nth-child(5n+2) { border-left-color: #ffd93d; background: #fffdf0; }
-    #app li:nth-child(5n+3) { border-left-color: #6bcb77; background: #f2fff4; }
-    #app li:nth-child(5n+4) { border-left-color: #4d96ff; background: #f0f7ff; }
-    #app li:nth-child(5n+5) { border-left-color: #c77dff; background: #f9f0ff; }
-
-    /* স্ক্রলবার */
-    ::-webkit-scrollbar { width: 10px; }
-    ::-webkit-scrollbar-thumb {
-      background: linear-gradient(#4d96ff, #c77dff);
-      border-radius: 10px;
-    }
-
-    @media (max-width: 480px) {
-      #app h1, #app h2 { font-size: 2.2rem; }
-      #app li, #app ul > div, #app ol > div {
-        padding: 14px 16px 14px 46px;
-        font-size: 1rem;
-      }
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Atma:wght@400;500;600;700&family=Baloo+Da+2:wght@600;700;800&display=swap');
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{background:repeating-linear-gradient(0deg,transparent 0 27px,rgba(0,0,0,.02) 27px 28px),#fbf6e9;min-height:100vh;padding:22px 14px 60px;font-family:'Atma',cursive}
+    #app{max-width:640px;margin:0 auto}
+    .notes-wrap{max-width:640px;margin:0 auto}
+    .notes-back{display:inline-flex;align-items:center;gap:6px;font-family:'Baloo Da 2',cursive;font-weight:700;font-size:17px;color:#fff;background:linear-gradient(135deg,#ec4899,#8b5cf6);border:none;padding:10px 26px;border-radius:999px;box-shadow:0 6px 14px rgba(139,92,246,.35);cursor:pointer;text-decoration:none;margin-bottom:22px}
+    .notes-heading-row{display:flex;align-items:stretch;gap:16px;margin-bottom:22px}
+    .notes-accent-bar{flex:0 0 5px;border-radius:4px;background:linear-gradient(180deg,#22c55e,#eab308)}
+    .notes-heading-text{font-family:'Baloo Da 2',cursive;font-weight:800;font-size:32px;line-height:1.2;margin:0;background:linear-gradient(180deg,#ff7a3d,#e6423c);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:1px rgba(180,40,30,.35);letter-spacing:.01em}
+    .notes-page{position:relative;background:repeating-linear-gradient(to bottom,transparent 0 38px,#a9c8ee 38px 39px),#faf3df;border-radius:14px;box-shadow:0 10px 26px rgba(60,40,10,.14);padding:26px 20px 30px 58px;overflow:hidden}
+    .notes-page::before{content:"";position:absolute;left:38px;top:0;bottom:0;width:2px;background:#d9524c;opacity:.65}
+    .notes-section{margin-bottom:8px}
+    .notes-sub-heading{font-family:'Baloo Da 2',cursive;font-weight:700;font-size:24px;color:#1d1d1f;margin:0 0 6px;line-height:39px;display:inline-block;position:relative}
+    .notes-sub-heading::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:8px;background:rgba(234,179,8,.35);z-index:-1;border-radius:2px}
+    .notes-content p{font-size:22px;line-height:39px;margin:0 0 6px;white-space:pre-wrap}
+    .notes-content .ink-black{color:#1d1d1f}.notes-content .ink-blue{color:#1a3aad}
+    .notes-stage-list{margin:0 0 6px;padding-left:26px}.notes-stage-list li{font-size:22px;line-height:39px;color:#1a3aad}.notes-stage-list li b{color:#1d1d1f}
+    .notes-state{font-size:22px;line-height:39px;color:#1d1d1f}
+    .notes-error{font-family:Inter,Arial,sans-serif;background:#fff;border:1px solid #eadfc4;border-radius:14px;padding:18px;color:#222}
+    @media(max-width:420px){.notes-heading-text{font-size:26px}.notes-content p,.notes-sub-heading,.notes-stage-list li,.notes-state{font-size:19px;line-height:34px}.notes-page{background:repeating-linear-gradient(to bottom,transparent 0 34px,#a9c8ee 34px 35px),#faf3df;padding:22px 14px 26px 46px}.notes-page::before{left:28px}.notes-sub-heading{line-height:34px}}
+    @media(prefers-reduced-motion:no-preference){.notes-page{animation:riseIn .5s ease both}.notes-heading-row{animation:riseIn .4s ease both}}
+    @keyframes riseIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   </style>
 </head>
 <body>
-  <div id="app"></div>
-  <script src="js/app.js"></script>
+<div id="app"></div>
+<script>
+(function(){
+  const params=new URLSearchParams(location.search);
+  const category=(params.get('category')||'').trim().replace(/[\\/]+/g,'').replace(/\s+/g,' ');
+  const rawPath=(params.get('path')||'').trim();
+  const segs=rawPath?rawPath.split('/').map(s=>s.trim().replace(/[\\/]+/g,'').replace(/\s+/g,' ')).filter(Boolean):[params.get('subject'),params.get('chapter'),params.get('topic')].map(s=>(s||'').trim().replace(/[\\/]+/g,'').replace(/\s+/g,' ')).filter(Boolean);
+  const base=['data',category,...segs].filter(Boolean).join('/');
+  const app=document.getElementById('app');
+  function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}
+  function title(v){return String(v||'').replaceAll('-',' ').replace(/\b\w/g,m=>m.toUpperCase())}
+  function set(html){app.innerHTML=html}
+  function paragraphHTML(text){return String(text||'').split(/\n\n+/).map((p,i)=>`<p class="${i%2?'ink-blue':'ink-black'}">${esc(p).replaceAll('\n','<br>')}</p>`).join('')}
+  async function load(){
+    const candidates=[`${base}/notes.json`,`${base}/theory/notes.json`];
+    let data=null;
+    for(const path of candidates){try{const r=await fetch(path,{cache:'no-store'});if(!r.ok)continue;const t=await r.text();if(!t.trim())continue;data=JSON.parse(t);break}catch(e){console.warn('Notes load failed',path,e)}}
+    if(!data){set(`<div class="notes-error"><a class="notes-back" href="javascript:history.back()">← Back</a><h2>Notes could not be loaded</h2><p>Expected content at:</p><code>${esc(candidates.join(' or '))}</code></div>`);return}
+    const body=String(data.content||'');
+    set(`<div class="notes-wrap"><a class="notes-back" href="javascript:history.back()">← Back</a><div class="notes-heading-row"><div class="notes-accent-bar"></div><h1 class="notes-heading-text"><span>🪨</span> ${esc(data.title||`${title(segs.at(-1)||category)} — Notes`)}</h1></div><div class="notes-page"><div class="notes-section"><span class="notes-sub-heading">প্রস্তর যুগের পরিচয়</span></div><div class="notes-content">${paragraphHTML(body)}</div></div></div>`)
+  }
+  set(`<div class="notes-error"><div>Loading…</div></div>`);load();
+})();
+</script>
 </body>
 </html>

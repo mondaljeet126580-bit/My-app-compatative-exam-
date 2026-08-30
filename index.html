@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Exam Vault</title>
+  <meta name="theme-color" content="#0f6b35" />
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif}
+    body{min-height:100vh;background:#073b21;color:#fff;overflow-x:hidden}
+    .header{background:linear-gradient(135deg,#08391f,#156b37);padding:28px 20px 26px;border-bottom:1px solid rgba(242,201,76,.35)}
+    .brand{display:flex;align-items:center;gap:16px;max-width:1100px;margin:0 auto}
+    .icon{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;font-size:34px;background:linear-gradient(145deg,#16a34a,#f2c94c);box-shadow:0 8px 22px rgba(0,0,0,.22)}
+    h1{margin:0;font-size:2rem;line-height:1.1}.subtitle{margin:6px 0 0;font-size:1.05rem;opacity:.9}
+    .main{max-width:1100px;margin:0 auto;padding:34px 20px 50px}
+    .title{display:flex;align-items:center;gap:12px;margin-bottom:24px;font-size:1.65rem;font-weight:700}.title:before{content:"";width:6px;height:34px;border-radius:6px;background:linear-gradient(#f2c94c,#16a34a)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+    .card{background:#fff;color:#10251a;border-radius:24px;padding:24px;min-height:220px;box-shadow:0 12px 30px rgba(0,0,0,.18);display:flex;flex-direction:column;justify-content:flex-end}
+    .card-icon{font-size:48px;margin-bottom:auto}.card h2{margin:18px 0 0;font-size:1.35rem;line-height:1.2}
+    @media(max-width:560px){.header{padding:24px 18px}.brand{gap:12px}.icon{width:58px;height:58px;font-size:30px}h1{font-size:1.55rem}.main{padding:28px 14px}.title{font-size:1.35rem}.grid{gap:16px}.card{min-height:210px;padding:20px 16px;border-radius:22px}.card h2{font-size:1.15rem}}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      <div class="icon">🎯</div>
+      <div><h1>Exam Vault</h1><div class="subtitle">Creating By J.mondal</div></div>
+    </div>
+  </header>
+  <main class="main">
+    <div class="title">Select Category</div>
+    <section class="grid">
+      <article class="card"><div class="card-icon">📚</div><h2>General Knowledge</h2></article>
+      <article class="card"><div class="card-icon">🔬</div><h2>General Science</h2></article>
+      <article class="card"><div class="card-icon">📐</div><h2>Mathematics</h2></article>
+      <article class="card"><div class="card-icon">🧠</div><h2>Reasoning</h2></article>
+      <article class="card"><div class="card-icon">📄</div><h2>Previous Year</h2></article>
+      <article class="card"><div class="card-icon">📰</div><h2>Current Affairs</h2></article>
+    </section>
+  </main>
+</body>
+</html>

@@ -10,11 +10,16 @@ body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;background
 </head>
 <body>
 <main class="main">
-<a class="back" href="javascript:history.back()">← Back</a>
+<button class="back" type="button" onclick="goBack()">← Back</button>
 <div class="title">Ancient History</div>
 <section class="grid">
 <a class="card" href="stone-age/index.html"><div class="icon">🪨</div><h2>Stone Age</h2><p>Stone Age</p></a>
 </section>
 </main>
+<script>
+function goBack(){
+  window.location.href='../../../../history.html';
+}
+</script>
 </body>
 </html>

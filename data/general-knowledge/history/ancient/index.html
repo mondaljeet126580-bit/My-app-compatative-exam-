@@ -10,11 +10,16 @@ body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;background
 </head>
 <body>
 <main class="main">
-<button class="back" type="button" onclick="window.location.assign('/My-app-compatative-exam-/history.html')">← Back</button>
+<button class="back" type="button" onclick="goBackToHistory()">← Back</button>
 <div class="title">Ancient History</div>
 <section class="grid">
 <a class="card" href="/My-app-compatative-exam-/data/general-knowledge/history/ancient/stone-age/index.html"><div class="icon">🪨</div><h2>Stone Age</h2><p>Stone Age</p></a>
 </section>
 </main>
+<script>
+function goBackToHistory(){
+  window.location.replace('/My-app-compatative-exam-/history.html');
+}
+</script>
 </body>
 </html>

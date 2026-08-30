@@ -1,17 +1,4 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stone Age Notes</title>
-<style>
-body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#faf7ee;font-family:Arial,sans-serif;color:#1b3a8a}.container{text-align:center;padding:32px}.container h1{font-size:34px;margin:0 0 12px}.container p{font-size:22px;margin:0;color:#555}
-</style>
-</head>
-<body>
-<div class="container">
-<h1>Stone Age</h1>
-<p>Content Coming Soon</p>
-</div>
-</body>
-</html>
+{
+  "title": "🪨 STONE AGE (প্রস্তর যুগ) — PART 1",
+  "content": "মানুষের ইতিহাসের যে সময়ে মানুষ প্রধানত পাথরের তৈরি অস্ত্র ও সরঞ্জাম ব্যবহার করত, সেই সময়কে প্রস্তর যুগ বা Stone Age বলা হয়। এটি মানব ইতিহাসের প্রাচীনতম পর্যায়গুলির মধ্যে অন্যতম।\n\nপ্রস্তর যুগে মানুষ ধীরে ধীরে পাথরের অস্ত্র ও সরঞ্জাম তৈরি করতে শেখে। তারা শিকার ও খাদ্য সংগ্রহের মাধ্যমে জীবনধারণ করত। পরবর্তীকালে তারা আগুনের ব্যবহার, গুহায় বসবাস এবং বিভিন্ন ধরনের শিল্পকর্মের সঙ্গে পরিচিত হয়।\n\n## প্রস্তর যুগের প্রধান ভাগ\n\nপ্রস্তর যুগকে সাধারণত তিনটি পর্যায়ে ভাগ করা হয় —\n\n- প্যালিওলিথিক (পুরাতন প্রস্তর যুগ) — শিকার ও খাদ্য সংগ্রহই ছিল প্রধান জীবিকা\n- মেসোলিথিক (মধ্য প্রস্তর যুগ) — মাইক্রোলিথ বা ছোট পাথরের হাতিয়ার ব্যবহার শুরু\n- নিওলিথিক (নব্য প্রস্তর যুগ) — কৃষিকাজ ও পশুপালনের সূচনা\n\nপ্রতিটি পর্যায়ে মানুষের হাতিয়ার তৈরির কৌশল এবং জীবনযাত্রার ধরন ক্রমশ উন্নত হয়েছে, যা পরবর্তীকালে সভ্যতার ভিত গড়ে তুলতে সাহায্য করেছে।"
+}

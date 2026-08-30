@@ -10,5 +10,11 @@
     "folder": "mahajanapadas",
     "icon": "🏰",
     "description": "The sixteen great kingdoms of ancient India"
+  },
+  {
+    "title": "Mohenjo-daro",
+    "folder": "mohenjo-daro",
+    "icon": "🏛️",
+    "description": "An important Indus Valley Civilization site in ancient India"
   }
 ]

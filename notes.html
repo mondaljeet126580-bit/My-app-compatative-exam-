@@ -20,160 +20,39 @@
     --btn-1:#ec4899;
     --btn-2:#8b5cf6;
   }
-
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; }
-  body{
-    background:#f4efe2;
-    min-height:100vh;
-    padding:22px 14px 60px;
-    font-family:'Noto Sans Bengali', 'Hind Siliguri', -apple-system, 'Segoe UI', Arial, sans-serif;
-    font-synthesis:none;
-  }
-
-  .wrap{ max-width:640px; margin:0 auto; }
-
-  .back-btn{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    font-family:inherit;
-    font-weight:700;
-    font-size:17px;
-    color:#fff;
-    background:linear-gradient(135deg, var(--btn-1), var(--btn-2));
-    border:none;
-    padding:10px 26px;
-    border-radius:999px;
-    box-shadow:0 6px 14px rgba(139,92,246,0.35);
-    cursor:pointer;
-    text-decoration:none;
-    margin-bottom:22px;
-  }
-  .back-btn:active{ transform:translateY(1px); }
-
-  .heading-row{
-    display:flex;
-    align-items:stretch;
-    gap:16px;
-    margin-bottom:22px;
-  }
-  .accent-bar{
-    flex:0 0 5px;
-    border-radius:4px;
-    background:linear-gradient(180deg, var(--accent-green), var(--accent-yellow));
-  }
-  .heading-text{
-    font-family:inherit;
-    font-weight:800;
-    font-size:32px;
-    line-height:1.2;
-    margin:0;
-    background:linear-gradient(180deg, var(--heading-1), var(--heading-2));
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-    -webkit-text-stroke:1px rgba(180,40,30,0.35);
-    letter-spacing:0.01em;
-  }
-  .heading-text .rock{ -webkit-text-stroke:0; }
-
-  .page{
-    position:relative;
-    background:var(--paper);
-    border-radius:14px;
-    box-shadow:0 10px 26px rgba(60,40,10,0.14);
-    padding:28px 22px 32px 54px;
-  }
-  .page::before{
-    content:"";
-    position:absolute;
-    left:36px; top:0; bottom:0;
-    width:2px;
-    background:var(--margin-red);
-    opacity:0.55;
-  }
-
-  .sub-heading{
-    font-family:inherit;
-    font-weight:700;
-    font-size:24px;
-    color:var(--ink-black);
-    margin:0 0 10px;
-    display:inline-block;
-    position:relative;
-  }
-  .sub-heading::after{
-    content:"";
-    position:absolute;
-    left:0; right:0; bottom:2px;
-    height:8px;
-    background:rgba(234,179,8,0.35);
-    z-index:-1;
-    border-radius:2px;
-  }
-
-  p{
-    font-size:22px;
-    line-height:1.65;
-    margin:0 0 16px;
-  }
-  .ink-black{ color:var(--ink-black); }
-  .ink-blue{ color:var(--ink-blue); }
-
-  .imp{
-    color:var(--imp-red);
-    font-weight:700;
-  }
-
-  .section{ margin-bottom:6px; }
-
-  .stage-list{
-    margin:0 0 16px;
-    padding-left:26px;
-  }
-  .stage-list li{
-    font-size:22px;
-    line-height:1.65;
-    color:var(--ink-blue);
-    margin-bottom:4px;
-  }
-  .stage-list li b{ color:var(--ink-black); }
-
-  @media (max-width:420px){
-    .heading-text{ font-size:26px; }
-    p, .sub-heading, .stage-list li{ font-size:19px; }
-    .page{ padding:24px 16px 26px 42px; }
-    .page::before{ left:26px; }
-  }
-
-  @media (prefers-reduced-motion: no-preference){
-    .page{ animation:riseIn 0.5s ease both; }
-    .heading-row{ animation:riseIn 0.4s ease both; }
-  }
-  @keyframes riseIn{
-    from{ opacity:0; transform:translateY(10px); }
-    to{ opacity:1; transform:translateY(0); }
-  }
+  body{background:#f4efe2;min-height:100vh;padding:22px 14px 60px;font-family:'Noto Sans Bengali','Hind Siliguri',-apple-system,'Segoe UI',Arial,sans-serif;font-synthesis:none;}
+  .wrap{max-width:640px;margin:0 auto}
+  .back-btn{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-weight:700;font-size:17px;color:#fff;background:linear-gradient(135deg,var(--btn-1),var(--btn-2));border:none;padding:10px 26px;border-radius:999px;box-shadow:0 6px 14px rgba(139,92,246,.35);cursor:pointer;text-decoration:none;margin-bottom:22px}
+  .back-btn:active{transform:translateY(1px)}
+  .heading-row{display:flex;align-items:stretch;gap:16px;margin-bottom:22px}
+  .accent-bar{flex:0 0 5px;border-radius:4px;background:linear-gradient(180deg,var(--accent-green),var(--accent-yellow))}
+  .heading-text{font-family:inherit;font-weight:800;font-size:32px;line-height:1.2;margin:0;background:linear-gradient(180deg,var(--heading-1),var(--heading-2));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:1px rgba(180,40,30,.35);letter-spacing:.01em}
+  .heading-text .rock{-webkit-text-stroke:0}
+  .page{position:relative;background:var(--paper);border-radius:14px;box-shadow:0 10px 26px rgba(60,40,10,.14);padding:28px 22px 32px 54px}
+  .page::before{content:"";position:absolute;left:36px;top:0;bottom:0;width:2px;background:var(--margin-red);opacity:.55}
+  .sub-heading{font-family:inherit;font-weight:700;font-size:24px;color:var(--ink-black);margin:0 0 10px;display:inline-block;position:relative}
+  .sub-heading::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:8px;background:rgba(234,179,8,.35);z-index:-1;border-radius:2px}
+  #noteBody,#noteBody p,#noteBody li,#noteBody b,#noteBody .imp{font-family:'Noto Sans Bengali','Hind Siliguri',-apple-system,'Segoe UI',Arial,sans-serif;font-synthesis:none}
+  p{font-size:22px;line-height:1.65;margin:0 0 16px}
+  .ink-black{color:var(--ink-black)} .ink-blue{color:var(--ink-blue)}
+  .imp{color:var(--imp-red);font-weight:700}
+  .section{margin-bottom:6px}
+  .stage-list{margin:0 0 16px;padding-left:26px}
+  .stage-list li{font-size:22px;line-height:1.65;color:var(--ink-blue);margin-bottom:4px}
+  .stage-list li b{color:var(--ink-black);font-weight:700}
+  @media(max-width:420px){.heading-text{font-size:26px}p,.sub-heading,.stage-list li{font-size:19px}.page{padding:24px 16px 26px 42px}.page::before{left:26px}}
+  @media(prefers-reduced-motion:no-preference){.page{animation:riseIn .5s ease both}.heading-row{animation:riseIn .4s ease both}}
+  @keyframes riseIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
-
 <div class="wrap">
-
-  <a class="back-btn" href="javascript:history.back()">&#8592; Back</a>
-
-  <div class="heading-row">
-    <div class="accent-bar"></div>
-    <h1 class="heading-text"><span class="rock">&#129704;</span> STONE AGE (প্রস্তর যুগ) — PART 1</h1>
-  </div>
-
-  <div class="page">
-    <div id="noteBody"></div>
-  </div>
-
+<a class="back-btn" href="javascript:history.back()">&#8592; Back</a>
+<div class="heading-row"><div class="accent-bar"></div><h1 class="heading-text"><span class="rock">&#129704;</span> STONE AGE (প্রস্তর যুগ) — PART 1</h1></div>
+<div class="page"><div id="noteBody"></div></div>
 </div>
-
 <script>
 const NOTE_CONTENT = `
 মানুষের ইতিহাসের যে সময়ে মানুষ প্রধানত পাথরের তৈরি অস্ত্র ও সরঞ্জাম ব্যবহার করত, সেই সময়কে ==প্রস্তর যুগ বা Stone Age== বলা হয়। এটি মানব ইতিহাসের প্রাচীনতম পর্যায়গুলির মধ্যে অন্যতম।
@@ -190,39 +69,10 @@ const NOTE_CONTENT = `
 
 প্রতিটি পর্যায়ে মানুষের হাতিয়ার তৈরির কৌশল এবং জীবনযাত্রার ধরন ক্রমশ উন্নত হয়েছে, যা পরবর্তীকালে ==সভ্যতার ভিত== গড়ে তুলতে সাহায্য করেছে।
 `;
-
-function parseInline(text){
-  text = text.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
-  text = text.replace(/==(.+?)==/g, '<span class="imp">$1</span>');
-  return text;
-}
-
-function renderNote(raw){
-  const lines = raw.split("\n").map(l => l.trim()).filter(l => l.length > 0);
-  let html = "";
-  let inList = false;
-  let paraIndex = 0;
-
-  lines.forEach(line => {
-    if (line.startsWith("## ")){
-      if (inList){ html += "</ul>"; inList = false; }
-      html += `<div class="section"><span class="sub-heading">${parseInline(line.slice(3))}</span></div>`;
-    } else if (line.startsWith("- ")){
-      if (!inList){ html += '<ul class="stage-list">'; inList = true; }
-      html += `<li>${parseInline(line.slice(2))}</li>`;
-    } else {
-      if (inList){ html += "</ul>"; inList = false; }
-      const inkClass = paraIndex % 2 === 0 ? "ink-black" : "ink-blue";
-      html += `<p class="${inkClass}">${parseInline(line)}</p>`;
-      paraIndex++;
-    }
-  });
-  if (inList) html += "</ul>";
-  return html;
-}
-
-document.getElementById("noteBody").innerHTML = renderNote(NOTE_CONTENT);
+function escHtml(text){return String(text??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}
+function parseInline(text){let safe=escHtml(text);safe=safe.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');safe=safe.replace(/==(.+?)==/g,'<span class="imp">$1</span>');return safe}
+function renderNote(raw){const lines=raw.split("\n").map(l=>l.trim()).filter(l=>l.length>0);let html="";let inList=false;let paraIndex=0;lines.forEach(line=>{if(line.startsWith("## ")){if(inList){html+="</ul>";inList=false}html+=`<div class="section"><span class="sub-heading">${parseInline(line.slice(3))}</span></div>`}else if(line.startsWith("- ")){if(!inList){html+='<ul class="stage-list">';inList=true}html+=`<li>${parseInline(line.slice(2))}</li>`}else{if(inList){html+="</ul>";inList=false}const inkClass=paraIndex%2===0?"ink-black":"ink-blue";html+=`<p class="${inkClass}">${parseInline(line)}</p>`;paraIndex++}});if(inList)html+="</ul>";return html}
+document.getElementById("noteBody").innerHTML=renderNote(NOTE_CONTENT);
 </script>
-
 </body>
 </html>

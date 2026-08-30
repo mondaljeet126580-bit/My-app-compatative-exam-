@@ -2,9 +2,25 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stone Age</title>
-<style>body{margin:0;min-height:100vh;background:#073b21;color:#fff;font-family:Arial,Helvetica,sans-serif}.main{max-width:900px;margin:auto;padding:30px 18px}.back{display:inline-block;color:#fff;text-decoration:none;background:rgba(255,255,255,.12);border:1px solid rgba(242,201,76,.45);padding:10px 18px;border-radius:999px;font-weight:700;margin-bottom:28px;cursor:pointer}.card{background:#fff;color:#10251a;border-radius:22px;padding:24px;box-shadow:0 12px 30px rgba(0,0,0,.18)}h1{margin-top:0}</style>
+<style>
+body{margin:0;min-height:100vh;background:#073b21;color:#fff;font-family:Arial,Helvetica,sans-serif}
+.main{max-width:900px;margin:auto;padding:30px 18px}
+.back{display:inline-block;color:#fff;text-decoration:none;background:rgba(255,255,255,.12);border:1px solid rgba(242,201,76,.45);padding:10px 18px;border-radius:999px;font-weight:700;margin-bottom:28px;cursor:pointer}
+.card{background:#fff;color:#10251a;border-radius:22px;padding:24px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
+h1{margin-top:0}
+</style>
 </head>
-<body><main class="main"><button class="back" type="button" onclick="window.location.assign('/My-app-compatative-exam-/data/general-knowledge/history/ancient/index.html')">← Back</button><div class="card"><h1>🪨 Stone Age</h1><p>Stone Age chapter.</p></div></main></body>
+<body>
+<main class="main">
+<button class="back" type="button" onclick="goBackToAncient()">← Back</button>
+<div class="card"><h1>🪨 Stone Age</h1><p>Stone Age chapter.</p></div>
+</main>
+<script>
+function goBackToAncient(){
+  window.location.replace('/My-app-compatative-exam-/data/general-knowledge/history/ancient/index.html');
+}
+</script>
+</body>
 </html>

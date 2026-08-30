@@ -1,20 +1,17 @@
 [
   {
-    "title": "Ancient History",
-    "folder": "ancient-history",
-    "icon": "🏛️",
-    "description": "Old Indian history"
+    "title": "Ancient",
+    "folder": "ancient",
+    "icon": "🏛️"
   },
   {
-    "title": "Medieval History",
-    "folder": "medieval-history",
-    "icon": "📜",
-    "description": "Medieval period"
+    "title": "Medieval",
+    "folder": "medieval",
+    "icon": "📜"
   },
   {
     "title": "Modern History",
     "folder": "modern-history",
-    "icon": "🕰️",
-    "description": "Modern Indian history"
+    "icon": "🕰️"
   }
 ]

@@ -1,1 +1,0 @@
-# My-app-compatative-exam-

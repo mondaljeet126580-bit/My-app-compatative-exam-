@@ -1,8 +1,0 @@
-[
-  {"id":1,"name":"General Knowledge","folder":"general-knowledge","icon":"📚"},
-  {"id":2,"name":"General Science","folder":"general-science","icon":"🔬"},
-  {"id":3,"name":"Mathematics","folder":"mathematics","icon":"📐"},
-  {"id":4,"name":"Reasoning","folder":"reasoning","icon":"🧠"},
-  {"id":5,"name":"Previous Year","folder":"previous-year","icon":"📄"},
-  {"id":6,"name":"Current Affairs","folder":"current-affairs","icon":"📰"}
-]

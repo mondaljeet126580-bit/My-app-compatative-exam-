@@ -726,6 +726,7 @@ async function downloadChatImage(id){
 async function sendMessage(e){
  e.preventDefault();
  if(!me||!activeChat)return;
+ const composerInput=$('messageInput');try{composerInput.focus({preventScroll:true})}catch{composerInput.focus()}
  const caption=$('messageInput').value.trim();
  const file=pendingImageFile;
  if(!caption&&!file)return;

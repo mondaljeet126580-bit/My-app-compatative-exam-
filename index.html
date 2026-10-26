@@ -343,6 +343,15 @@ function connectRecentRealtime(){
    loadRecentChats();
   })
   .on('postgres_changes',{event:'*',schema:'public',table:'conversation_members',filter:'user_id=eq.'+me.id},()=>loadRecentChats())
+  .on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles'},payload=>{
+   const row=payload.new;if(!row||!row.id)return;
+   document.querySelectorAll('[data-view-profile]').forEach(button=>{
+    if(button.dataset.viewProfile===row.id){const avatar=button.querySelector('.avatar');if(avatar)avatar.innerHTML=avatarMarkup(row.avatar_url,row.display_name||row.username||'?')}
+   });
+   if(row.id===me.id){profile={...profile,...row};if(!pendingAvatarFile&&!removeAvatarRequested)refreshHeaderProfileButton()}
+   if(activePeer&&activePeer.id===row.id){activePeer={...activePeer,...row};$('chatAvatar').innerHTML=avatarMarkup(row.avatar_url,row.display_name||row.username||'?');$('chatName').textContent=row.display_name||row.username||'User';$('chatStatus').textContent=row.is_online?'অনলাইন':'@'+(row.username||'')}
+   if(viewedProfileId===row.id&&row.id!==me.id&&!$('profilePanel').classList.contains('hidden'))fillProfileView(row,false);
+  })
   .subscribe()
 }
 async function openChat(convId,peer){if(!convId||!peer)throw new Error('চ্যাটের তথ্য অসম্পূর্ণ');if(msgChannel){try{await supa.removeChannel(msgChannel)}catch{}}activeChat=convId;activePeer=peer;clearMessageSelection();clearPendingImage();knownMsgs.clear();chatHistoryPushed=false;showPanel('chatPanel');$('headerSub').textContent='ব্যক্তিগত চ্যাট';$('chatName').textContent=peer.display_name||peer.username||'User';$('chatAvatar').innerHTML=avatarMarkup(peer.avatar_url,peer.display_name||peer.username||'?');$('chatStatus').textContent=peer.is_online?'অনলাইন':'@'+(peer.username||'');setConn('চ্যাট সংযুক্ত',true);pushChatHistory(convId);await loadMessages();await connectMessageRealtime();}

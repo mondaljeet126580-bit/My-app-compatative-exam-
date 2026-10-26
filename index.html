@@ -51,14 +51,14 @@ function scheduleRealtimeRetry(){if(realtimeRetryTimer||!activeChat)return;const
 async function loadMessages(){
  if(!activeChat)return;
  const messageBox=$('messages');
+ const {data,error}=await supa.from('messages').select('id,conversation_id,sender_id,body,created_at,edited_at,deleted_at,deleted_by,delete_for_everyone').eq('conversation_id',activeChat).order('created_at',{ascending:true}).limit(500);
+ if(error)throw error;
  const previousScrollTop=messageBox.scrollTop;
  const previousRect=messageBox.getBoundingClientRect();
  const anchor=Array.from(messageBox.querySelectorAll('.msg')).find(el=>el.getBoundingClientRect().bottom>previousRect.top+1);
  const anchorId=anchor?.dataset.msg||null;
  const anchorOffset=anchor?anchor.getBoundingClientRect().top-previousRect.top:0;
  const wasAtBottom=messageBox.scrollHeight-previousScrollTop-messageBox.clientHeight<90;
- const {data,error}=await supa.from('messages').select('id,conversation_id,sender_id,body,created_at,edited_at,deleted_at,deleted_by,delete_for_everyone').eq('conversation_id',activeChat).order('created_at',{ascending:true}).limit(500);
- if(error)throw error;
  const msgs=data||[];
  knownMsgs=new Map(msgs.map(m=>[m.id,m]));
  messageBox.innerHTML=msgs.map(m=>{
@@ -137,7 +137,11 @@ function bindMessageLongPress(){
    if(selectedMessageIds.size>0){ev.preventDefault();toggleMessageSelection(id,false)}
   });
   el.addEventListener('contextmenu',ev=>{
-   if(eligible()){ev.preventDefault();cancel();toggleMessageSelection(id,true)}
+   if(eligible()){
+    ev.preventDefault();cancel();
+    if(suppressMessageClickId===id&&Date.now()<=suppressMessageClickUntil)return;
+    toggleMessageSelection(id,true);
+   }
   });
   if(!window.PointerEvent){
    el.addEventListener('touchstart',start,{passive:true});

@@ -11,7 +11,7 @@
 header{background:var(--green);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;min-height:68px}
 .logo{width:40px;height:40px;border-radius:50%;background:#ffffff25;display:grid;place-items:center;font-weight:800;font-size:20px}
 .headtxt{flex:1;min-width:0}.headtxt strong{display:block;font-size:18px}.headtxt small{opacity:.85}.badge{font-size:12px;background:#ffffff25;border-radius:20px;padding:5px 8px}
-.panel{padding:16px;overflow:auto;flex:1;background:#f7f9fa}.hidden{display:none!important}label{display:block;margin:12px 0 6px;font-weight:650;font-size:14px}
+.panel{padding:16px;overflow:auto;flex:1;background:#f7f9fa}.hidden{display:none!important}.maintenanceGate{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at top,#17374b 0,transparent 40%),#07131e;color:#edf6ff;font-family:system-ui,-apple-system,'Noto Sans Bengali',Arial,sans-serif}.maintenanceGate.hidden{display:none!important}.maintenanceGateCard{width:min(520px,100%);padding:30px 22px;text-align:center;border-radius:24px;background:linear-gradient(145deg,#172a3b,#0d1a27);border:1px solid #31485b;box-shadow:0 18px 50px #0007}.maintenanceGateIcon{width:78px;height:78px;margin:0 auto 17px;border-radius:24px;display:grid;place-items:center;background:#3a3020;color:#ffd782;font-size:38px}.maintenanceGate h1{margin:0 0 12px;font-size:clamp(27px,6vw,36px)}.maintenanceGate p{margin:0;color:#b4c5d2;font-size:15px;white-space:pre-wrap}.maintenanceGate small{display:block;margin-top:23px;color:#7f96a8;font-size:12px}.maintenanceGate button{margin-top:22px;background:#163b35;color:#d5fff0;border:1px solid #2d7868;border-radius:12px;padding:12px 18px;font:inherit;font-weight:700;cursor:pointer}label{display:block;margin:12px 0 6px;font-weight:650;font-size:14px}
 input,button{font:inherit}input{width:100%;border:1px solid #ccd4d8;border-radius:12px;padding:13px 14px;background:#fff;outline:none}input:focus{border-color:var(--green);box-shadow:0 0 0 2px #087f6b15}
 button{border:0;border-radius:12px;padding:12px 14px;background:var(--green);color:#fff;font-weight:650;cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}.secondary{background:#e7efec;color:#174e44}.danger{background:#b42332}.row{display:flex;gap:8px}.row>*{min-width:0}.grow{flex:1}.note{background:#eef7f4;border-radius:12px;padding:12px;font-size:13px;color:#315c52;line-height:1.5}.alert{background:#fff0f0;color:#942b33;border-radius:12px;padding:12px;font-size:13px;margin-top:12px;white-space:pre-wrap}.sectionTitle{font-size:17px;font-weight:750;margin:0 0 12px}.toolbar{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);background:white}.toolbar input{padding:10px 12px}.userList{display:flex;flex-direction:column;gap:8px}.userCard{display:flex;gap:12px;align-items:center;text-align:left;background:white;color:var(--ink);border:1px solid #e8ecee;border-radius:14px;padding:12px;width:100%}.avatar{height:44px;width:44px;border-radius:50%;display:grid;place-items:center;background:#e0f2e9;color:#16634f;font-weight:800;font-size:18px;flex-shrink:0}.userInfo{flex:1;min-width:0}.userInfo strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.userInfo small{color:var(--muted)}.online{display:inline-block;background:#13a879;width:8px;height:8px;border-radius:50%;margin-right:5px}.offline{display:inline-block;background:#9aa7ad;width:8px;height:8px;border-radius:50%;margin-right:5px}
 .chatBG{flex:1 1 0%;height:0;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior-y:contain;padding:16px 12px;background-color:#efe9df;background-image:radial-gradient(#ffffffa0 1px,transparent 1px);background-size:18px 18px;scroll-behavior:auto}
@@ -19,7 +19,7 @@ button{border:0;border-radius:12px;padding:12px 14px;background:var(--green);col
 @media(min-width:721px){.app{height:94dvh;margin:3dvh auto;border-radius:16px;overflow:hidden}body{background:#dce5e6}}
 </style>
 </head>
-<body><main class="app">
+<body><div id="maintenanceGate" class="maintenanceGate" role="status" aria-live="polite"><section class="maintenanceGateCard"><div class="maintenanceGateIcon">🛠️</div><h1>on maintenance</h1><p id="maintenanceGateMessage">অ্যাপের অবস্থা যাচাই হচ্ছে…</p><small>Study Chat · কিছুক্ষণ পরে আবার চেষ্টা করো</small><button id="maintenanceRetry" type="button">আবার পরীক্ষা করুন</button></section></div><main class="app" id="chatAppShell" style="visibility:hidden">
 <header><div class="logo">S</div><div class="headtxt"><strong>Study Chat</strong><small id="headerSub">নাম দিয়ে ব্যবহারকারী খুঁজুন</small></div><span class="badge" id="connection">সংযোগ হচ্ছে…</span></header>
 <section class="panel" id="authPanel"><h2 class="sectionTitle">চ্যাটে প্রবেশ করো</h2><div class="note">একটি display name/username তৈরি করো। এরপর অন্য ব্যক্তি তার নাম সার্চ করে তোমার সাথে ব্যক্তিগতভাবে চ্যাট করতে পারবে। একই ব্রাউজারে ফিরে এলে এই ডিভাইসের guest session রাখা হয়।</div><label for="displayName">তোমার নাম (যেমন Jeet Mondal)</label><input id="displayName" maxlength="40" placeholder="নাম লিখো"><label for="username">ইউনিক username (যেমন jeet123)</label><input id="username" maxlength="30" autocapitalize="none" placeholder="a-z, 0-9, underscore"><button id="enterBtn" style="width:100%;margin-top:14px">চ্যাট শুরু করো</button><div class="alert hidden" id="authError"></div><div class="footerHint">নোট: শুধু নাম নিজে কোনো পরিচয় যাচাই করে না। স্থায়ী/অন্য ফোনে একই account পেতে পরে verified login যুক্ত করা উচিত।</div></section>
 <section class="panel hidden" id="usersPanel"><div class="row" style="align-items:center;margin-bottom:14px"><div class="grow"><div class="sectionTitle" style="margin-bottom:2px">ব্যবহারকারী খুঁজুন</div><small class="muted">নাম বা username লিখে সার্চ করো</small></div><button class="secondary" id="myProfileBtn">আমার নাম</button></div><div id="recentSection"><div class="recentHead"><div class="sectionTitle" style="margin:0">সাম্প্রতিক চ্যাট</div><button class="secondary" id="recentRefreshBtn" style="padding:8px 11px">↻</button></div><div class="recentList" id="recentList"></div><div class="footerHint hidden" id="recentEmpty">এখনও কোনো চ্যাট নেই</div></div><div class="searchTitle">নতুন চ্যাট শুরু করো</div><input id="searchInput" placeholder="নাম / username সার্চ..." autocomplete="off"><div class="footerHint" id="searchHint">কমপক্ষে ২ অক্ষর লিখো</div><div class="userList" id="userList"></div><div class="alert hidden" id="userError"></div><button class="secondary" id="logoutBtn" style="width:100%;margin-top:18px">এই ডিভাইস থেকে বের হও</button></section>
@@ -32,7 +32,44 @@ const loadSupabaseScript = src => new Promise(resolve=>{const s=document.createE
 const supabaseCdnCandidates=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0','https://unpkg.com/@supabase/supabase-js@2.118.0','https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js','https://unpkg.com/@supabase/supabase-js@2.57.0/dist/umd/supabase.js'];let libraryLoaded=false;for(const src of supabaseCdnCandidates){if(await loadSupabaseScript(src)){libraryLoaded=true;break}}
 if(!libraryLoaded){document.body.innerHTML='<main style="font:16px system-ui;padding:20px"><h2>লাইব্রেরি লোড হয়নি</h2><p>Supabase JavaScript library CDN থেকে আসেনি। Internet সংযোগ ও browser পরীক্ষা করো।</p><p><b>চেষ্টা করা URL:</b></p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">'+supabaseCdnCandidates.join('\n')+'</pre><p>এই বার্তাটি ডেটাবেস থেকে নয়; ব্রাউজার লাইব্রেরি ডাউনলোড করতে পারেনি।</p></main>';return}
 const SUPABASE_URL='https://mtitrkspgoqaqdeiluud.supabase.co';const SUPABASE_KEY='sb_publishable_MNm-dTK29hrtVkiyLRkLIw_qbtbxJu_';const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const $=id=>document.getElementById(id);let me=null,profile=null,activeChat=null,activePeer=null,msgChannel=null,profileChannel=null,recentChannel=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
+const $=id=>document.getElementById(id);
+const maintenanceGate=$('maintenanceGate'),chatAppShell=$('chatAppShell');
+let maintenanceIsOn=false,maintenanceCheckBusy=false;
+async function refreshMaintenanceGate(){
+ if(maintenanceCheckBusy)return maintenanceIsOn;
+ maintenanceCheckBusy=true;
+ try{
+  const {data,error}=await supa.rpc('get_app_maintenance');
+  if(error)throw error;
+  const state=data&&typeof data==='object'?data:{enabled:false,message:'on maintenance'};
+  maintenanceIsOn=state.enabled===true;
+  if(maintenanceIsOn){
+   $('maintenanceGateMessage').textContent=String(state.message||'on maintenance');
+   maintenanceGate.classList.remove('hidden');
+   chatAppShell.style.visibility='hidden';
+  }else{
+   maintenanceGate.classList.add('hidden');
+   chatAppShell.style.visibility='visible';
+  }
+ }catch(e){
+  console.warn('maintenance check failed',e&&e.message?e.message:e);
+  maintenanceGate.classList.add('hidden');
+  chatAppShell.style.visibility='visible';
+ }
+ finally{maintenanceCheckBusy=false}
+ return maintenanceIsOn;
+}
+const maintenanceInitiallyOn=await refreshMaintenanceGate();
+$('maintenanceRetry').addEventListener('click',async()=>{
+ const wasOn=maintenanceIsOn;const nowOn=await refreshMaintenanceGate();
+ if(wasOn&&!nowOn)window.location.reload();
+});
+setInterval(async()=>{
+ const wasOn=maintenanceIsOn;
+ const nowOn=await refreshMaintenanceGate();
+ if(wasOn&&!nowOn)window.location.reload();
+},10000);
+if(maintenanceInitiallyOn)return;let me=null,profile=null,activeChat=null,activePeer=null,msgChannel=null,profileChannel=null,recentChannel=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
 function setConn(s,ok=false){$('connection').textContent=s;$('connection').style.background=ok?'#ffffff30':'#ffffff20'}function alertBox(id,s){$(id).textContent=s;$(id).classList.remove('hidden')}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function showPanel(id){for(const p of ['authPanel','usersPanel','chatPanel'])$(p).classList.toggle('hidden',p!==id)}function timeStr(t){try{return new Intl.DateTimeFormat('bn-IN',{hour:'2-digit',minute:'2-digit'}).format(new Date(t))}catch{return ''}}function callRpc(name,args){return Promise.resolve(supa.rpc(name,args))}
 async function getProfile(id){const {data,error}=await supa.from('profiles').select('*').eq('id',id).maybeSingle();if(error)throw error;return data}
 async function setOnline(flag){if(!me)return;await supa.from('profiles').update({is_online:flag,last_seen:new Date().toISOString()}).eq('id',me.id)}

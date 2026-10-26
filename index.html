@@ -14,7 +14,7 @@ header{background:var(--green);color:#fff;padding:14px 16px;display:flex;align-i
 .panel{padding:16px;overflow:auto;flex:1;background:#f7f9fa}.hidden{display:none!important}label{display:block;margin:12px 0 6px;font-weight:650;font-size:14px}
 input,button{font:inherit}input{width:100%;border:1px solid #ccd4d8;border-radius:12px;padding:13px 14px;background:#fff;outline:none}input:focus{border-color:var(--green);box-shadow:0 0 0 2px #087f6b15}
 button{border:0;border-radius:12px;padding:12px 14px;background:var(--green);color:#fff;font-weight:650;cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}.secondary{background:#e7efec;color:#174e44}.danger{background:#b42332}.row{display:flex;gap:8px}.row>*{min-width:0}.grow{flex:1}.note{background:#eef7f4;border-radius:12px;padding:12px;font-size:13px;color:#315c52;line-height:1.5}.alert{background:#fff0f0;color:#942b33;border-radius:12px;padding:12px;font-size:13px;margin-top:12px;white-space:pre-wrap}.sectionTitle{font-size:17px;font-weight:750;margin:0 0 12px}.toolbar{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);background:white}.toolbar input{padding:10px 12px}.userList{display:flex;flex-direction:column;gap:8px}.userCard{display:flex;gap:12px;align-items:center;text-align:left;background:white;color:var(--ink);border:1px solid #e8ecee;border-radius:14px;padding:12px;width:100%}.avatar{height:44px;width:44px;border-radius:50%;display:grid;place-items:center;background:#e0f2e9;color:#16634f;font-weight:800;font-size:18px;flex-shrink:0}.userInfo{flex:1;min-width:0}.userInfo strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.userInfo small{color:var(--muted)}.online{display:inline-block;background:#13a879;width:8px;height:8px;border-radius:50%;margin-right:5px}.offline{display:inline-block;background:#9aa7ad;width:8px;height:8px;border-radius:50%;margin-right:5px}
-.chatBG{flex:1;overflow:auto;padding:16px 12px;background-color:#efe9df;background-image:radial-gradient(#ffffffa0 1px,transparent 1px);background-size:18px 18px;scroll-behavior:smooth}
+.chatBG{flex:1 1 0%;height:0;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior-y:contain;padding:16px 12px;background-color:#efe9df;background-image:radial-gradient(#ffffffa0 1px,transparent 1px);background-size:18px 18px;scroll-behavior:auto}
 .msg{max-width:85%;margin:7px 0;display:flex;flex-direction:column;gap:4px;position:relative;touch-action:pan-y;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}.msg.mine{margin-left:auto;align-items:flex-end}.bubble{padding:10px 12px;border-radius:14px;background:#fff;box-shadow:0 1px 1px #0001;overflow-wrap:anywhere;white-space:pre-wrap;line-height:1.42}.mine .bubble{background:var(--green2)}.msg.selected .bubble{outline:2px solid var(--green);box-shadow:0 0 0 3px #087f6b22}.meta{font-size:10px;color:#728087;display:flex;align-items:center;gap:6px}.deleted{font-style:italic;color:#74828a}.toolbar .danger{padding:8px 10px;white-space:nowrap;font-size:12px}.composer{display:flex;gap:8px;align-items:flex-end;padding:10px;background:#f8fafb;border-top:1px solid var(--line)}.composer input{border-radius:22px;resize:none}.composer button{height:46px;min-width:48px;border-radius:50%;padding:0;font-size:20px}.footerHint{text-align:center;color:var(--muted);font-size:11px;padding:7px}.topBack{background:#e2f2ed;color:#087f6b;border:1px solid #b9ded2;padding:0;font-size:28px;font-weight:800;width:46px;height:46px;min-width:46px;display:grid;place-items:center;border-radius:50%;flex-shrink:0;box-shadow:0 1px 3px #00000012}.toolbar .danger{padding:8px 9px;white-space:nowrap;font-size:12px;max-width:132px;line-height:1.25}.recentHead{display:flex;align-items:center;justify-content:space-between;margin:4px 0 10px}.recentList{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}.recentCard{display:flex;gap:12px;align-items:center;text-align:left;background:#fff;color:var(--ink);border:1px solid #e8ecee;border-radius:14px;padding:11px;width:100%}.recentCard:active,.userCard:active{transform:scale(.99)}.recentInfo{flex:1;min-width:0}.recentTop{display:flex;gap:8px;align-items:center}.recentTop strong{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.recentTime{font-size:10px;color:var(--muted);white-space:nowrap}.recentPreview{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:12px;margin-top:3px}.recentPreview .previewText{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.unreadBadge{min-width:20px;height:20px;border-radius:10px;background:var(--green);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;padding:0 6px}.searchTitle{font-size:15px;font-weight:750;margin:6px 0 10px}.myName{font-weight:750;color:#114f43}
 @media(min-width:721px){.app{height:94dvh;margin:3dvh auto;border-radius:16px;overflow:hidden}body{background:#dce5e6}}
 </style>
@@ -31,7 +31,7 @@ const loadSupabaseScript = src => new Promise(resolve=>{const s=document.createE
 const supabaseCdnCandidates=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0','https://unpkg.com/@supabase/supabase-js@2.118.0','https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js','https://unpkg.com/@supabase/supabase-js@2.57.0/dist/umd/supabase.js'];let libraryLoaded=false;for(const src of supabaseCdnCandidates){if(await loadSupabaseScript(src)){libraryLoaded=true;break}}
 if(!libraryLoaded){document.body.innerHTML='<main style="font:16px system-ui;padding:20px"><h2>লাইব্রেরি লোড হয়নি</h2><p>Supabase JavaScript library CDN থেকে আসেনি। Internet সংযোগ ও browser পরীক্ষা করো।</p><p><b>চেষ্টা করা URL:</b></p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">'+supabaseCdnCandidates.join('\n')+'</pre><p>এই বার্তাটি ডেটাবেস থেকে নয়; ব্রাউজার লাইব্রেরি ডাউনলোড করতে পারেনি।</p></main>';return}
 const SUPABASE_URL='https://mtitrkspgoqaqdeiluud.supabase.co';const SUPABASE_KEY='sb_publishable_MNm-dTK29hrtVkiyLRkLIw_qbtbxJu_';const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const $=id=>document.getElementById(id);let me=null,profile=null,activeChat=null,activePeer=null,msgChannel=null,profileChannel=null,recentChannel=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageId=null,longPressTimer=null,knownMsgs=new Map(),searchTimer=null,chatHistoryPushed=false,closingChat=false;
+const $=id=>document.getElementById(id);let me=null,profile=null,activeChat=null,activePeer=null,msgChannel=null,profileChannel=null,recentChannel=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),searchTimer=null,chatHistoryPushed=false,closingChat=false;
 function setConn(s,ok=false){$('connection').textContent=s;$('connection').style.background=ok?'#ffffff30':'#ffffff20'}function alertBox(id,s){$(id).textContent=s;$(id).classList.remove('hidden')}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function showPanel(id){for(const p of ['authPanel','usersPanel','chatPanel'])$(p).classList.toggle('hidden',p!==id)}function timeStr(t){try{return new Intl.DateTimeFormat('bn-IN',{hour:'2-digit',minute:'2-digit'}).format(new Date(t))}catch{return ''}}function callRpc(name,args){return Promise.resolve(supa.rpc(name,args))}
 async function getProfile(id){const {data,error}=await supa.from('profiles').select('*').eq('id',id).maybeSingle();if(error)throw error;return data}
 async function setOnline(flag){if(!me)return;await supa.from('profiles').update({is_online:flag,last_seen:new Date().toISOString()}).eq('id',me.id)}
@@ -48,14 +48,132 @@ async function goBackToRecentChats(){if(!activeChat){showPanel('usersPanel');ret
 window.addEventListener('popstate',()=>{if(activeChat)void closeChatView()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activeChat){if(selectedMessageId)clearMessageSelection();else void goBackToRecentChats()}})
 async function connectMessageRealtime(){if(!activeChat)return;if(msgChannel){try{await supa.removeChannel(msgChannel)}catch{}}subscribed=false;const cid=activeChat;msgChannel=supa.channel('messages-'+cid+'-'+Date.now()).on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:'conversation_id=eq.'+cid},payload=>{const row=payload.new||payload.old;if(row&&row.conversation_id===activeChat)loadMessages().catch(e=>setChatHint('মেসেজ আপডেট হয়নি: '+e.message))}).subscribe(status=>{if(status==='SUBSCRIBED'){subscribed=true;realtimeRetryCount=0;setConn('লাইভ সংযুক্ত',true)}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){subscribed=false;setChatHint('Realtime: '+status+' — আবার সংযোগ হচ্ছে…');setConn('পুনরায় সংযোগ হচ্ছে…');scheduleRealtimeRetry()}})}
 function scheduleRealtimeRetry(){if(realtimeRetryTimer||!activeChat)return;const delay=Math.min(15000,1000*Math.pow(2,Math.min(realtimeRetryCount,4)));realtimeRetryCount++;realtimeRetryTimer=setTimeout(()=>{realtimeRetryTimer=null;connectMessageRealtime().catch(()=>scheduleRealtimeRetry())},delay)}function setChatHint(v){$('chatHint').textContent=v}
-async function loadMessages(){if(!activeChat)return;const {data,error}=await supa.from('messages').select('id,conversation_id,sender_id,body,created_at,edited_at,deleted_at,deleted_by,delete_for_everyone').eq('conversation_id',activeChat).order('created_at',{ascending:true}).limit(500);if(error)throw error;const bottom=$('messages').scrollHeight-$('messages').scrollTop-$('messages').clientHeight<90;const msgs=data||[];knownMsgs=new Map(msgs.map(m=>[m.id,m]));$('messages').innerHTML=msgs.map(m=>{const mine=m.sender_id===me.id,deleted=!!m.deleted_at||m.delete_for_everyone;const body=deleted?'<span class="deleted">এই মেসেজটি মুছে ফেলা হয়েছে</span>':esc(m.body);return `<div class="msg ${mine?'mine':''}" data-msg="${esc(m.id)}"><div class="bubble">${body}</div><div class="meta"><span>${timeStr(m.created_at)}</span>${m.edited_at&&!deleted?'<span>সম্পাদিত</span>':''}</div></div>`}).join('');bindMessageLongPress();syncMessageSelection();if(bottom)$('messages').scrollTop=$('messages').scrollHeight;if(me&&activeChat){void(async()=>{try{const {error}=await callRpc('mark_direct_chat_read',{p_conversation_id:activeChat});if(error)console.warn(error.message)}catch(e){console.warn(e)}})()}}
-function clearMessageSelection(){selectedMessageId=null;if(longPressTimer){clearTimeout(longPressTimer);longPressTimer=null}document.querySelectorAll('.msg.selected').forEach(el=>el.classList.remove('selected'));$('deleteSelectedBtn').classList.add('hidden');$('cancelSelectionBtn').classList.add('hidden')}
-function selectMessageForDelete(id){const m=knownMsgs.get(id);if(!m||m.sender_id!==me.id||m.deleted_at||m.delete_for_everyone)return;selectedMessageId=id;document.querySelectorAll('.msg').forEach(el=>el.classList.toggle('selected',el.dataset.msg===id));$('deleteSelectedBtn').classList.remove('hidden');$('cancelSelectionBtn').classList.remove('hidden');$('chatHint').textContent='মেসেজ নির্বাচন করা হয়েছে — উপরের 🗑 সবার জন্য বাটন চাপো';try{if(navigator.vibrate)navigator.vibrate(20)}catch{}}
-function syncMessageSelection(){const m=selectedMessageId?knownMsgs.get(selectedMessageId):null;if(!m||m.sender_id!==me.id||m.deleted_at||m.delete_for_everyone){clearMessageSelection();return}document.querySelectorAll('.msg').forEach(el=>el.classList.toggle('selected',el.dataset.msg===selectedMessageId));$('deleteSelectedBtn').classList.remove('hidden');$('cancelSelectionBtn').classList.remove('hidden')}
-function bindMessageLongPress(){$('messages').querySelectorAll('.msg').forEach(el=>{const id=el.dataset.msg;const eligible=()=>{const m=knownMsgs.get(id);return !!m&&m.sender_id===me.id&&!m.deleted_at&&!m.delete_for_everyone};const start=ev=>{if(!eligible()||(ev.pointerType==='mouse'&&ev.button!==0))return;if(longPressTimer)clearTimeout(longPressTimer);longPressTimer=setTimeout(()=>{longPressTimer=null;selectMessageForDelete(id)},520)};const cancel=()=>{if(longPressTimer){clearTimeout(longPressTimer);longPressTimer=null}};el.addEventListener('pointerdown',start,{passive:true});el.addEventListener('pointerup',cancel,{passive:true});el.addEventListener('pointercancel',cancel,{passive:true});el.addEventListener('pointerleave',cancel,{passive:true});el.addEventListener('contextmenu',ev=>{if(eligible()){ev.preventDefault();cancel();selectMessageForDelete(id)}});if(!window.PointerEvent){el.addEventListener('touchstart',start,{passive:true});el.addEventListener('touchend',cancel,{passive:true});el.addEventListener('touchcancel',cancel,{passive:true})}})}
+async function loadMessages(){
+ if(!activeChat)return;
+ const messageBox=$('messages');
+ const previousScrollTop=messageBox.scrollTop;
+ const previousRect=messageBox.getBoundingClientRect();
+ const anchor=Array.from(messageBox.querySelectorAll('.msg')).find(el=>el.getBoundingClientRect().bottom>previousRect.top+1);
+ const anchorId=anchor?.dataset.msg||null;
+ const anchorOffset=anchor?anchor.getBoundingClientRect().top-previousRect.top:0;
+ const wasAtBottom=messageBox.scrollHeight-previousScrollTop-messageBox.clientHeight<90;
+ const {data,error}=await supa.from('messages').select('id,conversation_id,sender_id,body,created_at,edited_at,deleted_at,deleted_by,delete_for_everyone').eq('conversation_id',activeChat).order('created_at',{ascending:true}).limit(500);
+ if(error)throw error;
+ const msgs=data||[];
+ knownMsgs=new Map(msgs.map(m=>[m.id,m]));
+ messageBox.innerHTML=msgs.map(m=>{
+  const mine=m.sender_id===me.id,deleted=!!m.deleted_at||m.delete_for_everyone;
+  const body=deleted?'<span class="deleted">এই মেসেজটি মুছে ফেলা হয়েছে</span>':esc(m.body);
+  return '<div class="msg '+(mine?'mine':'')+'" data-msg="'+esc(m.id)+'"><div class="bubble">'+body+'</div><div class="meta"><span>'+timeStr(m.created_at)+'</span>'+(m.edited_at&&!deleted?'<span>সম্পাদিত</span>':'')+'</div></div>';
+ }).join('');
+ bindMessageLongPress();
+ syncMessageSelection();
+ if(wasAtBottom){
+  messageBox.scrollTop=messageBox.scrollHeight;
+ }else if(anchorId){
+  const restored=Array.from(messageBox.querySelectorAll('.msg')).find(el=>el.dataset.msg===anchorId);
+  if(restored){
+   const newOffset=restored.getBoundingClientRect().top-messageBox.getBoundingClientRect().top;
+   messageBox.scrollTop+=newOffset-anchorOffset;
+  }else messageBox.scrollTop=previousScrollTop;
+ }else messageBox.scrollTop=previousScrollTop;
+ if(me&&activeChat){void(async()=>{try{const {error}=await callRpc('mark_direct_chat_read',{p_conversation_id:activeChat});if(error)console.warn(error.message)}catch(e){console.warn(e)}})()}
+}
+function clearMessageSelection(){
+ selectedMessageIds.clear();
+ if(longPressTimer){clearTimeout(longPressTimer);longPressTimer=null}
+ suppressMessageClickId=null;suppressMessageClickUntil=0;
+ document.querySelectorAll('.msg.selected').forEach(el=>el.classList.remove('selected'));
+ $('deleteSelectedBtn').classList.add('hidden');
+ $('deleteSelectedBtn').textContent='🗑 সবার জন্য';
+ $('cancelSelectionBtn').classList.add('hidden');
+ $('chatHint').textContent='মেসেজ নির্বাচন বাতিল করা হয়েছে';
+}
+function updateMessageSelectionUI(){
+ document.querySelectorAll('.msg').forEach(el=>el.classList.toggle('selected',selectedMessageIds.has(el.dataset.msg)));
+ const count=selectedMessageIds.size;
+ $('deleteSelectedBtn').classList.toggle('hidden',count===0);
+ $('cancelSelectionBtn').classList.toggle('hidden',count===0);
+ $('deleteSelectedBtn').textContent=count>1?'🗑 সবার জন্য ('+count+')':'🗑 সবার জন্য';
+ if(count>0)$('chatHint').textContent=count+'টি মেসেজ নির্বাচিত — আরও মেসেজ ট্যাপ করে নির্বাচন করো';
+}
+function toggleMessageSelection(id,fromLongPress=false){
+ const m=knownMsgs.get(id);
+ if(!m||m.sender_id!==me.id||m.deleted_at||m.delete_for_everyone){
+  if(selectedMessageIds.size>0)$('chatHint').textContent='শুধু নিজের পাঠানো ও আগে ডিলিট না হওয়া মেসেজ নির্বাচন করা যাবে';
+  return;
+ }
+ if(selectedMessageIds.has(id))selectedMessageIds.delete(id);else selectedMessageIds.add(id);
+ if(fromLongPress){suppressMessageClickId=id;suppressMessageClickUntil=Date.now()+900}
+ updateMessageSelectionUI();
+ try{if(navigator.vibrate)navigator.vibrate(20)}catch{}
+}
+function syncMessageSelection(){
+ for(const id of Array.from(selectedMessageIds)){
+  const m=knownMsgs.get(id);
+  if(!m||m.sender_id!==me.id||m.deleted_at||m.delete_for_everyone)selectedMessageIds.delete(id);
+ }
+ updateMessageSelectionUI();
+}
+function bindMessageLongPress(){
+ $('messages').querySelectorAll('.msg').forEach(el=>{
+  const id=el.dataset.msg;
+  const eligible=()=>{const m=knownMsgs.get(id);return !!m&&m.sender_id===me.id&&!m.deleted_at&&!m.delete_for_everyone};
+  const start=ev=>{
+   if(!eligible()||(ev.pointerType==='mouse'&&ev.button!==0))return;
+   if(longPressTimer)clearTimeout(longPressTimer);
+   longPressTimer=setTimeout(()=>{longPressTimer=null;toggleMessageSelection(id,true)},520);
+  };
+  const cancel=()=>{if(longPressTimer){clearTimeout(longPressTimer);longPressTimer=null}};
+  el.addEventListener('pointerdown',start,{passive:true});
+  el.addEventListener('pointerup',cancel,{passive:true});
+  el.addEventListener('pointercancel',cancel,{passive:true});
+  el.addEventListener('pointerleave',cancel,{passive:true});
+  el.addEventListener('click',ev=>{
+   if(suppressMessageClickId===id&&Date.now()<=suppressMessageClickUntil){
+    suppressMessageClickId=null;suppressMessageClickUntil=0;ev.preventDefault();ev.stopPropagation();return;
+   }
+   if(suppressMessageClickId&&Date.now()>suppressMessageClickUntil){suppressMessageClickId=null;suppressMessageClickUntil=0}
+   if(selectedMessageIds.size>0){ev.preventDefault();toggleMessageSelection(id,false)}
+  });
+  el.addEventListener('contextmenu',ev=>{
+   if(eligible()){ev.preventDefault();cancel();toggleMessageSelection(id,true)}
+  });
+  if(!window.PointerEvent){
+   el.addEventListener('touchstart',start,{passive:true});
+   el.addEventListener('touchend',cancel,{passive:true});
+   el.addEventListener('touchcancel',cancel,{passive:true});
+  }
+ });
+}
 async function sendMessage(e){e.preventDefault();if(!me||!activeChat)return;const body=$('messageInput').value.trim();if(!body)return;$('sendBtn').disabled=true;try{const {error}=await supa.from('messages').insert({conversation_id:activeChat,sender_id:me.id,body});if(error)throw error;$('messageInput').value='';await loadMessages();await loadRecentChats()}catch(e){setChatHint('মেসেজ পাঠানো যায়নি: '+e.message)}finally{$('sendBtn').disabled=false;$('messageInput').focus()}}
-async function deleteForEveryone(id){const m=knownMsgs.get(id);if(!m||m.sender_id!==me.id)return;if(!confirm('এই মেসেজটি সবার জন্য মুছে ফেলবে? দুই পাশের চ্যাটেই এটি আর পড়া যাবে না।'))return;try{const now=new Date().toISOString();const {data,error}=await supa.from('messages').update({body:'এই মেসেজটি মুছে ফেলা হয়েছে',deleted_at:now,deleted_by:me.id,delete_for_everyone:true,edited_at:now}).eq('id',id).eq('sender_id',me.id).select('id').maybeSingle();if(error)throw error;if(!data)throw new Error('মেসেজটি মুছতে অনুমতি পাওয়া যায়নি। Database policy পরীক্ষা করতে হবে।');clearMessageSelection();await loadMessages();await loadRecentChats()}catch(e){setChatHint('মুছতে পারিনি: '+e.message)}}
-$('enterBtn').addEventListener('click',enter);$('searchInput').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(searchUsers,250)});$('sendForm').addEventListener('submit',sendMessage);$('backBtn').addEventListener('click',goBackToRecentChats);$('recentRefreshBtn').addEventListener('click',loadRecentChats);$('refreshBtn').addEventListener('click',()=>loadMessages().catch(e=>setChatHint(e.message)));$('deleteSelectedBtn').addEventListener('click',()=>{if(selectedMessageId)deleteForEveryone(selectedMessageId)});$('cancelSelectionBtn').addEventListener('click',clearMessageSelection);$('myProfileBtn').addEventListener('click',()=>alert('তোমার নাম: '+(profile?.display_name||'')+'\nUsername: '+(profile?.username||'')));$('logoutBtn').addEventListener('click',async()=>{if(!confirm('এই ডিভাইস থেকে বের হবে? guest account অন্য ফোনে restore করা যাবে না।'))return;try{await setOnline(false);if(heartbeat)clearInterval(heartbeat);if(msgChannel)await supa.removeChannel(msgChannel);if(profileChannel)await supa.removeChannel(profileChannel);if(recentChannel)await supa.removeChannel(recentChannel);await supa.auth.signOut();me=null;profile=null;showPanel('authPanel');setConn('অফলাইন')}catch(e){alertBox('userError',e.message)}});window.addEventListener('online',()=>{if(activeChat&&!subscribed)connectMessageRealtime().catch(()=>{})});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&activeChat&&!subscribed)connectMessageRealtime().catch(()=>{})});window.addEventListener('beforeunload',()=>{if(heartbeat)clearInterval(heartbeat)});
+async function deleteForEveryone(){
+ const ids=Array.from(selectedMessageIds);
+ if(!ids.length)return;
+ const validIds=ids.filter(id=>{const m=knownMsgs.get(id);return !!m&&m.sender_id===me.id&&!m.deleted_at&&!m.delete_for_everyone});
+ if(!validIds.length){clearMessageSelection();setChatHint('ডিলিট করার মতো নিজের কোনো মেসেজ নির্বাচন করা নেই');return}
+ if(!confirm('নির্বাচিত '+validIds.length+'টি মেসেজ সবার জন্য মুছে ফেলবে? দুই পাশের চ্যাটেই এগুলো আর পড়া যাবে না।'))return;
+ $('deleteSelectedBtn').disabled=true;
+ const now=new Date().toISOString();let deletedCount=0;const failures=[];
+ try{
+  for(const id of validIds){
+   try{
+    const {data,error}=await supa.from('messages').update({body:'এই মেসেজটি মুছে ফেলা হয়েছে',deleted_at:now,deleted_by:me.id,delete_for_everyone:true,edited_at:now}).eq('id',id).eq('sender_id',me.id).select('id').maybeSingle();
+    if(error)throw error;
+    if(!data)throw new Error('database policy অনুযায়ী মেসেজটি আপডেট হয়নি');
+    deletedCount++;
+   }catch(e){failures.push(e.message||String(e))}
+  }
+  clearMessageSelection();
+  await loadMessages();
+  await loadRecentChats();
+  if(failures.length)setChatHint(deletedCount+'/'+validIds.length+'টি মুছেছে; '+failures.length+'টি মুছতে পারেনি: '+failures[0]);
+  else setChatHint(deletedCount+'টি মেসেজ সবার জন্য মুছে ফেলা হয়েছে');
+ }catch(e){setChatHint('মুছতে পারিনি: '+(e.message||String(e)))}
+ finally{$('deleteSelectedBtn').disabled=false}
+}
+
+$('enterBtn').addEventListener('click',enter);$('searchInput').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(searchUsers,250)});$('sendForm').addEventListener('submit',sendMessage);$('backBtn').addEventListener('click',goBackToRecentChats);$('recentRefreshBtn').addEventListener('click',loadRecentChats);$('refreshBtn').addEventListener('click',()=>loadMessages().catch(e=>setChatHint(e.message)));$('deleteSelectedBtn').addEventListener('click',()=>deleteForEveryone());$('cancelSelectionBtn').addEventListener('click',clearMessageSelection);$('myProfileBtn').addEventListener('click',()=>alert('তোমার নাম: '+(profile?.display_name||'')+'\nUsername: '+(profile?.username||'')));$('logoutBtn').addEventListener('click',async()=>{if(!confirm('এই ডিভাইস থেকে বের হবে? guest account অন্য ফোনে restore করা যাবে না।'))return;try{await setOnline(false);if(heartbeat)clearInterval(heartbeat);if(msgChannel)await supa.removeChannel(msgChannel);if(profileChannel)await supa.removeChannel(profileChannel);if(recentChannel)await supa.removeChannel(recentChannel);await supa.auth.signOut();me=null;profile=null;showPanel('authPanel');setConn('অফলাইন')}catch(e){alertBox('userError',e.message)}});window.addEventListener('online',()=>{if(activeChat&&!subscribed)connectMessageRealtime().catch(()=>{})});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&activeChat&&!subscribed)connectMessageRealtime().catch(()=>{})});window.addEventListener('beforeunload',()=>{if(heartbeat)clearInterval(heartbeat)});
 supa.auth.getSession().then(async({data,error})=>{if(error){setConn('Auth error');return}if(data.session){me=data.session.user;try{profile=await getProfile(me.id);if(profile){$('displayName').value=profile.display_name||'';$('username').value=profile.username||'';await startApp()}else showPanel('authPanel')}catch(e){showPanel('authPanel');alertBox('authError','Profile load error: '+e.message)}}else{try{const d=JSON.parse(localStorage.getItem('study-chat-profile-draft')||'{}');$('displayName').value=d.display||'';$('username').value=d.username||''}catch{}setConn('লগইন করুন')}});
 })();
 </script>

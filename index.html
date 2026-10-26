@@ -286,7 +286,6 @@ async function sendMessage(e){
  finally{$('sendBtn').disabled=false;$('imagePickBtn').disabled=false;$('messageInput').focus()}
 }
 async function deleteForEveryone(){
-async function deleteForEveryone(){
  const ids=Array.from(selectedMessageIds);
  if(!ids.length)return;
  const validIds=ids.filter(id=>{const m=knownMsgs.get(id);return !!m&&m.sender_id===me.id&&!m.deleted_at&&!m.delete_for_everyone});

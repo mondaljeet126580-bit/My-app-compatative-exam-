@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ChatLink Automation Control</title>
+<style>
+:root{--bg:#07131e;--card:#102334;--line:#294258;--text:#edf6ff;--muted:#9db0c0;--green:#13b889;--red:#c94a5a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#17374b,#07131e 55%);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,Arial,sans-serif;min-height:100vh;padding:24px}.wrap{width:min(620px,100%);margin:auto}.card{background:#102334eF;border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 20px 60px #0005;margin-bottom:16px}h1{margin:0 0 6px;font-size:27px}.muted{color:var(--muted);line-height:1.5}.field{margin:14px 0}.field label{display:block;margin-bottom:7px;color:#b8c8d5;font-size:13px}input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:#081722;color:var(--text);outline:none}button{border:0;border-radius:12px;padding:13px 15px;font:inherit;font-weight:750;cursor:pointer}.row{display:flex;gap:9px;flex-wrap:wrap}.primary{background:var(--green);color:#06231c}.danger{background:var(--red);color:white}.secondary{background:#1a3043;color:#dceaf4}.status{margin-top:14px;padding:13px;border-radius:12px;background:#091a27;border:1px solid var(--line);white-space:pre-wrap}.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;overflow:auto;background:#07131e;border:1px solid var(--line);padding:12px;border-radius:12px;white-space:pre-wrap}.small{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="card">
+<h1>ChatLink Automation Control</h1>
+<div class="muted">A separate control page for your ChatLink Automation API. Your API key is kept only in this browser's local storage and is never committed to GitHub.</div>
+<div class="field"><label>Automation API key</label><input id="key" type="password" placeholder="Paste your ChatLink automation key"></div>
+<div class="row"><button class="primary" id="save">Save key on this device</button><button class="secondary" id="clear">Clear</button></div>
+<div id="status" class="status">Not connected.</div>
+</section>
+<section class="card">
+<h2>Maintenance automation</h2>
+<div class="muted">Turn the user app maintenance gate on or off remotely.</div>
+<div class="field"><label>Maintenance message</label><input id="message" value="on maintenance"></div>
+<div class="row"><button class="danger" id="on">ON MAINTENANCE</button><button class="primary" id="off">TURN OFF</button><button class="secondary" id="health">Test API</button></div>
+</section>
+<section class="card">
+<h2>API request</h2>
+<div class="code">POST https://mtitrkspgoqaqdeiluud.supabase.co/functions/v1/chatlink-automation
+X-ChatLink-Automation-Key: YOUR_KEY
+Content-Type: application/json
+
+{"action":"maintenance","enabled":true,"message":"on maintenance"}</div>
+<div class="small">Keep the key private. Do not put it in your public HTML, JavaScript, GitHub repository, or automation screenshots.</div>
+</section>
+</div>
+<script>
+const ENDPOINT='https://mtitrkspgoqaqdeiluud.supabase.co/functions/v1/chatlink-automation';
+const keyEl=document.getElementById('key'),statusEl=document.getElementById('status'),messageEl=document.getElementById('message');
+keyEl.value=localStorage.getItem('chatlink_automation_key')||'';
+function status(x){statusEl.textContent=typeof x==='string'?x:JSON.stringify(x,null,2)}
+async function call(action,extra={}){
+ const key=keyEl.value.trim();
+ if(!key){status('Enter your automation API key first.');return}
+ status('Working...');
+ try{const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','X-ChatLink-Automation-Key':key},body:JSON.stringify({action,...extra})});const data=await r.json().catch(()=>({error:'Invalid server response'}));status((r.ok?'OK: ':'Error: ')+JSON.stringify(data,null,2));return data}catch(e){status('Network error: '+e.message)}}
+document.getElementById('save').onclick=()=>{localStorage.setItem('chatlink_automation_key',keyEl.value.trim());status('Key saved on this device.')};
+document.getElementById('clear').onclick=()=>{localStorage.removeItem('chatlink_automation_key');keyEl.value='';status('Key cleared.')};
+document.getElementById('health').onclick=()=>call('health');
+document.getElementById('on').onclick=()=>call('maintenance',{enabled:true,message:messageEl.value.trim()||'on maintenance'});
+document.getElementById('off').onclick=()=>call('maintenance',{enabled:false,message:messageEl.value.trim()||'on maintenance'});
+</script>
+</body>
+</html>

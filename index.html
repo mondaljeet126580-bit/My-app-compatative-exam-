@@ -53,8 +53,14 @@ async function refreshMaintenanceGate(){
   }
  }catch(e){
   console.warn('maintenance check failed',e&&e.message?e.message:e);
-  maintenanceGate.classList.add('hidden');
-  chatAppShell.style.visibility='visible';
+  if(maintenanceIsOn){
+   $('maintenanceGateMessage').textContent='on maintenance — status check failed, retry in a moment.';
+   maintenanceGate.classList.remove('hidden');
+   chatAppShell.style.visibility='hidden';
+  }else{
+   maintenanceGate.classList.add('hidden');
+   chatAppShell.style.visibility='visible';
+  }
  }
  finally{maintenanceCheckBusy=false}
  return maintenanceIsOn;

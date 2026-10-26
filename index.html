@@ -38,28 +38,54 @@ header{background:var(--header);box-shadow:0 2px 5px #00000012}
 .profileEditBlock .sectionTitle{margin-bottom:13px}.profileEditBlock label{margin-top:12px}.profileEditBlock input{background:#fff}
 #profileSuccess{background:#e3f6e9;color:#17643f}
 @media(max-width:420px){.profileAvatarWrap,.profileAvatarInitial,.profileAvatarImage{width:96px;height:96px}.profileHero h2{font-size:20px}.panel{padding:13px}.recentCard,.userCard{padding:10px}}
+/* Per-user profile photos and WhatsApp-style public profile controls */
+.logoProfileButton{border:0;cursor:pointer;padding:0;overflow:hidden;flex-shrink:0}
+.logoProfileButton .avatarPhoto,.logoProfileButton .avatarFallback{width:100%;height:100%;border-radius:inherit;object-fit:cover}
+.logoProfileButton .avatarFallback{display:grid;place-items:center}
+.avatarPhoto{width:100%;height:100%;display:block;object-fit:cover;border-radius:inherit}
+.avatarFallback{width:100%;height:100%;display:grid;place-items:center;font-weight:800;line-height:1;color:#16634f}
+.avatar .avatarPhoto,.avatar .avatarFallback{position:absolute;inset:0}
+.avatar{position:relative;overflow:hidden}
+.userCardRow{display:flex;align-items:stretch;gap:8px;width:100%;min-width:0}
+.userProfileTap,.recentProfileTap{display:grid;place-items:center;flex:0 0 56px;width:56px;min-width:56px;padding:0;border-radius:50%;background:transparent;color:inherit;overflow:hidden}
+.userProfileTap .avatar,.recentProfileTap .avatar{width:52px;height:52px}
+.userCardRow .userCard{flex:1;width:0;min-width:0;display:flex;align-items:center;justify-content:space-between}
+.userChatArrow{font-size:25px;color:#008069;margin-left:8px}
+.recentRow{display:flex;align-items:center;gap:8px;min-width:0}
+.recentRow .recentCard{flex:1;min-width:0;width:0}
+.recentProfileTap{background:#e2f1eb;border:1px solid #d3e5dd}
+.profileAvatarWrap{cursor:default}
+.dpCameraBadge{position:absolute;right:-2px;bottom:2px;display:grid;place-items:center;width:31px;height:31px;border-radius:50%;background:#008069;color:white;border:3px solid #f0f2f5;font-size:14px}
+.dpEditRow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px;background:#f6f8f7;border:1px solid #e5ebE8;border-radius:12px;margin:10px 0}
+.dpEditRow b{display:block;font-size:14px}.dpEditRow small{display:block;font-size:11px;color:var(--muted);margin-top:4px;max-width:240px}
+.dpButtons{display:flex;gap:6px;flex-wrap:wrap}.dpButtons button{font-size:12px;padding:9px 10px}
+#profileAvatarImage{background:#d9fdd3}
+@media(max-width:420px){.userProfileTap,.recentProfileTap{flex-basis:48px;width:48px;min-width:48px}.userProfileTap .avatar,.recentProfileTap .avatar{width:46px;height:46px}.userCardRow,.recentRow{gap:5px}.dpEditRow{align-items:flex-start}.dpButtons{width:100%}.dpButtons button{flex:1}}
 </style>
 </head>
 <body><div id="maintenanceGate" class="maintenanceGate" role="status" aria-live="polite"><section class="maintenanceGateCard"><div class="maintenanceGateIcon">🛠️</div><h1>on maintenance</h1><p id="maintenanceGateMessage">অ্যাপের অবস্থা যাচাই হচ্ছে…</p><small>Study Chat · কিছুক্ষণ পরে আবার চেষ্টা করো</small><button id="maintenanceRetry" type="button">আবার পরীক্ষা করুন</button></section></div><main class="app" id="chatAppShell" style="visibility:hidden">
-<header><div class="logo">C</div><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">নাম দিয়ে ব্যবহারকারী খুঁজুন</small></div><span class="badge" id="connection">সংযোগ হচ্ছে…</span></header>
+<header><button type="button" class="logo logoProfileButton" id="headerProfileBtn" aria-label="আমার প্রোফাইল" title="আমার প্রোফাইল">C</button><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">নাম দিয়ে ব্যবহারকারী খুঁজুন</small></div><span class="badge" id="connection">সংযোগ হচ্ছে…</span></header>
 <section class="panel" id="authPanel"><h2 class="sectionTitle">চ্যাটে প্রবেশ করো</h2><div class="note">একটি display name/username তৈরি করো। এরপর অন্য ব্যক্তি তার নাম সার্চ করে তোমার সাথে ব্যক্তিগতভাবে চ্যাট করতে পারবে। একই ব্রাউজারে ফিরে এলে এই ডিভাইসের guest session রাখা হয়।</div><label for="displayName">তোমার নাম (যেমন Jeet Mondal)</label><input id="displayName" maxlength="40" placeholder="নাম লিখো"><label for="username">ইউনিক username (যেমন jeet123)</label><input id="username" maxlength="30" autocapitalize="none" placeholder="a-z, 0-9, underscore"><button id="enterBtn" style="width:100%;margin-top:14px">চ্যাট শুরু করো</button><div class="alert hidden" id="authError"></div><div class="footerHint">নোট: শুধু নাম নিজে কোনো পরিচয় যাচাই করে না। স্থায়ী/অন্য ফোনে একই account পেতে পরে verified login যুক্ত করা উচিত।</div></section>
 <section class="panel hidden" id="usersPanel"><div class="row" style="align-items:center;margin-bottom:14px"><div class="grow"><div class="sectionTitle" style="margin-bottom:2px">ব্যবহারকারী খুঁজুন</div><small class="muted">নাম বা username লিখে সার্চ করো</small></div><button class="secondary" id="myProfileBtn">👤 আমার প্রোফাইল</button></div><div id="recentSection"><div class="recentHead"><div class="sectionTitle" style="margin:0">সাম্প্রতিক চ্যাট</div><button class="secondary" id="recentRefreshBtn" style="padding:8px 11px">↻</button></div><div class="recentList" id="recentList"></div><div class="footerHint hidden" id="recentEmpty">এখনও কোনো চ্যাট নেই</div></div><div class="searchTitle">নতুন চ্যাট শুরু করো</div><input id="searchInput" placeholder="নাম / username সার্চ..." autocomplete="off"><div class="footerHint" id="searchHint">কমপক্ষে ২ অক্ষর লিখো</div><div class="userList" id="userList"></div><div class="alert hidden" id="userError"></div><button class="secondary" id="logoutBtn" style="width:100%;margin-top:18px">এই ডিভাইস থেকে বের হও</button></section>
 <section class="panel hidden" id="profilePanel">
- <div class="profileTopbar"><button type="button" class="profileBack" id="profileBackBtn" aria-label="ফিরে যাও">←</button><div><strong>Profile</strong><small>তোমার ChatLink account</small></div></div>
+ <div class="profileTopbar"><button type="button" class="profileBack" id="profileBackBtn" aria-label="ফিরে যাও">←</button><div><strong>Profile</strong><small>ChatLink account</small></div></div>
  <div class="profileHero">
-  <div class="profileAvatarWrap"><img id="profileAvatarImage" class="profileAvatarImage hidden" alt="প্রোফাইল ছবি"><div id="profileAvatarInitial" class="profileAvatarInitial">C</div></div>
+  <div class="profileAvatarWrap"><img id="profileAvatarImage" class="profileAvatarImage hidden" alt="প্রোফাইল ছবি"><div id="profileAvatarInitial" class="profileAvatarInitial">C</div><span class="dpCameraBadge" id="dpCameraBadge">📷</span></div>
   <h2 id="profileDisplayLabel">ChatLink User</h2><div class="profileUsername" id="profileUsernameLabel">@username</div>
   <div class="profileOnline" id="profileOnlineLabel"><span class="online"></span> অনলাইন</div>
  </div>
  <div class="profileInfoBlock"><div class="profileInfoLabel">নাম</div><div id="profileInfoName" class="profileInfoValue">—</div><div class="profileInfoLabel">Username</div><div id="profileInfoUsername" class="profileInfoValue">—</div><div class="profileInfoLabel">অ্যাকাউন্ট তৈরি</div><div id="profileCreatedLabel" class="profileInfoValue">—</div><div class="profileInfoLabel">Account type</div><div class="profileInfoValue">ChatLink Personal</div></div>
  <form id="profileEditForm" class="profileEditBlock">
-  <div class="sectionTitle">প্রোফাইল পরিবর্তন</div>
+  <div class="sectionTitle">আমার প্রোফাইল পরিবর্তন</div>
+  <div class="dpEditRow"><div><b>Profile photo / DP</b><small>এটি অন্য ChatLink ব্যবহারকারীরাও দেখতে পাবে।</small></div><div class="dpButtons"><input id="avatarFileInput" class="hidden" type="file" accept="image/jpeg,image/png,image/webp"><button id="chooseAvatarBtn" class="secondary" type="button">📷 DP বদলাও</button><button id="removeAvatarBtn" class="secondary" type="button">ছবি সরাও</button></div></div>
+  <div class="footerHint" id="avatarUploadHint">JPG, PNG বা WebP · সর্বোচ্চ ৫ MB</div>
   <label for="profileDisplayNameInput">তোমার নাম</label><input id="profileDisplayNameInput" maxlength="40" required placeholder="নাম লিখো">
   <label for="profileUsernameInput">Username</label><input id="profileUsernameInput" maxlength="30" autocapitalize="none" required placeholder="username">
   <div class="footerHint">Username ৩–৩০ অক্ষরের ইংরেজি ছোট হাতের অক্ষর, সংখ্যা বা underscore দিয়ে লিখবে।</div>
   <button id="profileSaveBtn" type="submit" style="width:100%;margin-top:12px">পরিবর্তন সেভ করো</button>
   <div class="alert hidden" id="profileError"></div><div class="note hidden" id="profileSuccess" style="margin-top:10px"></div>
  </form>
+ <div id="profilePublicActions" class="profileEditBlock hidden"><div class="sectionTitle">ব্যবহারকারীর প্রোফাইল</div><p class="muted">এই প্রোফাইলের DP, নাম এবং username অন্য ব্যবহারকারীরা দেখতে পাবে।</p><button id="profileMessageBtn" type="button" style="width:100%;margin-top:8px">মেসেজ পাঠাও</button></div>
 </section>
 <section class="hidden" id="chatPanel" style="flex:1;min-height:0;display:flex;flex-direction:column"><div class="toolbar"><button class="topBack" id="backBtn" aria-label="চ্যাট তালিকায় ফিরে যাও" title="চ্যাট তালিকায় ফিরে যাও">←</button><div class="avatar" id="chatAvatar">?</div><div class="grow"><strong id="chatName">User</strong><div style="font-size:12px;color:var(--muted)" id="chatStatus">সংযোগ হচ্ছে…</div></div><button class="danger hidden" id="deleteSelectedBtn" title="সবার জন্য মুছুন">🗑 সবার জন্য</button><button class="secondary hidden" id="cancelSelectionBtn" title="বাতিল">✕</button><button class="secondary" id="refreshBtn" title="সিঙ্ক">↻</button></div><div class="chatBG" id="messages"></div><div class="footerHint" id="chatHint">Realtime সংযোগ হচ্ছে…</div><div class="imagePending hidden" id="imagePending"><img id="pendingImageThumb" alt="নির্বাচিত ছবি"><div class="imagePendingInfo"><strong id="pendingImageName">ছবি</strong><small id="pendingImageSize"></small></div><button id="removePendingImageBtn" type="button" aria-label="ছবি সরাও">✕</button></div><input class="hidden" id="imageFileInput" type="file" accept="image/*"><form class="composer" id="sendForm"><button class="secondary imagePickBtn" id="imagePickBtn" type="button" aria-label="ছবি নির্বাচন করো" title="ছবি পাঠাও">📷</button><input class="grow" id="messageInput" maxlength="10000" placeholder="মেসেজ বা ছবির ক্যাপশন লিখো…" autocomplete="off"><button id="sendBtn" type="submit" aria-label="পাঠাও">➤</button></form></section>
 </main>
@@ -113,52 +139,142 @@ setInterval(async()=>{
  const nowOn=await refreshMaintenanceGate();
  if(wasOn&&!nowOn)window.location.reload();
 },10000);
-if(maintenanceInitiallyOn)return;let me=null,profile=null,activeChat=null,activePeer=null,msgChannel=null,profileChannel=null,recentChannel=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
+if(maintenanceInitiallyOn)return;let me=null,profile=null,viewedProfileId=null,pendingAvatarFile=null,avatarPreviewUrl=null,removeAvatarRequested=false,activeChat=null,activePeer=null,msgChannel=null,profileChannel=null,recentChannel=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
 function setConn(s,ok=false){$('connection').textContent=s;$('connection').style.background=ok?'#ffffff30':'#ffffff20'}function alertBox(id,s){$(id).textContent=s;$(id).classList.remove('hidden')}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function showPanel(id){for(const p of ['authPanel','usersPanel','profilePanel','chatPanel'])$(p).classList.toggle('hidden',p!==id)}function timeStr(t){try{return new Intl.DateTimeFormat('bn-IN',{hour:'2-digit',minute:'2-digit'}).format(new Date(t))}catch{return ''}}function callRpc(name,args){return Promise.resolve(supa.rpc(name,args))}
 async function getProfile(id){const {data,error}=await supa.from('profiles').select('*').eq('id',id).maybeSingle();if(error)throw error;return data}
 async function setOnline(flag){if(!me)return;await supa.from('profiles').update({is_online:flag,last_seen:new Date().toISOString()}).eq('id',me.id)}
 function profileInitial(value){const s=String(value||'C').trim();return (Array.from(s)[0]||'C').toUpperCase()}
 function profileDate(value){if(!value)return '—';try{return new Intl.DateTimeFormat('bn-IN',{year:'numeric',month:'long',day:'numeric'}).format(new Date(value))}catch{return '—'}}
-function openMyProfile(){
- if(!me||!profile){alertBox('userError','প্রোফাইল পাওয়া যায়নি। আবার চেষ্টা করো।');return}
- const display=profile.display_name||profile.username||'ChatLink User';
- $('profileDisplayLabel').textContent=display;
- $('profileUsernameLabel').textContent='@'+(profile.username||'');
- $('profileInfoName').textContent=display;
- $('profileInfoUsername').textContent='@'+(profile.username||'');
- $('profileCreatedLabel').textContent=profileDate(profile.created_at);
- $('profileDisplayNameInput').value=profile.display_name||'';
- $('profileUsernameInput').value=profile.username||'';
- $('profileOnlineLabel').innerHTML=profile.is_online?'<span class="online"></span> অনলাইন':'<span class="offline"></span> অফলাইন';
- const img=$('profileAvatarImage'),initial=$('profileAvatarInitial');
- if(profile.avatar_url&&/^https?:\/\//i.test(profile.avatar_url)){
-  img.onerror=()=>{img.classList.add('hidden');initial.classList.remove('hidden')};
-  img.src=profile.avatar_url;img.classList.remove('hidden');initial.classList.add('hidden');
- }else{img.removeAttribute('src');img.classList.add('hidden');initial.classList.remove('hidden')}
- initial.textContent=profileInitial(display);
- $('profileError').classList.add('hidden');$('profileSuccess').classList.add('hidden');
- showPanel('profilePanel');$('headerSub').textContent='আমার প্রোফাইল';
+function avatarMarkup(url,name){
+ const initial=esc(profileInitial(name));
+ const src=String(url||'');
+ if(/^https?:\/\//i.test(src))return '<img class="avatarPhoto" src="'+esc(src)+'" alt="" loading="lazy" onerror="this.classList.add(\'hidden\');this.nextElementSibling.classList.remove(\'hidden\')"><span class="avatarFallback hidden">'+initial+'</span>';
+ return '<span class="avatarFallback">'+initial+'</span>';
 }
+function refreshHeaderProfileButton(){
+ const button=$('headerProfileBtn');if(!button)return;
+ const display=profile?.display_name||profile?.username||'ChatLink';
+ button.innerHTML=avatarMarkup(profile?.avatar_url,display);
+ button.title=profile?'আমার প্রোফাইল: '+display:'আমার প্রোফাইল';
+ button.setAttribute('aria-label',button.title);
+}
+function clearAvatarPreview(){
+ if(avatarPreviewUrl){try{URL.revokeObjectURL(avatarPreviewUrl)}catch{}}
+ avatarPreviewUrl=null;pendingAvatarFile=null;removeAvatarRequested=false;
+ const input=$('avatarFileInput');if(input)input.value='';
+ const hint=$('avatarUploadHint');if(hint)hint.textContent='JPG, PNG বা WebP · সর্বোচ্চ ৫ MB';
+}
+function setProfileAvatarView(record){
+ const display=record.display_name||record.username||'ChatLink User';
+ const img=$('profileAvatarImage'),initial=$('profileAvatarInitial');
+ initial.textContent=profileInitial(display);
+ const url=String(record.avatar_url||'');
+ if(url&&/^https?:\/\//i.test(url)){
+  img.onerror=()=>{img.classList.add('hidden');initial.classList.remove('hidden')};
+  img.src=url;img.classList.remove('hidden');initial.classList.add('hidden');
+ }else{img.removeAttribute('src');img.classList.add('hidden');initial.classList.remove('hidden')}
+}
+function fillProfileView(record,own){
+ const display=record.display_name||record.username||'ChatLink User';
+ $('profileDisplayLabel').textContent=display;
+ $('profileUsernameLabel').textContent='@'+(record.username||'');
+ $('profileInfoName').textContent=display;
+ $('profileInfoUsername').textContent='@'+(record.username||'');
+ $('profileCreatedLabel').textContent=profileDate(record.created_at);
+ $('profileOnlineLabel').innerHTML=record.is_online?'<span class="online"></span> অনলাইন':'<span class="offline"></span> অফলাইন';
+ setProfileAvatarView(record);
+ $('profileEditForm').classList.toggle('hidden',!own);
+ $('profilePublicActions').classList.toggle('hidden',own);
+ $('dpCameraBadge').classList.toggle('hidden',!own);
+ if(own){$('profileDisplayNameInput').value=record.display_name||'';$('profileUsernameInput').value=record.username||'';}
+ $('profileError').classList.add('hidden');$('profileSuccess').classList.add('hidden');
+}
+async function openUserProfile(userId){
+ if(!me){showPanel('authPanel');return}
+ const own=userId===me.id;
+ try{
+  const record=own?profile:await getProfile(userId);
+  if(!record)throw new Error('এই ব্যবহারকারীর প্রোফাইল পাওয়া যায়নি।');
+  if(avatarPreviewUrl){try{URL.revokeObjectURL(avatarPreviewUrl)}catch{}avatarPreviewUrl=null}
+  pendingAvatarFile=null;removeAvatarRequested=false;
+  if($('avatarFileInput'))$('avatarFileInput').value='';
+  viewedProfileId=record.id;
+  fillProfileView(record,own);
+  showPanel('profilePanel');
+  $('headerSub').textContent=own?'আমার প্রোফাইল':'@'+(record.username||'প্রোফাইল');
+ }catch(e){alertBox('userError','প্রোফাইল খোলা যায়নি: '+(e.message||String(e)))}
+}
+function openMyProfile(){return openUserProfile(me?.id)}
+function chooseProfileAvatar(file){
+ if(!file||!me||viewedProfileId!==me.id)return;
+ const type=String(file.type||'').toLowerCase();
+ if(!['image/jpeg','image/png','image/webp'].includes(type)){alertBox('profileError','JPG, PNG বা WebP ছবি বেছে নাও।');return}
+ if(file.size>5242880){alertBox('profileError','ছবির আকার ৫ MB-এর কম হতে হবে।');return}
+ if(avatarPreviewUrl){try{URL.revokeObjectURL(avatarPreviewUrl)}catch{}}
+ pendingAvatarFile=file;removeAvatarRequested=false;avatarPreviewUrl=URL.createObjectURL(file);
+ const img=$('profileAvatarImage'),initial=$('profileAvatarInitial');
+ img.onerror=null;img.src=avatarPreviewUrl;img.classList.remove('hidden');initial.classList.add('hidden');
+ $('avatarUploadHint').textContent=file.name+' · '+(file.size/1024/1024).toFixed(2)+' MB · সেভ করতে নিচের বোতাম চাপো';
+ $('profileError').classList.add('hidden');
+}
+function removeProfileAvatar(){
+ if(!me||viewedProfileId!==me.id)return;
+ if(avatarPreviewUrl){try{URL.revokeObjectURL(avatarPreviewUrl)}catch{}avatarPreviewUrl=null}
+ pendingAvatarFile=null;removeAvatarRequested=true;
+ if($('avatarFileInput'))$('avatarFileInput').value='';
+ const img=$('profileAvatarImage');img.removeAttribute('src');img.classList.add('hidden');
+ $('profileAvatarInitial').classList.remove('hidden');
+ $('avatarUploadHint').textContent='DP সরানো হবে; পরিবর্তন সেভ করো';
+}
+function avatarStoragePath(url){
+ const marker='/storage/v1/object/public/chat-avatars/';
+ const value=String(url||'');const index=value.indexOf(marker);
+ if(index<0)return null;
+ try{return decodeURIComponent(value.slice(index+marker.length).split('?')[0])}catch{return value.slice(index+marker.length).split('?')[0]}
+}
+function avatarExtension(file){return file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg'}
 async function saveMyProfile(e){
- e.preventDefault();if(!me||!profile)return;
+ e.preventDefault();if(!me||!profile||viewedProfileId!==me.id)return;
  const display=String($('profileDisplayNameInput').value||'').trim();
  const username=String($('profileUsernameInput').value||'').trim().toLowerCase();
  $('profileError').classList.add('hidden');$('profileSuccess').classList.add('hidden');
  if(display.length<2){alertBox('profileError','নাম অন্তত ২ অক্ষরের হতে হবে।');return}
  if(!/^[a-z0-9_]{3,30}$/.test(username)){alertBox('profileError','Username ৩–৩০ অক্ষরের a-z, 0-9 বা underscore দিয়ে লিখো।');return}
  $('profileSaveBtn').disabled=true;
+ let uploadedPath=null;
+ const oldAvatarUrl=profile.avatar_url||null;
  try{
-  const {data,error}=await supa.from('profiles').update({display_name:display,username,updated_at:new Date().toISOString()}).eq('id',me.id).select('*').maybeSingle();
+  let avatarUrl=removeAvatarRequested?null:oldAvatarUrl;
+  if(pendingAvatarFile){
+   const file=pendingAvatarFile,extension=avatarExtension(file);
+   const unique=(window.crypto&&typeof window.crypto.randomUUID==='function')?window.crypto.randomUUID():(Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
+   uploadedPath=me.id+'/'+unique+'.'+extension;
+   const {error:uploadError}=await supa.storage.from('chat-avatars').upload(uploadedPath,file,{cacheControl:'31536000',upsert:false,contentType:file.type});
+   if(uploadError)throw uploadError;
+   avatarUrl=supa.storage.from('chat-avatars').getPublicUrl(uploadedPath).data.publicUrl;
+  }
+  const {data,error}=await supa.from('profiles').update({display_name:display,username,avatar_url:avatarUrl,updated_at:new Date().toISOString()}).eq('id',me.id).select('*').maybeSingle();
   if(error){if(error.code==='23505')throw new Error('এই username অন্য কেউ ব্যবহার করছে। অন্য username দাও।');throw error}
-  if(!data)throw new Error('প্রোফাইল সেভ হয়নি। আবার লগইন করে চেষ্টা করো।');
-  profile=data;$('headerSub').textContent=(profile.display_name||'')+' · @'+(profile.username||'');
-  openMyProfile();$('profileSuccess').textContent='প্রোফাইল সফলভাবে আপডেট হয়েছে।';$('profileSuccess').classList.remove('hidden');
- }catch(err){alertBox('profileError','প্রোফাইল আপডেট হয়নি: '+(err.message||String(err)))}
- finally{$('profileSaveBtn').disabled=false}
+  if(!data)throw new Error('প্রোফাইল সেভ হয়নি। আবার চেষ্টা করো।');
+  profile=data;
+  clearAvatarPreview();
+  refreshHeaderProfileButton();
+  const oldPath=avatarStoragePath(oldAvatarUrl),newPath=avatarStoragePath(avatarUrl);
+  if(oldPath&&oldPath!==newPath){try{const {error:removeError}=await supa.storage.from('chat-avatars').remove([oldPath]);if(removeError)console.warn('old avatar cleanup failed',removeError.message)}catch(err){console.warn('old avatar cleanup failed',err)}}
+  await openUserProfile(me.id);
+  $('profileSuccess').textContent='প্রোফাইল ও DP সফলভাবে সেভ হয়েছে। অন্য ব্যবহারকারীরাও তোমার DP দেখতে পাবে।';
+  $('profileSuccess').classList.remove('hidden');
+  $('avatarUploadHint').textContent=avatarUrl?'DP সেভ হয়েছে।':'নতুন DP নির্বাচন করতে পারো।';
+  void loadRecentChats();
+  const q=$('searchInput').value.trim();if(q.length>=2)void searchUsers();
+ }catch(err){
+  if(uploadedPath){try{await supa.storage.from('chat-avatars').remove([uploadedPath])}catch(cleanupError){console.warn('avatar upload cleanup failed',cleanupError)}}
+  alertBox('profileError','প্রোফাইল আপডেট হয়নি: '+(err.message||String(err)));
+ }finally{$('profileSaveBtn').disabled=false}
 }
 async function enter(){const display=$('displayName').value.trim(),username=$('username').value.trim().toLowerCase();if(!display||!/^[a-z0-9_]{3,30}$/.test(username)){alertBox('authError','নাম লিখো এবং username ৩–৩০ অক্ষরের a-z, 0-9 বা underscore দিয়ে দাও।');return}$('enterBtn').disabled=true;try{let {data,error}=await supa.auth.getSession();if(error)throw error;if(!data.session){const res=await supa.auth.signInAnonymously();if(res.error)throw res.error;me=res.data.user}else me=data.session.user;const {data:existing,error:readErr}=await supa.from('profiles').select('id').eq('id',me.id).maybeSingle();if(readErr)throw readErr;if(existing){const {error:updateErr}=await supa.from('profiles').update({display_name:display,username,updated_at:new Date().toISOString()}).eq('id',me.id);if(updateErr)throw updateErr}else{const {error:insertErr}=await supa.from('profiles').update({display_name:display,username,updated_at:new Date().toISOString()}).eq('id',me.id);if(insertErr)throw insertErr}profile=await getProfile(me.id);if(!profile)throw new Error('প্রোফাইল তৈরি হয়নি');await startApp()}catch(e){alertBox('authError',e.message||String(e))}finally{$('enterBtn').disabled=false}}
 async function startApp(){
- showPanel('usersPanel');$('headerSub').textContent=(profile?.display_name||'')+' · @'+(profile?.username||'');setConn('অনলাইন',true);
+ showPanel('usersPanel');$('headerSub').textContent=(profile?.display_name||'')+' · @'+(profile?.username||'');refreshHeaderProfileButton();setConn('অনলাইন',true);
  await setOnline(true);
  if(heartbeat)clearInterval(heartbeat);
  heartbeat=setInterval(()=>setOnline(true),30000);
@@ -166,26 +282,54 @@ async function startApp(){
  for(const chat of recent){if(chat.conversation_id){void(async()=>{try{const {error}=await callRpc('mark_direct_messages_delivered',{p_conversation_id:chat.conversation_id});if(error)console.warn('delivery sync',error.message)}catch(e){console.warn('delivery sync',e.message)}})()}}
  connectRecentRealtime();
 }
-async function searchUsers(){const q=$('searchInput').value.trim();$('userList').innerHTML='';$('userError').classList.add('hidden');if(q.length<2){$('searchHint').textContent='কমপক্ষে ২ অক্ষর লিখো';return}$('searchHint').textContent='খোঁজা হচ্ছে…';try{const {data,error}=await callRpc('search_chat_users',{search_text:q});if(error)throw error;const rows=(data||[]).filter(x=>x.user_id && x.user_id!==me?.id);$('searchHint').textContent=rows.length?rows.length+' জন পাওয়া গেছে':'কোনও ব্যবহারকারী পাওয়া যায়নি';$('userList').innerHTML=rows.map(u=>`<button class="userCard" data-user="${esc(u.user_id)}"><span class="avatar">${esc((u.display_name||u.username||'?').slice(0,1).toUpperCase())}</span><span class="userInfo"><strong>${esc(u.display_name||u.username)}</strong><small>@${esc(u.username||'')} · ${u.is_online?'অনলাইন':'অফলাইন'}</small></span></button>`).join('');$('userList').querySelectorAll('[data-user]').forEach(el=>el.addEventListener('click',()=>openDirectChat(el.dataset.user)))}catch(e){$('searchHint').textContent='';alertBox('userError',e.message||String(e))}}
+async function searchUsers(){
+ const q=String($('searchInput').value||'').trim();
+ $('userList').innerHTML='';$('userError').classList.add('hidden');
+ if(q.length<2){$('searchHint').textContent='কমপক্ষে ২ অক্ষর লিখো';return}
+ $('searchHint').textContent='খোঁজা হচ্ছে…';
+ try{
+  const {data,error}=await callRpc('search_chat_users',{search_text:q});if(error)throw error;
+  const rows=(data||[]).filter(x=>x.user_id&&x.user_id!==me?.id);
+  if(!rows.length){$('searchHint').textContent='কোনও ব্যবহারকারী পাওয়া যায়নি';return}
+  const ids=rows.map(x=>x.user_id);
+  const {data:profileRows,error:profileError}=await supa.from('profiles').select('id,avatar_url,display_name,username').in('id',ids);
+  if(profileError)throw profileError;
+  const profileMap=new Map((profileRows||[]).map(p=>[p.id,p]));
+  $('searchHint').textContent=rows.length+' জন পাওয়া গেছে';
+  $('userList').innerHTML=rows.map(u=>{
+   const p=profileMap.get(u.user_id)||{};
+   const display=u.display_name||p.display_name||u.username||p.username||'User';
+   return '<div class="userCardRow"><button type="button" class="userProfileTap" data-view-profile="'+esc(u.user_id)+'" aria-label="'+esc(display)+'-এর প্রোফাইল"><span class="avatar">'+avatarMarkup(p.avatar_url,display)+'</span></button><button type="button" class="userCard" data-user="'+esc(u.user_id)+'"><span class="userInfo"><strong>'+esc(display)+'</strong><small>@'+esc(u.username||p.username||'')+' · '+(u.is_online?'অনলাইন':'অফলাইন')+'</small></span><span class="userChatArrow">›</span></button></div>';
+  }).join('');
+  $('userList').querySelectorAll('[data-user]').forEach(el=>el.addEventListener('click',()=>openDirectChat(el.dataset.user)));
+  $('userList').querySelectorAll('[data-view-profile]').forEach(el=>el.addEventListener('click',()=>openUserProfile(el.dataset.viewProfile)));
+ }catch(e){$('searchHint').textContent='';alertBox('userError',e.message||String(e))}
+}
 async function openDirectChat(id){try{setConn('চ্যাট খুলছে…');const {data,error}=await callRpc('get_or_create_direct_chat',{target_user:id});if(error)throw error;const convId=typeof data==='string'?data:data?.id||data?.conversation_id;if(!convId)throw new Error('চ্যাট ID পাওয়া যায়নি');const peer=await getProfile(id);if(!peer)throw new Error('ব্যবহারকারী পাওয়া যায়নি');await openChat(convId,peer)}catch(e){alertBox('userError','চ্যাট খোলা যায়নি: '+e.message);setConn('ত্রুটি')}}
 async function loadRecentChats(){
  if(!me)return [];
  try{
-  const {data,error}=await callRpc('get_recent_direct_chats',{});
-  if(error)throw error;
+  const {data,error}=await callRpc('get_recent_direct_chats',{});if(error)throw error;
   const rows=data||[];
-  $('recentList').innerHTML=rows.map(r=>`<button class="recentCard" data-conv="${esc(r.conversation_id)}" data-peer="${esc(r.peer_id)}"><span class="avatar">${esc((r.peer_display_name||r.peer_username||'?').slice(0,1).toUpperCase())}</span><span class="recentInfo"><span class="recentTop"><strong>${esc(r.peer_display_name||r.peer_username||'ব্যবহারকারী')}</strong><span class="recentTime">${timeStr(r.last_created_at)}</span></span><span class="recentPreview"><span class="previewText">${esc(r.last_body||'নতুন চ্যাট')}</span>${Number(r.unread_count)>0?`<span class="unreadBadge">${Number(r.unread_count)}</span>`:''}</span></span></button>`).join('');
+  const peerIds=[...new Set(rows.map(r=>r.peer_id).filter(Boolean))];
+  let profileRows=[];
+  if(peerIds.length){const {data:p,error:pe}=await supa.from('profiles').select('id,avatar_url,display_name,username').in('id',peerIds);if(pe)throw pe;profileRows=p||[]}
+  const profileMap=new Map(profileRows.map(p=>[p.id,p]));
+  $('recentList').innerHTML=rows.map(r=>{
+   const p=profileMap.get(r.peer_id)||{};
+   const display=r.peer_display_name||p.display_name||r.peer_username||p.username||'ব্যবহারকারী';
+   return '<div class="recentRow"><button type="button" class="recentProfileTap" data-view-profile="'+esc(r.peer_id)+'" aria-label="'+esc(display)+'-এর প্রোফাইল"><span class="avatar">'+avatarMarkup(p.avatar_url,display)+'</span></button><button type="button" class="recentCard" data-conv="'+esc(r.conversation_id)+'" data-peer="'+esc(r.peer_id)+'"><span class="recentInfo"><span class="recentTop"><strong>'+esc(display)+'</strong><span class="recentTime">'+timeStr(r.last_created_at)+'</span></span><span class="recentPreview"><span class="previewText">'+esc(r.last_body||'নতুন চ্যাট')+'</span>'+(Number(r.unread_count)>0?'<span class="unreadBadge">'+Number(r.unread_count)+'</span>':'')+'</span></span></button></div>';
+  }).join('');
   $('recentEmpty').classList.toggle('hidden',rows.length>0);
   $('recentList').querySelectorAll('[data-conv]').forEach(el=>el.addEventListener('click',async()=>{
-   try{const p=await getProfile(el.dataset.peer);await openChat(el.dataset.conv,p)}
-   catch(e){alertBox('userError',e.message)}
+   try{const p=await getProfile(el.dataset.peer);if(!p)throw new Error('ব্যবহারকারী পাওয়া যায়নি');await openChat(el.dataset.conv,p)}
+   catch(e){alertBox('userError',e.message||String(e))}
   }));
+  $('recentList').querySelectorAll('[data-view-profile]').forEach(el=>el.addEventListener('click',()=>openUserProfile(el.dataset.viewProfile)));
   return rows;
  }catch(e){
-  $('recentList').innerHTML='';
-  $('recentEmpty').classList.remove('hidden');
-  $('recentEmpty').textContent='চ্যাট তালিকা লোড হয়নি: '+e.message;
-  return [];
+  $('recentList').innerHTML='';$('recentEmpty').classList.remove('hidden');
+  $('recentEmpty').textContent='চ্যাট তালিকা লোড হয়নি: '+(e.message||String(e));return [];
  }
 }
 function connectRecentRealtime(){
@@ -201,7 +345,7 @@ function connectRecentRealtime(){
   .on('postgres_changes',{event:'*',schema:'public',table:'conversation_members',filter:'user_id=eq.'+me.id},()=>loadRecentChats())
   .subscribe()
 }
-async function openChat(convId,peer){if(!convId||!peer)throw new Error('চ্যাটের তথ্য অসম্পূর্ণ');if(msgChannel){try{await supa.removeChannel(msgChannel)}catch{}}activeChat=convId;activePeer=peer;clearMessageSelection();clearPendingImage();knownMsgs.clear();chatHistoryPushed=false;showPanel('chatPanel');$('headerSub').textContent='ব্যক্তিগত চ্যাট';$('chatName').textContent=peer.display_name||peer.username||'User';$('chatAvatar').textContent=(peer.display_name||peer.username||'?').slice(0,1).toUpperCase();$('chatStatus').textContent=peer.is_online?'অনলাইন':'@'+(peer.username||'');setConn('চ্যাট সংযুক্ত',true);pushChatHistory(convId);await loadMessages();await connectMessageRealtime();}
+async function openChat(convId,peer){if(!convId||!peer)throw new Error('চ্যাটের তথ্য অসম্পূর্ণ');if(msgChannel){try{await supa.removeChannel(msgChannel)}catch{}}activeChat=convId;activePeer=peer;clearMessageSelection();clearPendingImage();knownMsgs.clear();chatHistoryPushed=false;showPanel('chatPanel');$('headerSub').textContent='ব্যক্তিগত চ্যাট';$('chatName').textContent=peer.display_name||peer.username||'User';$('chatAvatar').innerHTML=avatarMarkup(peer.avatar_url,peer.display_name||peer.username||'?');$('chatStatus').textContent=peer.is_online?'অনলাইন':'@'+(peer.username||'');setConn('চ্যাট সংযুক্ত',true);pushChatHistory(convId);await loadMessages();await connectMessageRealtime();}
 function pushChatHistory(convId){if(chatHistoryPushed)return;try{history.pushState({studyChatOpen:true,conversationId:convId},'',location.href);chatHistoryPushed=true}catch{chatHistoryPushed=false}}
 async function closeChatView(){if(closingChat)return;closingChat=true;clearMessageSelection();if(realtimeRetryTimer){clearTimeout(realtimeRetryTimer);realtimeRetryTimer=null}if(msgChannel){const ch=msgChannel;msgChannel=null;try{await supa.removeChannel(ch)}catch{}}activeChat=null;activePeer=null;knownMsgs.clear();subscribed=false;chatHistoryPushed=false;showPanel('usersPanel');$('headerSub').textContent='নাম দিয়ে ব্যবহারকারী খুঁজুন';setConn('অনলাইন',true);try{await loadRecentChats()}catch{}closingChat=false}
 async function goBackToRecentChats(){if(!activeChat){showPanel('usersPanel');return}if(chatHistoryPushed){try{history.back();setTimeout(()=>{if(activeChat&&chatHistoryPushed)void closeChatView()},300);return}catch{}}await closeChatView()}
@@ -480,7 +624,7 @@ async function deleteForEveryone(){
  finally{$('deleteSelectedBtn').disabled=false}
 }
 
-$('enterBtn').addEventListener('click',enter);$('searchInput').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(searchUsers,250)});$('imagePickBtn').addEventListener('click',()=> $('imageFileInput').click());$('imageFileInput').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(file)chooseChatImage(file)});$('removePendingImageBtn').addEventListener('click',clearPendingImage);$('messages').addEventListener('click',e=>{const button=e.target&&e.target.closest?e.target.closest('[data-download-image]'):null;if(button){e.preventDefault();e.stopPropagation();downloadChatImage(button.dataset.downloadImage);return}const image=e.target&&e.target.closest?e.target.closest('[data-open-image]'):null;if(image){e.preventDefault();e.stopPropagation();openImageViewer(image.dataset.openImage)}});$('viewerDownloadBtn').addEventListener('click',()=>{const id=$('viewerDownloadBtn').dataset.downloadImage;if(id)downloadChatImage(id)});$('closeImageViewerBtn').addEventListener('click',closeImageViewer);$('imageViewer').addEventListener('click',e=>{if(e.target===$('imageViewer'))closeImageViewer()});$('sendForm').addEventListener('submit',sendMessage);$('backBtn').addEventListener('click',goBackToRecentChats);$('recentRefreshBtn').addEventListener('click',loadRecentChats);$('refreshBtn').addEventListener('click',()=>loadMessages().catch(e=>setChatHint(e.message)));$('deleteSelectedBtn').addEventListener('click',()=>deleteForEveryone());$('cancelSelectionBtn').addEventListener('click',clearMessageSelection);$('myProfileBtn').addEventListener('click',openMyProfile);$('profileBackBtn').addEventListener('click',()=>{showPanel('usersPanel');$('headerSub').textContent=(profile?.display_name||'')+' · @'+(profile?.username||'')});$('profileEditForm').addEventListener('submit',saveMyProfile);$('logoutBtn').addEventListener('click',async()=>{if(!confirm('এই ডিভাইস থেকে বের হবে? guest account অন্য ফোনে restore করা যাবে না।'))return;try{await setOnline(false);if(heartbeat)clearInterval(heartbeat);if(msgChannel)await supa.removeChannel(msgChannel);if(profileChannel)await supa.removeChannel(profileChannel);if(recentChannel)await supa.removeChannel(recentChannel);await supa.auth.signOut();me=null;profile=null;showPanel('authPanel');setConn('অফলাইন')}catch(e){alertBox('userError',e.message)}});window.addEventListener('online',()=>{if(activeChat&&!subscribed)connectMessageRealtime().catch(()=>{})});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&activeChat&&!subscribed)connectMessageRealtime().catch(()=>{})});window.addEventListener('beforeunload',()=>{if(heartbeat)clearInterval(heartbeat)});
+$('enterBtn').addEventListener('click',enter);$('searchInput').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(searchUsers,250)});$('imagePickBtn').addEventListener('click',()=> $('imageFileInput').click());$('imageFileInput').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(file)chooseChatImage(file)});$('removePendingImageBtn').addEventListener('click',clearPendingImage);$('messages').addEventListener('click',e=>{const button=e.target&&e.target.closest?e.target.closest('[data-download-image]'):null;if(button){e.preventDefault();e.stopPropagation();downloadChatImage(button.dataset.downloadImage);return}const image=e.target&&e.target.closest?e.target.closest('[data-open-image]'):null;if(image){e.preventDefault();e.stopPropagation();openImageViewer(image.dataset.openImage)}});$('viewerDownloadBtn').addEventListener('click',()=>{const id=$('viewerDownloadBtn').dataset.downloadImage;if(id)downloadChatImage(id)});$('closeImageViewerBtn').addEventListener('click',closeImageViewer);$('imageViewer').addEventListener('click',e=>{if(e.target===$('imageViewer'))closeImageViewer()});$('sendForm').addEventListener('submit',sendMessage);$('backBtn').addEventListener('click',goBackToRecentChats);$('recentRefreshBtn').addEventListener('click',loadRecentChats);$('refreshBtn').addEventListener('click',()=>loadMessages().catch(e=>setChatHint(e.message)));$('deleteSelectedBtn').addEventListener('click',()=>deleteForEveryone());$('cancelSelectionBtn').addEventListener('click',clearMessageSelection);$('myProfileBtn').addEventListener('click',openMyProfile);$('headerProfileBtn').addEventListener('click',openMyProfile);$('chooseAvatarBtn').addEventListener('click',()=> $('avatarFileInput').click());$('avatarFileInput').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(file)chooseProfileAvatar(file)});$('removeAvatarBtn').addEventListener('click',removeProfileAvatar);$('profileMessageBtn').addEventListener('click',()=>{if(viewedProfileId&&viewedProfileId!==me?.id)void openDirectChat(viewedProfileId)});$('profileBackBtn').addEventListener('click',()=>{showPanel('usersPanel');$('headerSub').textContent=(profile?.display_name||'')+' · @'+(profile?.username||'')});$('profileEditForm').addEventListener('submit',saveMyProfile);$('logoutBtn').addEventListener('click',async()=>{if(!confirm('এই ডিভাইস থেকে বের হবে? guest account অন্য ফোনে restore করা যাবে না।'))return;try{await setOnline(false);if(heartbeat)clearInterval(heartbeat);if(msgChannel)await supa.removeChannel(msgChannel);if(profileChannel)await supa.removeChannel(profileChannel);if(recentChannel)await supa.removeChannel(recentChannel);await supa.auth.signOut();me=null;profile=null;showPanel('authPanel');setConn('অফলাইন')}catch(e){alertBox('userError',e.message)}});window.addEventListener('online',()=>{if(activeChat&&!subscribed)connectMessageRealtime().catch(()=>{})});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&activeChat&&!subscribed)connectMessageRealtime().catch(()=>{})});window.addEventListener('beforeunload',()=>{if(heartbeat)clearInterval(heartbeat)});
 supa.auth.getSession().then(async({data,error})=>{if(error){setConn('Auth error');return}if(data.session){me=data.session.user;try{profile=await getProfile(me.id);if(profile){$('displayName').value=profile.display_name||'';$('username').value=profile.username||'';await startApp()}else showPanel('authPanel')}catch(e){showPanel('authPanel');alertBox('authError','Profile load error: '+e.message)}}else{try{const d=JSON.parse(localStorage.getItem('study-chat-profile-draft')||'{}');$('displayName').value=d.display||'';$('username').value=d.username||''}catch{}setConn('লগইন করুন')}});
 })();
 </script>

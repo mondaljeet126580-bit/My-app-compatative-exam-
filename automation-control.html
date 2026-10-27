@@ -50,6 +50,15 @@ function renderState(enabled){
  $('enableBtn').disabled=busy||!canControl||enabled;
  $('disableBtn').disabled=busy||!canControl||!enabled;
 }
+function renderUnknown(title,description){
+ currentEnabled=false;
+ $('stateBadge').className='state';
+ $('stateBadgeText').textContent='UNKNOWN';
+ $('stateTitle').textContent=title;
+ $('stateDescription').textContent=description;
+ $('enableBtn').disabled=true;
+ $('disableBtn').disabled=true;
+}
 async function refresh(){
  busy=true;$('refreshBtn').disabled=true;$('enableBtn').disabled=true;$('disableBtn').disabled=true;
  feedback('সার্ভার যাচাই হচ্ছে…');
@@ -57,9 +66,7 @@ async function refresh(){
   const {data:sessionData,error:sessionError}=await supa.auth.getSession();
   if(sessionError)throw sessionError;
   if(!sessionData?.session?.access_token){
-   canControl=false;renderState(false);
-   $('stateTitle').textContent='লগইন প্রয়োজন';
-   $('stateDescription').textContent='একই ব্রাউজারে ChatLink খুলে Admin account দিয়ে লগইন করো, তারপর এই পেজে ফিরে এসো।';
+   canControl=false;renderUnknown('লগইন প্রয়োজন','একই ব্রাউজারে ChatLink খুলে Admin account দিয়ে লগইন করো, তারপর এই পেজে ফিরে এসো।');
    feedback('কোনো পরিবর্তন করা হয়নি। লগইন সেশন পাওয়া যায়নি।','error');
    return;
   }
@@ -68,9 +75,7 @@ async function refresh(){
   canControl=true;renderState(data?.enabled===true);
   feedback('স্ট্যাটাস সফলভাবে পড়া হয়েছে।','ok');
  }catch(e){
-  canControl=false;renderState(false);
-  $('stateTitle').textContent='স্ট্যাটাস যাচাই করা যায়নি';
-  $('stateDescription').textContent='নিরাপত্তার জন্য Automation API বন্ধ অবস্থায় থাকবে।';
+  canControl=false;renderUnknown('স্ট্যাটাস যাচাই করা যায়নি','স্ট্যাটাস যাচাই না হওয়া পর্যন্ত এই পেজ থেকে কোনো পরিবর্তন করা যাবে না। সার্ভারও অনিশ্চিত অবস্থায় API request বন্ধ রাখে।');
   feedback((e?.message||String(e))+'\nAdmin allowlist এবং লগইন সেশন যাচাই করো।','error');
  }finally{
   busy=false;$('refreshBtn').disabled=false;

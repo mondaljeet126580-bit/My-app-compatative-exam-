@@ -228,7 +228,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
 .appBootLoaderCard small{font-size:13px;color:#8fa1aa}
 </style>
 </head>
-<body><div id="maintenanceGate" class="maintenanceGate hidden" role="status" aria-live="polite"><section class="maintenanceGateCard"><div class="maintenanceGateIcon">🛠️</div><h1>on maintenance</h1><p id="maintenanceGateMessage">Checking app status…</p><small>ChatLink · Please try again shortly</small><button id="maintenanceRetry" type="button">Check again</button></section></div><div id="appBootLoader" class="appBootLoader" role="status" aria-live="polite"><div class="appBootLoaderCard"><div class="chatLoadingDots" aria-hidden="true"><span></span><span></span><span></span></div><strong>Loading ChatLink</strong><small>Loading your chats…</small></div></div>
+<body><div id="maintenanceGate" class="maintenanceGate hidden" role="status" aria-live="polite"><section class="maintenanceGateCard"><div class="maintenanceGateIcon">🛠️</div><h1>Maintenance in progress</h1><p id="maintenanceGateMessage">Checking app status…</p><small>ChatLink · Please try again shortly</small><button id="maintenanceRetry" type="button">Check again</button></section></div><div id="appBootLoader" class="appBootLoader" role="status" aria-live="polite"><div class="appBootLoaderCard"><div class="chatLoadingDots" aria-hidden="true"><span></span><span></span><span></span></div><strong>Loading ChatLink</strong><small>Loading your chats…</small></div></div>
 <main class="app" id="chatAppShell" style="visibility:hidden">
 <header class="chatLinkHeader"><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">Private messaging</small></div><div class="headerActions"><button type="button" id="headerNewChatBtn" class="headerActionBtn" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v6"/><path d="m16 18 5-5 2 2-5 5-3 1z"/></svg></button><button type="button" id="headerMoreBtn" class="headerActionBtn" aria-label="More options" title="More options" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button></div><span class="badge hidden" id="connection">Connecting…</span></header><div id="headerMenu" class="headerMenu hidden" role="menu"><button type="button" id="menuProfileBtn" role="menuitem">👤 My profile</button><button type="button" id="menuRefreshBtn" role="menuitem">↻ Refresh chats</button><button type="button" id="menuLogoutBtn" role="menuitem">⎋ Log out from this device</button><div class="menuBuildTag">ChatLink build · 2026.10.26.3</div></div>
 <section class="panel" id="authPanel"><h2 class="sectionTitle">Get started with ChatLink</h2><div class="note">Create a display name and username. Others can search for your name to start a private chat with you. Your guest session is saved on this device when you return to the same browser.</div><label for="displayName">Your name (e.g. Jeet Mondal)</label><input id="displayName" maxlength="40" placeholder="Enter your name"><label for="username">Unique username (e.g. jeet123)</label><input id="username" maxlength="30" autocapitalize="none" placeholder="a-z, 0-9, underscore"><button id="enterBtn" style="width:100%;margin-top:14px">Start chatting</button><div class="alert hidden" id="authError"></div><div class="footerHint">Note: A name alone does not verify identity. Verified login is needed to securely use the same account on another device.</div></section>
@@ -366,7 +366,7 @@ async function refreshMaintenanceGate(){
  try{
   const {data,error}=await supa.rpc('get_app_maintenance');
   if(error)throw error;
-  const state=data&&typeof data==='object'?data:{enabled:false,message:'on maintenance'};
+  const state=data&&typeof data==='object'?data:{enabled:false,message:'Maintenance is in progress.'};
   maintenanceIsOn=state.enabled===true;
   if(maintenanceIsOn){
    $('maintenanceGateMessage').textContent=String(state.message||'Maintenance is in progress.');
@@ -970,7 +970,7 @@ function chatLoadingMarkup(label='Loading chat…'){
  return '<div class="chatLoadingState" role="status" aria-live="polite"><div class="chatLoadingDots" aria-hidden="true"><span></span><span></span><span></span></div><div class="chatLoadingText">'+esc(label)+'</div></div>';
 }
 function chatLoadErrorMarkup(message){
- return '<div class="chatLoadError"><div class="chatLoadingIcon">⌁</div><strong>message load failed</strong><p>'+esc(message||'Check your internet connection and try again.')+'</p><button type="button" id="retryChatLoadBtn">again try please</button></div>';
+ return '<div class="chatLoadError"><div class="chatLoadingIcon">⌁</div><strong>message load failed</strong><p>'+esc(message||'Check your internet connection and try again.')+'</p><button type="button" id="retryChatLoadBtn">Try again</button></div>';
 }
 async function openChat(convId,peer){
  if(!convId||!peer)throw new Error('Incomplete chat information');

@@ -212,7 +212,7 @@ body{background:#0b141a;color:#e9edef}
 <section class="panel hidden" id="apiPanel">
  <div class="settingsHeader"><button type="button" class="profileBack" id="apiBackBtn" aria-label="More-এ ফিরে যাও">←</button><div><h1>Automation API</h1><p>অন্য app, script বা automation tool থেকে ChatLink চালাও</p></div></div>
  <div id="automationApiLockedContent" class="automationApiLockedContent" inert aria-hidden="true">
- <div class="apiNotice"><strong>এটি আসল Automation API</strong><p>Supabase-এর public key শুধু connection/gateway-এর জন্য। বাইরের automation চালাতে নিচে আলাদা ChatLink Automation Key বানাতে হবে। Key-এর পূর্ণ মান একবারই দেখানো হবে; ডেটাবেজে শুধু hash থাকবে।</p></div><div class="apiNotice"><strong>Automation এখন ডিফল্টভাবে বন্ধ</strong><p>সাধারণ ChatLink ব্যবহার চালু থাকবে। অনুমোদিত Admin account দিয়ে পরে চালু করতে <a href="automation-control.html" style="color:#8ee8ce;text-decoration:underline">Automation Control</a> খোলো।</p></div>
+ <div class="apiNotice"><strong>এটি আসল Automation API</strong><p>Supabase-এর public key শুধু connection/gateway-এর জন্য। বাইরের automation চালাতে নিচে আলাদা ChatLink Automation Key বানাতে হবে। Key-এর পূর্ণ মান একবারই দেখানো হবে; ডেটাবেজে শুধু hash থাকবে।</p></div><div class="apiNotice"><strong>Automation API বর্তমানে বন্ধ</strong><p>এই ফিচারটি প্রকাশের আগে সাময়িকভাবে নিষ্ক্রিয় রাখা হয়েছে।</p></div>
  <label for="apiEndpoint">Automation endpoint</label><div class="apiValueRow"><input id="apiEndpoint" type="text" readonly autocomplete="off"><button id="copyApiEndpointBtn" type="button" class="apiCopyBtn">Copy</button></div>
  <label for="apiGatewayKey">Gateway publishable key (public)</label><div class="apiValueRow"><input id="apiGatewayKey" type="password" readonly autocomplete="off"><button id="toggleApiGatewayKeyBtn" type="button" class="apiCopyBtn">Show</button><button id="copyApiGatewayKeyBtn" type="button" class="apiCopyBtn">Copy</button></div>
  <div class="apiHint">এই publishable key একা তোমার অ্যাপের নিয়ন্ত্রণ দেয় না। Automation permission নির্ধারণ করে নিচের আলাদা ChatLink key। Secret/service_role key কখনও browser-এ দেওয়া হবে না।</div>
@@ -266,7 +266,7 @@ Content-Type: application/json</code></pre>
    </div>
   </div>
  </div>
-</section>><section class="panel hidden" id="profilePanel">
+</section><section class="panel hidden" id="profilePanel">
  <div class="profileTopbar"><button type="button" class="profileBack" id="profileBackBtn" aria-label="ফিরে যাও">←</button><div><strong>Profile</strong><small>ChatLink account</small></div></div>
  <div class="profileHero">
   <div class="profileAvatarWrap"><img id="profileAvatarImage" class="profileAvatarImage hidden" alt="প্রোফাইল ছবি"><div id="profileAvatarInitial" class="profileAvatarInitial">C</div><span class="dpCameraBadge" id="dpCameraBadge">📷</span></div>

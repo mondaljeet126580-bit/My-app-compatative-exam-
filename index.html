@@ -475,7 +475,7 @@ const loadSupabaseScript = src => new Promise(resolve=>{
 const supabaseCdnCandidates=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js','https://unpkg.com/@supabase/supabase-js@2.57.0/dist/umd/supabase.js','https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0','https://unpkg.com/@supabase/supabase-js@2.118.0'];let libraryLoaded=false;for(const src of supabaseCdnCandidates){if(await loadSupabaseScript(src)){libraryLoaded=true;break}}
 if(!libraryLoaded){document.body.innerHTML='<main style="font:16px system-ui;padding:20px"><h2>Library could not be loaded</h2><p>The Supabase JavaScript library could not be loaded from the CDN. Check your internet connection and browser.</p><p><b>URLs tried:</b></p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">'+supabaseCdnCandidates.join('\n')+'</pre><p>This message is not from the database; the browser could not download the library.</p></main>';return}
 const SUPABASE_URL='https://mtitrkspgoqaqdeiluud.supabase.co';const SUPABASE_KEY='sb_publishable_MNm-dTK29hrtVkiyLRkLIw_qbtbxJu_';const AUTOMATION_API_URL=SUPABASE_URL+'/functions/v1/chatlink-automation';const ACCOUNT_AUTH_URL=SUPABASE_URL+'/functions/v1/chatlink-account-auth';const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const initialSessionPromise=supa.auth.getSession();
+let initialSessionPromise=null;
 const $=id=>document.getElementById(id);
 const maintenanceGate=$('maintenanceGate'),chatAppShell=$('chatAppShell');
 let maintenanceIsOn=false,maintenanceCheckBusy=false,appBootReady=false;
@@ -496,10 +496,23 @@ async function refreshMaintenanceGate(){
  maintenanceCheckBusy=true;
  try{
   let timeoutId;
+  const controller=new AbortController();
   const timeout=new Promise((_,reject)=>{
-   timeoutId=setTimeout(()=>reject(new Error('Maintenance status check timed out.')),5000);
+   timeoutId=setTimeout(()=>{
+    controller.abort();
+    reject(new Error('Maintenance status check timed out.'));
+   },4000);
   });
-  const {data,error}=await Promise.race([supa.rpc('get_app_maintenance'),timeout]);
+  const maintenanceRequest=fetch(SUPABASE_URL+'/rest/v1/rpc/get_app_maintenance',{
+   method:'POST',
+   headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},
+   body:'{}',
+   signal:controller.signal
+  }).then(async response=>{
+   if(!response.ok)throw new Error('Maintenance status request failed ('+response.status+').');
+   return {data:await response.json(),error:null};
+  }).catch(error=>({data:null,error}));
+  const {data,error}=await Promise.race([maintenanceRequest,timeout]);
   if(error)throw error;
   const state=data&&typeof data==='object'?data:{enabled:false,message:'Maintenance is in progress.'};
   maintenanceIsOn=state.enabled===true;
@@ -538,7 +551,7 @@ $('maintenanceRetry').addEventListener('click',()=>void checkMaintenanceTransiti
 setInterval(()=>{if(!document.hidden)void checkMaintenanceTransition()},3000);
 window.addEventListener('focus',()=>{if(!document.hidden)void checkMaintenanceTransition()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)void checkMaintenanceTransition()});
-if(maintenanceInitiallyOn)return;let me=null,profile=null,viewedProfileId=null,pendingAvatarFile=null,avatarPreviewUrl=null,removeAvatarRequested=false,currentChatFilter="all",activeChat=null,activePeer=null,recentChatsCache=[],profileReturnPanel="usersPanel",currentPanel="authPanel",chatStickToBottom=true,avatarCropImage=null,avatarCropObjectUrl=null,avatarCropZoom=1,avatarCropOffsetX=0,avatarCropOffsetY=0,avatarCropRotation=0,avatarCropDrag=null,avatarCropPointers=new Map(),avatarCropPinch=null,profilePhotoScale=1,profilePhotoX=0,profilePhotoY=0,profilePhotoPointers=new Map(),profilePhotoGesture=null,profilePhotoLastTap=null,profilePhotoSkipPan=new Set(),profilePhotoPreviousOverflow="",chatResizeObserver=null,chatMutationObserver=null,msgChannel=null,profileChannel=null,recentChannel=null,recentRefreshTimer=null,recentRealtimeRetryTimer=null,recentRealtimeRetryCount=0,recentPollTimer=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
+if(maintenanceInitiallyOn)return;initialSessionPromise=supa.auth.getSession();let me=null,profile=null,viewedProfileId=null,pendingAvatarFile=null,avatarPreviewUrl=null,removeAvatarRequested=false,currentChatFilter="all",activeChat=null,activePeer=null,recentChatsCache=[],profileReturnPanel="usersPanel",currentPanel="authPanel",chatStickToBottom=true,avatarCropImage=null,avatarCropObjectUrl=null,avatarCropZoom=1,avatarCropOffsetX=0,avatarCropOffsetY=0,avatarCropRotation=0,avatarCropDrag=null,avatarCropPointers=new Map(),avatarCropPinch=null,profilePhotoScale=1,profilePhotoX=0,profilePhotoY=0,profilePhotoPointers=new Map(),profilePhotoGesture=null,profilePhotoLastTap=null,profilePhotoSkipPan=new Set(),profilePhotoPreviousOverflow="",chatResizeObserver=null,chatMutationObserver=null,msgChannel=null,profileChannel=null,recentChannel=null,recentRefreshTimer=null,recentRealtimeRetryTimer=null,recentRealtimeRetryCount=0,recentPollTimer=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
 function setConn(s,ok=false){$('connection').textContent=s;$('connection').style.background=ok?'#ffffff30':'#ffffff20'}function alertBox(id,s){$(id).textContent=s;$(id).classList.remove('hidden')}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function showPanel(id){
  currentPanel=id;
  for(const p of ['authPanel','loginPanel','setupPanel','blockedPanel','usersPanel','morePanel','schedulePanel','apiPanel','profilePanel','chatPanel'])$(p).classList.toggle('hidden',p!==id);
@@ -1042,10 +1055,17 @@ let blockedAccountState=null,accountGuardTimer=null,accountGuardBusy=false;
 async function callAccountAuth(action,payload={},accessToken=''){
  const headers={'Content-Type':'application/json','apikey':SUPABASE_KEY};
  if(accessToken)headers.Authorization='Bearer '+accessToken;
- const response=await fetch(ACCOUNT_AUTH_URL,{method:'POST',headers,body:JSON.stringify({action,...payload})});
- let result={};try{result=await response.json()}catch{}
- if(!response.ok&&!result.status)throw new Error(result.message||result.error||'Account request failed.');
- return result;
+ const controller=new AbortController();
+ const timeoutId=setTimeout(()=>controller.abort(),6500);
+ try{
+  const response=await fetch(ACCOUNT_AUTH_URL,{method:'POST',headers,body:JSON.stringify({action,...payload}),signal:controller.signal});
+  let result={};try{result=await response.json()}catch{}
+  if(!response.ok&&!result.status)throw new Error(result.message||result.error||'Account request failed.');
+  return result;
+ }catch(error){
+  if(controller.signal.aborted)throw new Error('Account status check timed out.');
+  throw error;
+ }finally{clearTimeout(timeoutId)}
 }
 function setSetupValues(record){
  $('setupDisplayName').value=record?.display_name&&record.display_name!=='New user'?record.display_name:'';
@@ -1082,7 +1102,22 @@ async function showAccountBlocked(state){
 }
 async function routeSignedInSession(session){
  if(!session?.access_token||!session?.user){showPanel('authPanel');return}
- const state=await callAccountAuth('status',{},session.access_token);
+ let state;
+ try{
+  state=await callAccountAuth('status',{},session.access_token);
+ }catch(statusError){
+  console.warn('Account status service unavailable; checking own profile via RLS',statusError?.message||statusError);
+  try{
+   const {data:profileData,error:profileError}=await supa.from('profiles').select('*').eq('id',session.user.id).maybeSingle();
+   if(profileError)throw profileError;
+   if(!profileData)throw statusError;
+   state={status:'ok',profile:profileData,googleLinked:hasGoogleIdentity(session.user)};
+  }catch(profileFallbackError){
+   showPanel('authPanel');
+   alertBox('authError','Account verification is unavailable right now. Check your connection and retry. '+(profileFallbackError?.message||''));
+   return;
+  }
+ }
  if(state.status==='banned'||state.status==='deleted'){await showAccountBlocked(state);return}
  if(state.status==='unauthenticated'){
   await supa.auth.signOut({scope:'local'}).catch(()=>{});
@@ -1100,9 +1135,11 @@ async function routeSignedInSession(session){
  }
  $('displayName').value=profile.display_name||'';
  $('username').value=profile.username||'';
- if(me.is_anonymous&&!state.googleLinked&&profile.username&&profile.display_name){await startApp();return}
- if(!profile.password_login_enabled||!profile.username||!profile.display_name){setSetupValues(profile);showPanel('setupPanel');return}
- await startApp();
+ const hasExistingProfile=Boolean(profile.username&&profile.display_name&&profile.display_name!=='New user');
+ if(hasExistingProfile){await startApp();return}
+ setSetupValues(profile);
+ showPanel('setupPanel');
+ return;
 }
 async function loginWithUsernamePassword(event){
  event?.preventDefault();
@@ -1293,6 +1330,7 @@ async function startApp(){
  clearTimeout(bootSafetyTimer);
  if(!maintenanceIsOn)chatAppShell.style.visibility='visible';
  $('appBootLoader').classList.add('hidden');
+ $('authError').classList.add('hidden');
  $('headerSub').textContent=(profile?.display_name||'')+' · @'+(profile?.username||'');
  refreshHeaderProfileButton();setConn('Connecting…',false);
  // Presence and chat history load in the background so neither can block the first screen.

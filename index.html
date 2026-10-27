@@ -495,9 +495,9 @@ const bootSafetyTimer=setTimeout(()=>{
 async function refreshMaintenanceGate(){
  if(maintenanceCheckBusy)return maintenanceIsOn;
  maintenanceCheckBusy=true;
+ let timeoutId=null;
+ const controller=new AbortController();
  try{
-  let timeoutId;
-  const controller=new AbortController();
   const timeout=new Promise((_,reject)=>{
    timeoutId=setTimeout(()=>{
     controller.abort();

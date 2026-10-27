@@ -717,11 +717,6 @@ async function startApp(){
  const recent=await loadRecentChats();
  for(const chat of recent){if(chat.conversation_id){void(async()=>{try{const {error}=await callRpc('mark_direct_messages_delivered',{p_conversation_id:chat.conversation_id});if(error)console.warn('delivery sync',error.message)}catch(e){console.warn('delivery sync',e.message)}})()}}
  connectRecentRealtime();
- if(pendingNativeFcmToken)void registerNativeFcmToken(pendingNativeFcmToken);
- void retryPendingPushMessages();
- let routeChat=pendingNotificationConversationId;
- try{routeChat=routeChat||new URL(location.href).searchParams.get('chat')||''}catch{}
- if(routeChat)void openChatFromNotification(routeChat);
 }
 function updateChatFilterUi(){
  const map={all:'filterAllBtn',unread:'filterUnreadBtn',new:'filterNewChatBtn'};
@@ -764,112 +759,12 @@ async function searchUsers(){
  }catch(e){$('searchHint').textContent='';alertBox('userError',e.message||String(e))}
 }
 async function openDirectChat(id){try{setConn('চ্যাট খুলছে…');const {data,error}=await callRpc('get_or_create_direct_chat',{target_user:id});if(error)throw error;const convId=typeof data==='string'?data:data?.id||data?.conversation_id;if(!convId)throw new Error('চ্যাট ID পাওয়া যায়নি');const peer=await getProfile(id);if(!peer)throw new Error('ব্যবহারকারী পাওয়া যায়নি');clearSearchUi();await openChat(convId,peer)}catch(e){alertBox('userError','চ্যাট খোলা যায়নি: '+e.message);setConn('ত্রুটি')}}
-// Real notification integration hooks. The Android wrapper must provide the native FCM token.
-let pendingNativeFcmToken = '';
-let pendingNotificationConversationId = '';
-let lastNativePushToken = '';
-let lastNativePushUserId = '';
-
-function chatLinkDeviceId(){
- const key='chatlink-push-device-id';
- try{
-  let value=localStorage.getItem(key)||'';
-  if(!value){
-   value=(window.crypto&&typeof window.crypto.randomUUID==='function')
-    ?window.crypto.randomUUID()
-    :'cl-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
-   localStorage.setItem(key,value);
-  }
-  return value;
- }catch{
-  return 'cl-'+String(me?.id||'device')+'-'+String(navigator.userAgent||'').slice(0,32);
- }
-}
-async function setAppUnreadBadge(count){
+// Keep the in-app unread count display without native notification integration.
+function updateUnreadChatCount(count){
  const unread=Math.max(0,Math.floor(Number(count)||0));
  const countNode=$('unreadChatCount');
  if(countNode)countNode.textContent=String(unread);
- try{
-  if(unread>0&&typeof navigator.setAppBadge==='function')await navigator.setAppBadge(unread);
-  else if(unread===0&&typeof navigator.clearAppBadge==='function')await navigator.clearAppBadge();
- }catch(e){console.debug('Web App Badge is not available in this container',e?.message||e)}
- // Optional native bridge. WebIntoApp must expose this function for exact native badge control.
- try{
-  if(window.ChatLinkNative&&typeof window.ChatLinkNative.setAppBadgeCount==='function'){
-   window.ChatLinkNative.setAppBadgeCount(unread);
-  }
- }catch(e){console.debug('Native badge bridge is unavailable',e?.message||e)}
 }
-async function registerNativeFcmToken(token){
- const value=String(token||'').trim();
- if(!me||value.length<20||!supa.functions?.invoke)return;
- if(lastNativePushToken===value&&lastNativePushUserId===me.id)return;
- try{
-  const {data,error}=await supa.functions.invoke('chat-push',{body:{
-   action:'register_token',token:value,device_id:chatLinkDeviceId(),platform:'android'
-  }});
-  if(error)throw error;
-  if(!data?.ok)throw new Error(data?.error||'FCM token registration failed');
-  lastNativePushToken=value;lastNativePushUserId=me.id;
-  console.info('ChatLink push registration status',{registered:!!data.registered,pushConfigured:!!data.push_configured});
- }catch(e){
-  lastNativePushToken='';lastNativePushUserId='';
-  console.warn('Native FCM token was not registered. Confirm the WebIntoApp native bridge and Supabase FCM secret.',e?.message||e);
- }
-}
-async function retryPendingPushMessages(){
- if(!me||!navigator.onLine||!supa.functions?.invoke)return;
- try{
-  const {data,error}=await supa.functions.invoke('chat-push',{body:{action:'retry_pending'}});
-  if(error)throw error;
-  if(data?.ok&&Number(data.attempted)>0)console.info('Pending push attempts:',data.attempted);
- }catch(e){
-  // No local/demo notification is generated here. The database remains the source of truth.
-  console.debug('Pending push retry was not available',e?.message||e);
- }
-}
-async function openChatFromNotification(conversationId){
- const id=String(conversationId||'').trim();
- if(!id)return;
- if(!me){pendingNotificationConversationId=id;return}
- try{
-  const rows=await loadRecentChats();
-  const target=(rows||[]).find(row=>String(row.conversation_id)===id);
-  if(!target||!target.peer_id){console.warn('Notification chat is not in the signed-in user chat list');return}
-  const peer=await getProfile(target.peer_id);
-  if(!peer)return;
-  pendingNotificationConversationId='';
-  await openChat(id,peer);
-  try{
-   const url=new URL(location.href);url.searchParams.delete('chat');
-   history.replaceState(history.state,'',url.pathname+url.search+url.hash);
-  }catch{}
- }catch(e){console.warn('Could not open notification destination',e?.message||e)}
-}
-function handleNativeNotificationOpen(detail){
- let conversationId=detail?.conversation_id||detail?.conversationId||'';
- const possibleUrl=detail?.click_url||detail?.url||'';
- if(!conversationId&&possibleUrl){
-  try{conversationId=new URL(String(possibleUrl),location.href).searchParams.get('chat')||''}catch{}
- }
- if(!conversationId){
-  try{conversationId=new URL(location.href).searchParams.get('chat')||''}catch{}
- }
- if(!conversationId)return;
- pendingNotificationConversationId=String(conversationId);
- if(me)void openChatFromNotification(pendingNotificationConversationId);
-}
-// Contract for a native WebView wrapper: dispatch chatlink:fcm-token and
-// chatlink:notification-opened events, or call these two methods directly.
-window.ChatLinkPushBridge=window.ChatLinkPushBridge||{};
-window.ChatLinkPushBridge.registerFcmToken=(token)=>{pendingNativeFcmToken=String(token||'');return registerNativeFcmToken(pendingNativeFcmToken)};
-window.ChatLinkPushBridge.handleNotificationOpen=(data)=>handleNativeNotificationOpen(data||{});
-window.addEventListener('chatlink:fcm-token',event=>{
- pendingNativeFcmToken=String(event?.detail?.token||event?.detail||'');
- if(pendingNativeFcmToken&&me)void registerNativeFcmToken(pendingNativeFcmToken);
-});
-window.addEventListener('chatlink:notification-opened',event=>handleNativeNotificationOpen(event?.detail||{}));
-
 async function syncAfterNetworkRecovery(){
  if(!me||!navigator.onLine)return;
  try{
@@ -882,8 +777,6 @@ async function syncAfterNetworkRecovery(){
    }
   }
   if(activeChat&&!$('chatPanel').classList.contains('hidden'))await loadMessages();
-  if(pendingNativeFcmToken)void registerNativeFcmToken(pendingNativeFcmToken);
-  void retryPendingPushMessages();
  }catch(e){console.warn('Message sync after reconnect failed',e?.message||e)}
 }
 async function loadRecentChats(){
@@ -901,7 +794,7 @@ async function loadRecentChats(){
    return '<div class="recentRow" data-unread="'+(Number(r.unread_count)>0?'1':'0')+'"><button type="button" class="recentProfileTap" data-view-profile="'+esc(r.peer_id)+'" aria-label="'+esc(display)+'-এর প্রোফাইল"><span class="avatar">'+avatarMarkup(p.avatar_url,display)+'</span></button><button type="button" class="recentCard" data-conv="'+esc(r.conversation_id)+'" data-peer="'+esc(r.peer_id)+'"><span class="recentInfo"><span class="recentTop"><strong>'+esc(display)+'</strong><span class="recentTime">'+timeStr(r.last_created_at)+'</span></span><span class="recentPreview"><span class="previewText">'+esc(r.last_body||'নতুন চ্যাট')+'</span>'+(Number(r.unread_count)>0?'<span class="unreadBadge">'+Number(r.unread_count)+'</span>':'')+'</span></span></button></div>';
   }).join('');
   const totalUnread=rows.reduce((n,r)=>n+(Number(r.unread_count)||0),0);
-  void setAppUnreadBadge(totalUnread);
+  void updateUnreadChatCount(totalUnread);
   $('recentCountLabel').textContent=rows.length?rows.length+' চ্যাট':'';
   $('recentEmpty').classList.toggle('hidden',rows.length>0);
   applyChatFilter(currentChatFilter);

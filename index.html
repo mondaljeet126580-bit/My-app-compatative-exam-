@@ -310,7 +310,7 @@ Content-Type: application/json</code></pre>
  <div class="profileAboutCard"><div class="profileAboutHeading"><span>About</span><span id="profileAboutCount">0/139</span></div><p id="profileAboutPreview">Hey there! I am using ChatLink.</p></div><div class="profileInfoBlock"><div class="profileInfoLabel">Name</div><div id="profileInfoName" class="profileInfoValue">—</div><div class="profileInfoLabel">Username</div><div id="profileInfoUsername" class="profileInfoValue">—</div><div class="profileInfoLabel">Account created</div><div id="profileCreatedLabel" class="profileInfoValue">—</div><div class="profileInfoLabel">Account type</div><div class="profileInfoValue">ChatLink Personal</div></div>
  <form id="profileEditForm" class="profileEditBlock">
   <div class="sectionTitle">Edit my profile</div>
-  <div class="dpEditRow"><div><b>Profile photo / DP</b><small>Other ChatLink users can see this.</small></div><div class="dpButtons"><input id="avatarFileInput" class="hidden" type="file" accept="image/jpeg,image/png,image/webp"><button id="chooseAvatarBtn" class="secondary" type="button">📷 DP বদলাও</button><button id="removeAvatarBtn" class="secondary" type="button">Remove photo</button></div></div>
+  <div class="dpEditRow"><div><b>Profile photo / DP</b><small>Other ChatLink users can see this.</small></div><div class="dpButtons"><input id="avatarFileInput" class="hidden" type="file" accept="image/jpeg,image/png,image/webp"><button id="chooseAvatarBtn" class="secondary" type="button">📷 Change profile photo</button><button id="removeAvatarBtn" class="secondary" type="button">Remove photo</button></div></div>
   <div class="footerHint" id="avatarUploadHint">JPG, PNG, or WebP · Max 5 MB</div>
   <label for="profileDisplayNameInput">Your name</label><input id="profileDisplayNameInput" maxlength="40" required placeholder="Enter your name">
   <label for="profileUsernameInput">Username</label><input id="profileUsernameInput" maxlength="30" autocapitalize="none" required placeholder="username">
@@ -321,7 +321,7 @@ Content-Type: application/json</code></pre>
  </form>
  <div id="profilePublicActions" class="profileEditBlock hidden"><div class="sectionTitle">User profile</div><p class="muted">Other users can see this profile photo, name, and username.</p><button id="profileMessageBtn" type="button" style="width:100%;margin-top:8px">Send a message</button></div>
 </section>
-<section class="hidden" id="chatPanel" style="flex:1;min-height:0;display:flex;flex-direction:column"><div class="toolbar"><button class="topBack" id="backBtn" aria-label="Back to chats" title="Back to chats">←</button><div class="avatar" id="chatAvatar">?</div><div class="grow"><strong id="chatName">User</strong><div style="font-size:12px;color:var(--muted)" id="chatStatus">Connecting…</div></div><button class="danger hidden" id="deleteSelectedBtn" title="Delete for everyone">🗑 Allার জন্য</button><button class="secondary hidden" id="cancelSelectionBtn" title="Cancel">✕</button><button class="secondary" id="refreshBtn" title="Sync">↻</button></div><div class="chatBG" id="messages"></div><button type="button" id="scrollToLatestBtn" class="scrollToLatestBtn hidden" aria-label="Jump to latest message" title="Jump to latest message">↓</button><div class="footerHint" id="chatHint">Realtime Connecting…</div><div class="imagePending hidden" id="imagePending"><img id="pendingImageThumb" alt="Selected photo"><div class="imagePendingInfo"><strong id="pendingImageName">photo</strong><small id="pendingImageSize"></small></div><button id="removePendingImageBtn" type="button" aria-label="Remove photo">✕</button></div><input class="hidden" id="imageFileInput" type="file" accept="image/*"><form class="composer" id="sendForm"><button class="secondary imagePickBtn" id="imagePickBtn" type="button" aria-label="Choose photo" title="Send photo">📷</button><input class="grow" id="messageInput" maxlength="10000" placeholder="Type a message or photo caption…" autocomplete="off"><button id="sendBtn" type="submit" aria-label="Send">➤</button></form></section>
+<section class="hidden" id="chatPanel" style="flex:1;min-height:0;display:flex;flex-direction:column"><div class="toolbar"><button class="topBack" id="backBtn" aria-label="Back to chats" title="Back to chats">←</button><div class="avatar" id="chatAvatar">?</div><div class="grow"><strong id="chatName">User</strong><div style="font-size:12px;color:var(--muted)" id="chatStatus">Connecting…</div></div><button class="danger hidden" id="deleteSelectedBtn" title="Delete for everyone">🗑 Delete for everyone</button><button class="secondary hidden" id="cancelSelectionBtn" title="Cancel">✕</button><button class="secondary" id="refreshBtn" title="Sync">↻</button></div><div class="chatBG" id="messages"></div><button type="button" id="scrollToLatestBtn" class="scrollToLatestBtn hidden" aria-label="Jump to latest message" title="Jump to latest message">↓</button><div class="footerHint" id="chatHint">Realtime Connecting…</div><div class="imagePending hidden" id="imagePending"><img id="pendingImageThumb" alt="Selected photo"><div class="imagePendingInfo"><strong id="pendingImageName">photo</strong><small id="pendingImageSize"></small></div><button id="removePendingImageBtn" type="button" aria-label="Remove photo">✕</button></div><input class="hidden" id="imageFileInput" type="file" accept="image/*"><form class="composer" id="sendForm"><button class="secondary imagePickBtn" id="imagePickBtn" type="button" aria-label="Choose photo" title="Send photo">📷</button><input class="grow" id="messageInput" maxlength="10000" placeholder="Type a message or photo caption…" autocomplete="off"><button id="sendBtn" type="submit" aria-label="Send">➤</button></form></section>
 </main>
 <div id="profilePhotoViewer" class="profilePhotoViewer hidden" role="dialog" aria-modal="true" aria-label="View profile photo">
  <div class="profilePhotoTopbar">
@@ -334,10 +334,10 @@ Content-Type: application/json</code></pre>
  <div id="profilePhotoStage" class="profilePhotoStage" aria-label="Pinch to zoom">
   <div id="profilePhotoLoading" class="profilePhotoLoading">photo load in progress…</div>
   <img id="profilePhotoFull" class="profilePhotoFull" alt="Full-resolution profile photo" draggable="false">
-  <div id="profilePhotoError" class="profilePhotoError hidden">photo load করা not available। again try do it।</div>
+  <div id="profilePhotoError" class="profilePhotoError hidden">Photo could not be loaded. Please try again.</div>
  </div>
- <div class="profilePhotoFooter"><span>দুই আঙুলে Zoom · দুইবার ট্যাপ করলে বড় will be</span><span id="profilePhotoZoomLevel">100%</span></div>
-</div><div class="avatarCropModal hidden" id="avatarCropModal" role="dialog" aria-modal="true" aria-labelledby="avatarCropTitle"> <div class="avatarCropCard">  <div class="avatarCropHeader"><button type="button" id="avatarCropCancelTop" aria-label="Cancel">×</button><div><h2 id="avatarCropTitle">Profile photo</h2><p>photoটি remove বা বড় করে ফ্রেম ঠিক do it</p></div></div>  <div class="avatarCropStage" id="avatarCropStage"><canvas id="avatarCropCanvas" width="320" height="320" aria-label="Photo crop preview"></canvas><div class="avatarCropCircle" aria-hidden="true"></div></div>  <div class="avatarCropActions"><button type="button" class="cropIconBtn" id="avatarCropRotateBtn">↻ ঘোরাও</button><button type="button" class="cropIconBtn" id="avatarCropResetBtn">রিসেট</button></div>  <div class="avatarCropZoom"><span aria-hidden="true">−</span><input id="avatarCropZoomInput" aria-label="Photo zoom" type="range" min="1" max="3" step="0.05" value="1"><span aria-hidden="true">＋</span></div>  <p class="avatarCropHint">গোল ফ্রেমের মধ্যে DP দেখা যাবে। আঙুল দিয়ে photo টেনে your own মতো করে ঠিক do it।</p>  <div class="avatarCropFooter"><button type="button" id="avatarCropCancelBtn" class="secondary">Cancel</button><button type="button" id="avatarCropUseBtn" class="avatarCropUseBtn">Use photo</button></div>  <div id="avatarCropError" class="alert hidden"></div> </div></div>
+ <div class="profilePhotoFooter"><span>Pinch to zoom · Double tap to zoom in</span><span id="profilePhotoZoomLevel">100%</span></div>
+</div><div class="avatarCropModal hidden" id="avatarCropModal" role="dialog" aria-modal="true" aria-labelledby="avatarCropTitle"> <div class="avatarCropCard">  <div class="avatarCropHeader"><button type="button" id="avatarCropCancelTop" aria-label="Cancel">×</button><div><h2 id="avatarCropTitle">Profile photo</h2><p>Remove the photo or zoom in to adjust the frame</p></div></div>  <div class="avatarCropStage" id="avatarCropStage"><canvas id="avatarCropCanvas" width="320" height="320" aria-label="Photo crop preview"></canvas><div class="avatarCropCircle" aria-hidden="true"></div></div>  <div class="avatarCropActions"><button type="button" class="cropIconBtn" id="avatarCropRotateBtn">↻ Rotate</button><button type="button" class="cropIconBtn" id="avatarCropResetBtn">Reset</button></div>  <div class="avatarCropZoom"><span aria-hidden="true">−</span><input id="avatarCropZoomInput" aria-label="Photo zoom" type="range" min="1" max="3" step="0.05" value="1"><span aria-hidden="true">＋</span></div>  <p class="avatarCropHint">The profile photo appears inside the circular frame. Drag the photo to position it.</p>  <div class="avatarCropFooter"><button type="button" id="avatarCropCancelBtn" class="secondary">Cancel</button><button type="button" id="avatarCropUseBtn" class="avatarCropUseBtn">Use photo</button></div>  <div id="avatarCropError" class="alert hidden"></div> </div></div>
 <div class="imageViewer hidden" id="imageViewer" role="dialog" aria-modal="true" aria-label="View photo"><div class="imageViewerBar"><button id="closeImageViewerBtn" type="button" aria-label="Close photo">✕ disabled</button><div class="imageViewerName" id="imageViewerName">photo</div><button id="viewerDownloadBtn" class="hidden" type="button">⬇ Download</button></div><div class="imageViewerStage"><img id="imageViewerImg" alt="Full image" decoding="async"></div><div class="imageViewerCaption" id="imageViewerCaption"></div></div>
 <script>
 (async()=>{
@@ -472,7 +472,7 @@ async function openProfilePhoto(userId){
   if(!/^https?:\/\//i.test(url)){await openUserProfile(userId);return}
   const viewer=$('profilePhotoViewer'),img=$('profilePhotoFull'),display=record.display_name||record.username||'ChatLink User';
   profilePhotoScale=1;profilePhotoX=0;profilePhotoY=0;profilePhotoPointers.clear();profilePhotoGesture=null;profilePhotoLastTap=null;profilePhotoSkipPan.clear();
-  img.style.transform='none';img.removeAttribute('src');img.alt=display+'-এর সম্পূর্ণ Profile photo';
+  img.style.transform='none';img.removeAttribute('src');img.alt=display+'’s full profile photo';
   $('profilePhotoName').textContent=display;$('profilePhotoUsername').textContent='@'+(record.username||'');
   $('profilePhotoError').classList.add('hidden');$('profilePhotoLoading').classList.remove('hidden');
   profilePhotoPreviousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';
@@ -572,7 +572,7 @@ async function openUserProfile(userId){
 }
 function openMyProfile(){return openUserProfile(me?.id)}
 function cropGeometry(size=320){
- const image=avatarCropImage;if(!image||!image.naturalWidth||!image.naturalHeight)throw new Error('photoটি load failed।');
+ const image=avatarCropImage;if(!image||!image.naturalWidth||!image.naturalHeight)throw new Error('The image has not loaded.');
  const quarter=Math.abs(avatarCropRotation%180)===90;
  const fitW=quarter?image.naturalHeight:image.naturalWidth,fitH=quarter?image.naturalWidth:image.naturalHeight;
  const baseScale=Math.max(size/fitW,size/fitH),scale=baseScale*avatarCropZoom;
@@ -970,16 +970,16 @@ function chatLoadingMarkup(label='Loading chat…'){
  return '<div class="chatLoadingState" role="status" aria-live="polite"><div class="chatLoadingDots" aria-hidden="true"><span></span><span></span><span></span></div><div class="chatLoadingText">'+esc(label)+'</div></div>';
 }
 function chatLoadErrorMarkup(message){
- return '<div class="chatLoadError"><div class="chatLoadingIcon">⌁</div><strong>message load failed</strong><p>'+esc(message||'internet connection পরীক্ষা করে again try do it।')+'</p><button type="button" id="retryChatLoadBtn">again try please</button></div>';
+ return '<div class="chatLoadError"><div class="chatLoadingIcon">⌁</div><strong>message load failed</strong><p>'+esc(message||'Check your internet connection and try again.')+'</p><button type="button" id="retryChatLoadBtn">again try please</button></div>';
 }
 async function openChat(convId,peer){
- if(!convId||!peer)throw new Error('Chatের তথ্য অসম্পূর্ণ');
+ if(!convId||!peer)throw new Error('Incomplete chat information');
  if(msgChannel){try{await supa.removeChannel(msgChannel)}catch{}}
  activeChat=convId;activePeer=peer;chatStickToBottom=true;updateJumpLatestButton();clearMessageSelection();clearPendingImage();knownMsgs.clear();chatHistoryPushed=false;
  showPanel('chatPanel');
  $('messages').innerHTML=chatLoadingMarkup();
  $('chatHint').textContent='Establishing a secure connection…';
- $('headerSub').textContent='ব্যক্তিগত Chat';
+ $('headerSub').textContent='Private chat';
  $('chatName').textContent=peer.display_name||peer.username||'User';
  $('chatAvatar').innerHTML=avatarMarkup(peer.avatar_url,peer.display_name||peer.username||'?');
  $('chatStatus').textContent=peer.is_online?'Online':'@'+(peer.username||'');
@@ -1053,7 +1053,7 @@ async function loadMessages(options={}){
  messageBox.innerHTML=msgs.map(m=>{
   const mine=m.sender_id===me.id,deleted=!!m.deleted_at||m.delete_for_everyone;
   const bodyText=deleted?'<span class="deleted">This message was deleted</span>':(!m.image_path||m.body!=='📷 photo'?esc(m.body):'');
-  const imagePart=m.image_path&&!deleted?'<div class="imageMessage"><img class="chatImage" id="chat-image-'+esc(m.id)+'" data-open-image="'+esc(m.id)+'" alt="Chatে sent photo" loading="lazy" decoding="async">'+(mine?'<button class="imageDownloadButton" type="button" data-download-image="'+esc(m.id)+'">⬇ Download</button>':'')+'</div>':'';
+  const imagePart=m.image_path&&!deleted?'<div class="imageMessage"><img class="chatImage" id="chat-image-'+esc(m.id)+'" data-open-image="'+esc(m.id)+'" alt="Photo sent in chat" loading="lazy" decoding="async">'+(mine?'<button class="imageDownloadButton" type="button" data-download-image="'+esc(m.id)+'">⬇ Download</button>':'')+'</div>':'';
   const receipt=mine&&!deleted?'<span class="messageTicks '+(m.read_at?'read':'')+'" title="'+(m.read_at?'Read':m.delivered_at?'Delivered':'Sent')+'">'+(m.read_at||m.delivered_at?'✓✓':'✓')+'</span>':'';
   return '<div class="msg '+(mine?'mine':'')+'" data-msg="'+esc(m.id)+'"><div class="bubble">'+bodyText+imagePart+'</div><div class="meta"><span>'+timeStr(m.created_at)+'</span>'+(m.edited_at&&!deleted?'<span>Edited</span>':'')+receipt+'</div></div>';
  }).join('');
@@ -1140,7 +1140,7 @@ function clearMessageSelection(){
  suppressMessageClickId=null;suppressMessageClickUntil=0;
  document.querySelectorAll('.msg.selected').forEach(el=>el.classList.remove('selected'));
  $('deleteSelectedBtn').classList.add('hidden');
- $('deleteSelectedBtn').textContent='🗑 Allার জন্য';
+ $('deleteSelectedBtn').textContent='🗑 Delete for everyone';
  $('cancelSelectionBtn').classList.add('hidden');
  $('chatHint').textContent='Message selection cleared';
 }
@@ -1149,7 +1149,7 @@ function updateMessageSelectionUI(){
  const count=selectedMessageIds.size;
  $('deleteSelectedBtn').classList.toggle('hidden',count===0);
  $('cancelSelectionBtn').classList.toggle('hidden',count===0);
- $('deleteSelectedBtn').textContent=count>1?'🗑 Allার জন্য ('+count+')':'🗑 Allার জন্য';
+ $('deleteSelectedBtn').textContent=count>1?'🗑 Delete for everyone ('+count+')':'🗑 Delete for everyone';
  if(count>0)$('chatHint').textContent=count+' messages selected — tap more messages to select them';
 }
 function toggleMessageSelection(id,fromLongPress=false){

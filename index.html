@@ -179,6 +179,20 @@ body{background:#0b141a;color:#e9edef}
 .apiEndpointLine{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid #26343b}.apiEndpointLine b{font-size:12px}.apiEndpointLine code{font-size:10px;color:#a8ebd2}
 .apiDocs pre{overflow:auto;max-width:100%;margin:7px 0 14px;padding:12px;border-radius:10px;background:#071117;border:1px solid #26343b;color:#c6e4d9;font-size:10px;line-height:1.55;white-space:pre}.apiDocs code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.apiDocs .apiHint{margin:12px 0 0}
 @media(max-width:420px){.apiCreateCard,.apiDocs{margin:14px 10px;padding:13px}.apiKeysHeader{padding-left:11px;padding-right:11px}.automationKeysList{padding-left:10px;padding-right:10px}.apiValueRow{gap:4px}.apiValueRow .apiCopyBtn{padding:8px}.apiEndpointLine{display:block}.apiEndpointLine code{display:block;margin-top:5px}}
+
+/* Automation API is intentionally unavailable in the user app until launch. */
+#apiPanel{position:relative;isolation:isolate}
+#apiPanel .automationApiLockedContent{filter:blur(4px) brightness(.55);opacity:.76;pointer-events:none;user-select:none;-webkit-user-select:none}
+#apiPanel .automationComingSoonOverlay{position:absolute;z-index:100;inset:74px 12px 12px;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(4,14,22,.35);backdrop-filter:blur(5px) brightness(.72);-webkit-backdrop-filter:blur(5px) brightness(.72)}
+#apiPanel .automationComingSoonCard{width:min(480px,100%);padding:24px 19px;text-align:center;border-radius:22px;background:linear-gradient(145deg,#122c3b,#0b1b26);border:1px solid #315064;box-shadow:0 18px 48px #0008}
+#apiPanel .automationComingSoonIcon{width:58px;height:58px;margin:0 auto 13px;border-radius:19px;display:grid;place-items:center;font-size:27px;background:#183646;color:#b9e6f4}
+#apiPanel .automationComingSoonBadge{display:inline-block;padding:6px 11px;border-radius:20px;background:#263b34;color:#c6ecd9;font-size:11px;font-weight:800;letter-spacing:.2px}
+#apiPanel .automationComingSoonCard h2{font-size:20px;line-height:1.35;margin:14px 0 9px;color:#f0f7fb}
+#apiPanel .automationComingSoonCard p{font-size:13px;line-height:1.7;margin:0;color:#b4c5d0}
+#apiPanel .automationComingSoonActions{display:grid;gap:9px;margin-top:19px}
+#apiPanel .automationComingSoonActions a{display:block;padding:12px 15px;border-radius:12px;background:#164d42;border:1px solid #2b7b66;color:#d7fff1;text-decoration:none;font-size:13px;font-weight:800}
+#apiPanel .automationComingSoonActions span{font-size:11px;color:#91a9b7}
+@media(max-width:420px){#apiPanel .automationComingSoonOverlay{inset:70px 8px 8px;padding:12px}#apiPanel .automationComingSoonCard{padding:20px 15px}#apiPanel .automationComingSoonCard h2{font-size:18px}}
 </style>
 </head>
 <body><div id="maintenanceGate" class="maintenanceGate" role="status" aria-live="polite"><section class="maintenanceGateCard"><div class="maintenanceGateIcon">🛠️</div><h1>on maintenance</h1><p id="maintenanceGateMessage">অ্যাপের অবস্থা যাচাই হচ্ছে…</p><small>Study Chat · কিছুক্ষণ পরে আবার চেষ্টা করো</small><button id="maintenanceRetry" type="button">আবার পরীক্ষা করুন</button></section></div><main class="app" id="chatAppShell" style="visibility:hidden">
@@ -190,13 +204,14 @@ body{background:#0b141a;color:#e9edef}
  <div class="moreGroupTitle">ACCOUNT</div>
  <button type="button" class="moreOption" id="moreProfileBtn"><span class="moreOptionIcon">👤</span><span class="moreOptionText"><strong>Profile</strong><small>নাম, DP ও About পরিবর্তন করো</small></span><span class="moreChevron">›</span></button>
  <div class="moreGroupTitle">APP SETTINGS</div>
- <button type="button" class="moreOption" id="moreApiBtn"><span class="moreOptionIcon">🔑</span><span class="moreOptionText"><strong>Automation API</strong><small>নিজের API key তৈরি, permission ও automation control</small></span><span class="moreChevron">›</span></button>
+ <button type="button" class="moreOption" id="moreApiBtn"><span class="moreOptionIcon">🔑</span><span class="moreOptionText"><strong>Automation API</strong><small>ফিচারটি বর্তমানে বন্ধ—শীঘ্রই চালু হবে</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption" id="moreRefreshBtn"><span class="moreOptionIcon">↻</span><span class="moreOptionText"><strong>Refresh chats</strong><small>সাম্প্রতিক চ্যাট আপডেট করো</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption moreLogout" id="moreLogoutBtn"><span class="moreOptionIcon">⎋</span><span class="moreOptionText"><strong>Log out</strong><small>এই ডিভাইস থেকে বের হও</small></span><span class="moreChevron">›</span></button>
  <div class="moreBuild">ChatLink · build 2026.10.27.1</div>
 </section>
 <section class="panel hidden" id="apiPanel">
  <div class="settingsHeader"><button type="button" class="profileBack" id="apiBackBtn" aria-label="More-এ ফিরে যাও">←</button><div><h1>Automation API</h1><p>অন্য app, script বা automation tool থেকে ChatLink চালাও</p></div></div>
+ <div id="automationApiLockedContent" class="automationApiLockedContent" inert aria-hidden="true">
  <div class="apiNotice"><strong>এটি আসল Automation API</strong><p>Supabase-এর public key শুধু connection/gateway-এর জন্য। বাইরের automation চালাতে নিচে আলাদা ChatLink Automation Key বানাতে হবে। Key-এর পূর্ণ মান একবারই দেখানো হবে; ডেটাবেজে শুধু hash থাকবে।</p></div><div class="apiNotice"><strong>Automation এখন ডিফল্টভাবে বন্ধ</strong><p>সাধারণ ChatLink ব্যবহার চালু থাকবে। অনুমোদিত Admin account দিয়ে পরে চালু করতে <a href="automation-control.html" style="color:#8ee8ce;text-decoration:underline">Automation Control</a> খোলো।</p></div>
  <label for="apiEndpoint">Automation endpoint</label><div class="apiValueRow"><input id="apiEndpoint" type="text" readonly autocomplete="off"><button id="copyApiEndpointBtn" type="button" class="apiCopyBtn">Copy</button></div>
  <label for="apiGatewayKey">Gateway publishable key (public)</label><div class="apiValueRow"><input id="apiGatewayKey" type="password" readonly autocomplete="off"><button id="toggleApiGatewayKeyBtn" type="button" class="apiCopyBtn">Show</button><button id="copyApiGatewayKeyBtn" type="button" class="apiCopyBtn">Copy</button></div>
@@ -237,7 +252,21 @@ Content-Type: application/json</code></pre>
   <div class="apiHint">API key কেবল নিজের profile ও নিজের সদস্য থাকা chat-এর জন্য কাজ করবে। অন্যের account, admin/maintenance settings বা সম্পূর্ণ Supabase database নিয়ন্ত্রণের permission এতে নেই।</div>
  </div>
  <div class="apiHint" id="apiCopyStatus">Automation API status.</div>
-</section><section class="panel hidden" id="profilePanel">
+</sectio
+ </div>
+ <div class="automationComingSoonOverlay" role="status" aria-live="polite">
+  <div class="automationComingSoonCard">
+   <div class="automationComingSoonIcon">🔒</div>
+   <span class="automationComingSoonBadge">শীঘ্রই চালু হবে</span>
+   <h2>Automation API এখন চালু নেই</h2>
+   <p>এই ফিচারটি আপাতত বন্ধ রাখা হয়েছে। নিরাপত্তার কারণে API key তৈরি, দেখানো বা ব্যবহার করা যাচ্ছে না। শীঘ্রই Admin Console থেকে নিয়ন্ত্রিতভাবে ফিচারটি চালু করা হবে।</p>
+   <div class="automationComingSoonActions">
+    <a href="automation-control.html">ফিচারের অবস্থা দেখো</a>
+    <span>সাধারণ ChatLink চ্যাট চালু আছে</span>
+   </div>
+  </div>
+ </div>
+</section>><section class="panel hidden" id="profilePanel">
  <div class="profileTopbar"><button type="button" class="profileBack" id="profileBackBtn" aria-label="ফিরে যাও">←</button><div><strong>Profile</strong><small>ChatLink account</small></div></div>
  <div class="profileHero">
   <div class="profileAvatarWrap"><img id="profileAvatarImage" class="profileAvatarImage hidden" alt="প্রোফাইল ছবি"><div id="profileAvatarInitial" class="profileAvatarInitial">C</div><span class="dpCameraBadge" id="dpCameraBadge">📷</span></div>
@@ -326,7 +355,7 @@ setInterval(async()=>{
  if(wasOn&&!nowOn)window.location.reload();
 },10000);
 if(maintenanceInitiallyOn)return;let me=null,profile=null,viewedProfileId=null,pendingAvatarFile=null,avatarPreviewUrl=null,removeAvatarRequested=false,currentChatFilter="all",activeChat=null,activePeer=null,profileReturnPanel="usersPanel",currentPanel="authPanel",chatStickToBottom=true,avatarCropImage=null,avatarCropObjectUrl=null,avatarCropZoom=1,avatarCropOffsetX=0,avatarCropOffsetY=0,avatarCropRotation=0,avatarCropDrag=null,avatarCropPointers=new Map(),avatarCropPinch=null,profilePhotoScale=1,profilePhotoX=0,profilePhotoY=0,profilePhotoPointers=new Map(),profilePhotoGesture=null,profilePhotoLastTap=null,profilePhotoSkipPan=new Set(),profilePhotoPreviousOverflow="",chatResizeObserver=null,chatMutationObserver=null,msgChannel=null,profileChannel=null,recentChannel=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
-function setConn(s,ok=false){$('connection').textContent=s;$('connection').style.background=ok?'#ffffff30':'#ffffff20'}function alertBox(id,s){$(id).textContent=s;$(id).classList.remove('hidden')}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function showPanel(id){currentPanel=id;for(const p of ['authPanel','usersPanel','morePanel','apiPanel','profilePanel','chatPanel'])$(p).classList.toggle('hidden',p!==id);const nav=$('homeBottomNav');if(nav)nav.classList.toggle('hidden',!['usersPanel','morePanel','apiPanel'].includes(id));const menu=$('headerMenu');if(menu)menu.classList.add('hidden');const more=$('headerMoreBtn');if(more)more.setAttribute('aria-expanded','false');if(id==='morePanel')refreshMoreAccount();if(id==='apiPanel')loadPublicApiDetails();if(id==='profilePanel')updateAboutCounters()}function timeStr(t){try{return new Intl.DateTimeFormat('bn-IN',{hour:'2-digit',minute:'2-digit'}).format(new Date(t))}catch{return ''}}function callRpc(name,args){return Promise.resolve(supa.rpc(name,args))}
+function setConn(s,ok=false){$('connection').textContent=s;$('connection').style.background=ok?'#ffffff30':'#ffffff20'}function alertBox(id,s){$(id).textContent=s;$(id).classList.remove('hidden')}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function showPanel(id){currentPanel=id;for(const p of ['authPanel','usersPanel','morePanel','apiPanel','profilePanel','chatPanel'])$(p).classList.toggle('hidden',p!==id);const nav=$('homeBottomNav');if(nav)nav.classList.toggle('hidden',!['usersPanel','morePanel','apiPanel'].includes(id));const menu=$('headerMenu');if(menu)menu.classList.add('hidden');const more=$('headerMoreBtn');if(more)more.setAttribute('aria-expanded','false');if(id==='morePanel')refreshMoreAccount();/* Automation API panel is locked until launch; skip key/API loading. */if(id==='profilePanel')updateAboutCounters()}function timeStr(t){try{return new Intl.DateTimeFormat('bn-IN',{hour:'2-digit',minute:'2-digit'}).format(new Date(t))}catch{return ''}}function callRpc(name,args){return Promise.resolve(supa.rpc(name,args))}
 async function getProfile(id){const {data,error}=await supa.from('profiles').select('*').eq('id',id).maybeSingle();if(error)throw error;return data}
 async function setOnline(flag){if(!me)return;await supa.from('profiles').update({is_online:flag,last_seen:new Date().toISOString()}).eq('id',me.id)}
 function profileInitial(value){const s=String(value||'C').trim();return (Array.from(s)[0]||'C').toUpperCase()}

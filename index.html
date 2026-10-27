@@ -1039,8 +1039,20 @@ async function continueWithGoogle(){
  authUiTouched=true;
  const label=button.textContent;button.disabled=true;button.textContent='Opening Google…';
  try{
-  // Do not let a stalled session restore block the first Google sign-in.
-  // If a guest session has already been restored, link it so its chats are preserved.
+  // Preserve an existing anonymous account before starting a new Google flow.
+  if(!me&&initialSessionPromise){
+   let waitId=0;
+   let restored=null;
+   try{
+    restored=await Promise.race([
+     initialSessionPromise,
+     new Promise(resolve=>{waitId=setTimeout(()=>resolve(null),2500)})
+    ]);
+   }finally{if(waitId)clearTimeout(waitId)}
+   if(!restored)throw new Error('ChatLink is still checking your saved account. Please wait a moment and tap Google again so your existing chats are not separated.');
+   if(restored.error)throw restored.error;
+   me=restored.data?.session?.user||null;
+  }
   if(me?.is_anonymous){
    const {error}=await supa.auth.linkIdentity({provider:'google',options:{redirectTo:googleRedirectUrl(),queryParams:{prompt:'select_account'}}});
    if(error)throw error;
@@ -1049,6 +1061,7 @@ async function continueWithGoogle(){
    if(error)throw error;
   }
  }catch(error){
+  authUiTouched=false;
   alertBox('authError',cleanGoogleAuthError(error));
   button.disabled=false;button.textContent=label;
  }

@@ -203,7 +203,7 @@ body{background:#0b141a;color:#e9edef}
  <div class="moreGroupTitle">ACCOUNT</div>
  <button type="button" class="moreOption" id="moreProfileBtn"><span class="moreOptionIcon">👤</span><span class="moreOptionText"><strong>Profile</strong><small>নাম, DP ও About পরিবর্তন করো</small></span><span class="moreChevron">›</span></button>
  <div class="moreGroupTitle">APP SETTINGS</div>
- <button type="button" class="moreOption" id="moreApiBtn"><span class="moreOptionIcon">🔑</span><span class="moreOptionText"><strong>Automation API</strong><small>বর্তমানে বন্ধ · শীঘ্রই চালু হবে</small></span><span class="moreChevron">›</span></button>
+ <button type="button" class="moreOption" id="moreApiBtn"><span class="moreOptionIcon">🔑</span><span class="moreOptionText"><strong>Automation API</strong><small>Key controls বন্ধ · শীঘ্রই চালু হবে</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption" id="moreRefreshBtn"><span class="moreOptionIcon">↻</span><span class="moreOptionText"><strong>Refresh chats</strong><small>সাম্প্রতিক চ্যাট আপডেট করো</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption moreLogout" id="moreLogoutBtn"><span class="moreOptionIcon">⎋</span><span class="moreOptionText"><strong>Log out</strong><small>এই ডিভাইস থেকে বের হও</small></span><span class="moreChevron">›</span></button>
  <div class="moreBuild">ChatLink · build 2026.10.27.1</div>
@@ -212,7 +212,7 @@ body{background:#0b141a;color:#e9edef}
  <div class="settingsHeader"><button type="button" class="profileBack" id="apiBackBtn" aria-label="More-এ ফিরে যাও">←</button><div><h1>Automation API</h1><p>অন্য app, script বা automation tool থেকে ChatLink চালাও</p></div></div>
  <div id="automationApiLockedContent" class="automationApiLockedContent" inert aria-hidden="true">
 
- <div class="apiNotice"><strong>এটি আসল Automation API</strong><p>Supabase-এর public key শুধু connection/gateway-এর জন্য। বাইরের automation চালাতে নিচে আলাদা ChatLink Automation Key বানাতে হবে। Key-এর পূর্ণ মান একবারই দেখানো হবে; ডেটাবেজে শুধু hash থাকবে।</p></div><div class="apiNotice"><strong>Automation API বর্তমানে বন্ধ</strong><p>এই User Page-এ API key তৈরি ও ব্যবহার আপাতত নিষ্ক্রিয়। ফিচারটি প্রকাশের আগে শীঘ্রই চালু হবে।</p></div>
+ <div class="apiNotice"><strong>এটি আসল Automation API</strong><p>Supabase-এর public key শুধু connection/gateway-এর জন্য। বাইরের automation চালাতে নিচে আলাদা ChatLink Automation Key বানাতে হবে। Key-এর পূর্ণ মান একবারই দেখানো হবে; ডেটাবেজে শুধু hash থাকবে।</p></div><div class="apiNotice"><strong>User Page-এর key controls বন্ধ</strong><p>এই অংশে API-এর তথ্য দেখা যাবে, কিন্তু key তৈরি, show/copy বা ব্যবহার করা যাবে না।</p></div>
  <label for="apiEndpoint">Automation endpoint</label><div class="apiValueRow"><input id="apiEndpoint" type="text" readonly autocomplete="off"><button id="copyApiEndpointBtn" type="button" class="apiCopyBtn">Copy</button></div>
  <label for="apiGatewayKey">Gateway publishable key (public)</label><div class="apiValueRow"><input id="apiGatewayKey" type="password" readonly autocomplete="off"><button id="toggleApiGatewayKeyBtn" type="button" class="apiCopyBtn">Show</button><button id="copyApiGatewayKeyBtn" type="button" class="apiCopyBtn">Copy</button></div>
  <div class="apiHint">এই publishable key একা তোমার অ্যাপের নিয়ন্ত্রণ দেয় না। Automation permission নির্ধারণ করে নিচের আলাদা ChatLink key। Secret/service_role key কখনও browser-এ দেওয়া হবে না।</div>
@@ -257,12 +257,12 @@ Content-Type: application/json</code></pre>
  <div class="automationComingSoonOverlay" role="status" aria-live="polite">
   <div class="automationComingSoonCard">
    <div class="automationComingSoonIcon">🔒</div>
-   <span class="automationComingSoonBadge">শীঘ্রই চালু হবে</span>
-   <h2>Automation API এখন চালু নেই</h2>
-   <p>API key এবং permission-এর তথ্য নিচে দেখা যাবে, তবে এই অংশের কোনো বোতাম বা input ব্যবহার করা যাবে না। নিরাপদভাবে প্রকাশের পর Admin Console থেকে API-টি চালু করা হবে।</p>
+   <span class="automationComingSoonBadge">USER PAGE · LOCKED</span>
+   <h2>API Key Controls আপাতত বন্ধ</h2>
+   <p>এখানে endpoint ও permission-এর তথ্য দেখা যাবে, কিন্তু key তৈরি, show/copy বা ব্যবহার করা যাবে না। Admin Console-এর ON/OFF switch শুধু server-side Automation API request নিয়ন্ত্রণ করে; এই User Page-এর key interface এখনো প্রকাশিত হয়নি।</p>
    <div class="automationComingSoonActions">
-    <span>এই পেজের key controls এখন নিষ্ক্রিয়</span>
-    <span>সাধারণ ChatLink চ্যাট চালু আছে</span>
+    <span>সাধারণ ChatLink চ্যাট, login ও message চালু আছে</span>
+    <span>Admin Console → Automation API থেকে server switch নিয়ন্ত্রণ করো</span>
    </div>
   </div>
  </div>

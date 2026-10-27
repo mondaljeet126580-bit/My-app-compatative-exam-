@@ -1013,6 +1013,7 @@ async function startApp(){
  recentPollTimer=setInterval(()=>{
   if(document.hidden||!me||currentPanel==='chatPanel'||currentPanel==='authPanel')return;
   if(currentPanel==='schedulePanel'){void loadScheduledMessages();return}
+  if(document.querySelector('.recentRowOpening'))return;
   void loadRecentChats();
  },2000);
  appBootReady=true;

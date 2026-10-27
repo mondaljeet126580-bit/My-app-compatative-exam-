@@ -220,62 +220,69 @@ button.moreAccountCard .moreOnlineDot{flex-shrink:0}
 button.dpCameraBadge{padding:0;z-index:3;cursor:pointer;touch-action:manipulation;box-shadow:0 2px 7px #0003;transition:transform .16s ease,background .16s ease}
 button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
 @media(prefers-reduced-motion:reduce){.panelEnterAnimation,#chatPanel.chatEnterAnimation,.chatLoadingState,.chatLoadingDots span{animation:none!important}.moreAccountCard,.dpCameraBadge{transition:none!important}}
+/* Full-screen boot loader: stays visible until the first screen and chat list are ready. */
+.appBootLoader{position:fixed;inset:0;z-index:15000;display:flex;align-items:center;justify-content:center;padding:24px;background:#0b141a;color:#e9edef;transition:opacity .18s ease}
+.appBootLoader.hidden{display:none!important}
+.appBootLoaderCard{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-width:200px;text-align:center}
+.appBootLoaderCard strong{font-size:17px;font-weight:650;letter-spacing:.2px}
+.appBootLoaderCard small{font-size:13px;color:#8fa1aa}
 </style>
 </head>
-<body><div id="maintenanceGate" class="maintenanceGate hidden" role="status" aria-live="polite"><section class="maintenanceGateCard"><div class="maintenanceGateIcon">🛠️</div><h1>on maintenance</h1><p id="maintenanceGateMessage">অ্যাপের অবস্থা যাচাই হচ্ছে…</p><small>Study Chat · কিছুক্ষণ পরে আবার চেষ্টা করো</small><button id="maintenanceRetry" type="button">আবার পরীক্ষা করুন</button></section></div><main class="app" id="chatAppShell" style="visibility:hidden">
-<header class="chatLinkHeader"><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">ব্যক্তিগত মেসেজ</small></div><div class="headerActions"><button type="button" id="headerNewChatBtn" class="headerActionBtn" aria-label="নতুন চ্যাট" title="নতুন চ্যাট"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v6"/><path d="m16 18 5-5 2 2-5 5-3 1z"/></svg></button><button type="button" id="headerMoreBtn" class="headerActionBtn" aria-label="আরও অপশন" title="আরও অপশন" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button></div><span class="badge hidden" id="connection">সংযোগ হচ্ছে…</span></header><div id="headerMenu" class="headerMenu hidden" role="menu"><button type="button" id="menuProfileBtn" role="menuitem">👤 আমার প্রোফাইল</button><button type="button" id="menuRefreshBtn" role="menuitem">↻ চ্যাট রিফ্রেশ</button><button type="button" id="menuLogoutBtn" role="menuitem">⎋ এই ডিভাইস থেকে বের হও</button><div class="menuBuildTag">ChatLink build · 2026.10.26.3</div></div>
-<section class="panel" id="authPanel"><h2 class="sectionTitle">চ্যাটে প্রবেশ করো</h2><div class="note">একটি display name/username তৈরি করো। এরপর অন্য ব্যক্তি তার নাম সার্চ করে তোমার সাথে ব্যক্তিগতভাবে চ্যাট করতে পারবে। একই ব্রাউজারে ফিরে এলে এই ডিভাইসের guest session রাখা হয়।</div><label for="displayName">তোমার নাম (যেমন Jeet Mondal)</label><input id="displayName" maxlength="40" placeholder="নাম লিখো"><label for="username">ইউনিক username (যেমন jeet123)</label><input id="username" maxlength="30" autocapitalize="none" placeholder="a-z, 0-9, underscore"><button id="enterBtn" style="width:100%;margin-top:14px">চ্যাট শুরু করো</button><div class="alert hidden" id="authError"></div><div class="footerHint">নোট: শুধু নাম নিজে কোনো পরিচয় যাচাই করে না। স্থায়ী/অন্য ফোনে একই account পেতে পরে verified login যুক্ত করা উচিত।</div></section>
-<section class="panel hidden" id="usersPanel"><div class="homeToolbar"><div class="homeTitle"><small>ChatLink · ব্যক্তিগত মেসেজ</small></div><div class="homeActions"><button type="button" class="homeIconBtn" id="myProfileBtn" aria-label="আমার প্রোফাইল" title="আমার প্রোফাইল">👤</button><button class="homeIconBtn" id="recentRefreshBtn" aria-label="চ্যাট রিফ্রেশ" title="রিফ্রেশ">↻</button></div></div><div class="waSearchWrap"><span class="waSearchIcon" aria-hidden="true">⌕</span><input id="searchInput" placeholder="নাম বা username সার্চ করো" autocomplete="off" autocapitalize="none" aria-label="ব্যবহারকারী সার্চ"><button type="button" id="clearSearchBtn" class="clearSearchBtn hidden" aria-label="সার্চ মুছে ফেলো">×</button></div><div class="chatFilterBar" role="tablist" aria-label="চ্যাট ফিল্টার"><button type="button" id="filterAllBtn" class="chatFilter active" role="tab" aria-selected="true">সব</button><button type="button" id="filterUnreadBtn" class="chatFilter" role="tab" aria-selected="false">অপঠিত <span id="unreadChatCount">0</span></button><button type="button" id="filterNewChatBtn" class="chatFilter" role="tab" aria-selected="false">নতুন চ্যাট</button></div><div id="searchResultsPanel" class="searchResultsSection hidden"><div class="searchTitle">ব্যবহারকারী</div><div class="footerHint" id="searchHint">নাম বা username লিখে সার্চ করো</div><div class="userList" id="userList"></div><div class="alert hidden" id="userError"></div></div><div id="recentSection"><div class="recentHead"><div class="sectionTitle" style="margin:0">সাম্প্রতিক চ্যাট</div><span class="muted" id="recentCountLabel"></span></div><div class="recentList" id="recentList"></div><div class="footerHint hidden" id="recentEmpty">এখনও কোনো চ্যাট নেই</div></div><button type="button" id="newChatFab" class="newChatFab" aria-label="নতুন চ্যাট শুরু করো" title="নতুন চ্যাট"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><button class="secondary logoutButton hidden" id="logoutBtn" style="width:100%;margin-top:18px">এই ডিভাইস থেকে বের হও</button></section><nav id="homeBottomNav" class="homeBottomNav hidden" aria-label="প্রধান নেভিগেশন"><button type="button" id="navChatsBtn" class="bottomNavItem active" aria-current="page"><span class="bottomNavIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l-2 2v-7.5A7.5 7.5 0 0 1 10.5 6H12"/><path d="M15 3h6v6M21 3l-8 8"/></svg></span><span>Chats</span></button><button type="button" id="navMoreBtn" class="bottomNavItem"><span class="bottomNavIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg></span><span>More</span></button></nav><section class="panel hidden" id="morePanel">
- <div class="settingsHeader"><button type="button" class="profileBack" id="moreBackBtn" aria-label="ফিরে যাও">←</button><div><h1>More</h1><p>তোমার ChatLink সেটিংস ও অ্যাপের তথ্য</p></div></div>
- <button type="button" class="moreAccountCard" id="moreAccountCard" aria-label="প্রোফাইল ও সেটিংস খুলুন"><div id="moreAvatar" class="moreAvatar">C</div><div class="moreAccountInfo"><strong id="moreDisplayName">ChatLink User</strong><small id="moreUsername">@username</small></div><span class="moreOnlineDot"></span></button>
+<body><div id="maintenanceGate" class="maintenanceGate hidden" role="status" aria-live="polite"><section class="maintenanceGateCard"><div class="maintenanceGateIcon">🛠️</div><h1>on maintenance</h1><p id="maintenanceGateMessage">Checking app status…</p><small>ChatLink · Please try again shortly</small><button id="maintenanceRetry" type="button">Check again</button></section></div><div id="appBootLoader" class="appBootLoader" role="status" aria-live="polite"><div class="appBootLoaderCard"><div class="chatLoadingDots" aria-hidden="true"><span></span><span></span><span></span></div><strong>Loading ChatLink</strong><small>Loading your chats…</small></div></div>
+<main class="app" id="chatAppShell" style="visibility:hidden">
+<header class="chatLinkHeader"><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">Private messaging</small></div><div class="headerActions"><button type="button" id="headerNewChatBtn" class="headerActionBtn" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v6"/><path d="m16 18 5-5 2 2-5 5-3 1z"/></svg></button><button type="button" id="headerMoreBtn" class="headerActionBtn" aria-label="More options" title="More options" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button></div><span class="badge hidden" id="connection">Connecting…</span></header><div id="headerMenu" class="headerMenu hidden" role="menu"><button type="button" id="menuProfileBtn" role="menuitem">👤 My profile</button><button type="button" id="menuRefreshBtn" role="menuitem">↻ Refresh chats</button><button type="button" id="menuLogoutBtn" role="menuitem">⎋ Log out from this device</button><div class="menuBuildTag">ChatLink build · 2026.10.26.3</div></div>
+<section class="panel" id="authPanel"><h2 class="sectionTitle">Get started with ChatLink</h2><div class="note">Create a display name and username. Others can search for your name to start a private chat with you. Your guest session is saved on this device when you return to the same browser.</div><label for="displayName">Your name (e.g. Jeet Mondal)</label><input id="displayName" maxlength="40" placeholder="Enter your name"><label for="username">Unique username (e.g. jeet123)</label><input id="username" maxlength="30" autocapitalize="none" placeholder="a-z, 0-9, underscore"><button id="enterBtn" style="width:100%;margin-top:14px">Start chatting</button><div class="alert hidden" id="authError"></div><div class="footerHint">Note: A name alone does not verify identity. Verified login is needed to securely use the same account on another device.</div></section>
+<section class="panel hidden" id="usersPanel"><div class="homeToolbar"><div class="homeTitle"><small>ChatLink · Private messaging</small></div><div class="homeActions"><button type="button" class="homeIconBtn" id="myProfileBtn" aria-label="My profile" title="My profile">👤</button><button class="homeIconBtn" id="recentRefreshBtn" aria-label="Refresh chats" title="Refresh">↻</button></div></div><div class="waSearchWrap"><span class="waSearchIcon" aria-hidden="true">⌕</span><input id="searchInput" placeholder="Search name or username" autocomplete="off" autocapitalize="none" aria-label="Search users"><button type="button" id="clearSearchBtn" class="clearSearchBtn hidden" aria-label="Clear search">×</button></div><div class="chatFilterBar" role="tablist" aria-label="Chat filters"><button type="button" id="filterAllBtn" class="chatFilter active" role="tab" aria-selected="true">All</button><button type="button" id="filterUnreadBtn" class="chatFilter" role="tab" aria-selected="false">Unread <span id="unreadChatCount">0</span></button><button type="button" id="filterNewChatBtn" class="chatFilter" role="tab" aria-selected="false">New chat</button></div><div id="searchResultsPanel" class="searchResultsSection hidden"><div class="searchTitle">User</div><div class="footerHint" id="searchHint">Search by name or username</div><div class="userList" id="userList"></div><div class="alert hidden" id="userError"></div></div><div id="recentSection"><div class="recentHead"><div class="sectionTitle" style="margin:0">Recent chats</div><span class="muted" id="recentCountLabel"></span></div><div class="recentList" id="recentList"></div><div class="footerHint hidden" id="recentEmpty">No chats yet</div></div><button type="button" id="newChatFab" class="newChatFab" aria-label="Start a new chat" title="New chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><button class="secondary logoutButton hidden" id="logoutBtn" style="width:100%;margin-top:18px">Log out from this device</button></section><nav id="homeBottomNav" class="homeBottomNav hidden" aria-label="Main navigation"><button type="button" id="navChatsBtn" class="bottomNavItem active" aria-current="page"><span class="bottomNavIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l-2 2v-7.5A7.5 7.5 0 0 1 10.5 6H12"/><path d="M15 3h6v6M21 3l-8 8"/></svg></span><span>Chats</span></button><button type="button" id="navMoreBtn" class="bottomNavItem"><span class="bottomNavIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg></span><span>More</span></button></nav><section class="panel hidden" id="morePanel">
+ <div class="settingsHeader"><button type="button" class="profileBack" id="moreBackBtn" aria-label="Go back">←</button><div><h1>More</h1><p>Your ChatLink settings and app information</p></div></div>
+ <button type="button" class="moreAccountCard" id="moreAccountCard" aria-label="Open profile and settings"><div id="moreAvatar" class="moreAvatar">C</div><div class="moreAccountInfo"><strong id="moreDisplayName">ChatLink User</strong><small id="moreUsername">@username</small></div><span class="moreOnlineDot"></span></button>
  <div class="moreGroupTitle">APP SETTINGS</div>
- <button type="button" class="moreOption" id="moreApiBtn"><span class="moreOptionIcon">🔑</span><span class="moreOptionText"><strong>Automation API</strong><small>Key controls বন্ধ · শীঘ্রই চালু হবে</small></span><span class="moreChevron">›</span></button>
- <button type="button" class="moreOption" id="moreRefreshBtn"><span class="moreOptionIcon">↻</span><span class="moreOptionText"><strong>Refresh chats</strong><small>সাম্প্রতিক চ্যাট আপডেট করো</small></span><span class="moreChevron">›</span></button>
- <button type="button" class="moreOption moreLogout" id="moreLogoutBtn"><span class="moreOptionIcon">⎋</span><span class="moreOptionText"><strong>Log out</strong><small>এই ডিভাইস থেকে বের হও</small></span><span class="moreChevron">›</span></button>
+ <button type="button" class="moreOption" id="moreApiBtn"><span class="moreOptionIcon">🔑</span><span class="moreOptionText"><strong>Automation API</strong><small>Key controls disabled · Coming soon</small></span><span class="moreChevron">›</span></button>
+ <button type="button" class="moreOption" id="moreRefreshBtn"><span class="moreOptionIcon">↻</span><span class="moreOptionText"><strong>Refresh chats</strong><small>Refresh recent chats</small></span><span class="moreChevron">›</span></button>
+ <button type="button" class="moreOption moreLogout" id="moreLogoutBtn"><span class="moreOptionIcon">⎋</span><span class="moreOptionText"><strong>Log out</strong><small>Log out from this device</small></span><span class="moreChevron">›</span></button>
  <div class="moreBuild">ChatLink · build 2026.10.27.1</div>
 </section>
 <section class="panel hidden" id="apiPanel">
- <div class="settingsHeader"><button type="button" class="profileBack" id="apiBackBtn" aria-label="More-এ ফিরে যাও">←</button><div><h1>Automation API</h1><p>অন্য app, script বা automation tool থেকে ChatLink চালাও</p></div></div>
+ <div class="settingsHeader"><button type="button" class="profileBack" id="apiBackBtn" aria-label="Back to More">←</button><div><h1>Automation API</h1><p>Use ChatLink from another app, script, or automation tool</p></div></div>
  <div id="automationApiLockedContent" class="automationApiLockedContent" inert aria-hidden="true">
 
- <div class="apiNotice"><strong>এটি আসল Automation API</strong><p>Supabase-এর public key শুধু connection/gateway-এর জন্য। বাইরের automation চালাতে নিচে আলাদা ChatLink Automation Key বানাতে হবে। Key-এর পূর্ণ মান একবারই দেখানো হবে; ডেটাবেজে শুধু hash থাকবে।</p></div><div class="apiNotice"><strong>User Page-এর key controls বন্ধ</strong><p>এই অংশে API-এর তথ্য দেখা যাবে, কিন্তু key তৈরি, show/copy বা ব্যবহার করা যাবে না।</p></div>
+ <div class="apiNotice"><strong>This is the actual Automation API</strong><p>The Supabase publishable key is only for connection/gateway access. Create a separate ChatLink Automation Key below for external automation. The full key is shown once; only its hash is stored in the database.</p></div><div class="apiNotice"><strong>User page key controls are disabled</strong><p>API information is visible here, but keys cannot be created, revealed, copied, or used.</p></div>
  <label for="apiEndpoint">Automation endpoint</label><div class="apiValueRow"><input id="apiEndpoint" type="text" readonly autocomplete="off"><button id="copyApiEndpointBtn" type="button" class="apiCopyBtn">Copy</button></div>
  <label for="apiGatewayKey">Gateway publishable key (public)</label><div class="apiValueRow"><input id="apiGatewayKey" type="password" readonly autocomplete="off"><button id="toggleApiGatewayKeyBtn" type="button" class="apiCopyBtn">Show</button><button id="copyApiGatewayKeyBtn" type="button" class="apiCopyBtn">Copy</button></div>
- <div class="apiHint">এই publishable key একা তোমার অ্যাপের নিয়ন্ত্রণ দেয় না। Automation permission নির্ধারণ করে নিচের আলাদা ChatLink key। Secret/service_role key কখনও browser-এ দেওয়া হবে না।</div>
+ <div class="apiHint">This publishable key alone does not control your app. Permissions are set by a separate ChatLink key. Never expose a secret/service_role key in the browser.</div>
  <div class="apiCreateCard">
-  <h2>নতুন Automation Key তৈরি করো</h2><p>যে permission দরকার শুধু সেটাই নির্বাচন করো। নিরাপত্তার জন্য Send message আলাদা করে অনুমতি দিতে হবে।</p>
-  <label for="apiKeyName">Key-এর নাম</label><input id="apiKeyName" maxlength="60" placeholder="যেমন: n8n automation, personal script">
+  <h2>Create a new Automation Key</h2><p>Select only the permissions you need. Sending messages requires separate permission for security.</p>
+  <label for="apiKeyName">Key name</label><input id="apiKeyName" maxlength="60" placeholder="such as: n8n automation, personal script">
   <div class="apiScopeOptions">
-   <label class="apiScopeChoice"><input type="checkbox" id="scopeProfileRead" checked><span><b>profile:read</b><small>নিজের profile পড়বে</small></span></label>
-   <label class="apiScopeChoice"><input type="checkbox" id="scopeChatsRead" checked><span><b>chats:read</b><small>যেসব chat-এর member, সেগুলোর তালিকা</small></span></label>
-   <label class="apiScopeChoice"><input type="checkbox" id="scopeMessagesSend"><span><b>messages:send</b><small>নিজের থাকা chat-এ text message পাঠানো</small></span></label>
+   <label class="apiScopeChoice"><input type="checkbox" id="scopeProfileRead" checked><span><b>profile:read</b><small>Read your profile</small></span></label>
+   <label class="apiScopeChoice"><input type="checkbox" id="scopeChatsRead" checked><span><b>chats:read</b><small>List chats you are a member of</small></span></label>
+   <label class="apiScopeChoice"><input type="checkbox" id="scopeMessagesSend"><span><b>messages:send</b><small>Send text messages in your chats</small></span></label>
   </div>
   <button type="button" class="apiPrimaryBtn" id="createAutomationKeyBtn">＋ Create Automation Key</button>
-  <div class="apiHint" id="apiKeyCreateStatus" role="status">সর্বোচ্চ ১০টি active key রাখা যাবে; প্রতিটি key-তে ৬০ request/minute সীমা।</div>
+  <div class="apiHint" id="apiKeyCreateStatus" role="status">You can keep up to 10 active keys; each key is limited to 60 requests per minute.</div>
  </div>
  <div id="newAutomationKeyPanel" class="apiNewKeyPanel hidden">
-  <h2>নতুন key — এখনই কপি করো</h2><p>এই full token আর পরে দেখানো হবে না। নিরাপদ password manager-এ রাখো, public chat/GitHub-এ paste কোরো না।</p>
+  <h2>New key — copy it now</h2><p>This full token will not be shown again. Save it in a secure password manager; do not paste it into public chats or GitHub.</p>
   <div class="apiValueRow"><input id="newAutomationKeyInput" type="password" readonly autocomplete="off"><button id="toggleNewAutomationKeyBtn" type="button" class="apiCopyBtn">Show</button><button id="copyNewAutomationKeyBtn" type="button" class="apiCopyBtn">Copy</button></div>
  </div>
- <div class="apiKeysHeader"><h2>তোমার API Keys</h2><button type="button" class="apiCopyBtn" id="refreshAutomationKeysBtn">↻ Refresh</button></div>
- <div id="automationKeysList" class="automationKeysList"><div class="apiHint">API keys লোড হচ্ছে…</div></div>
+ <div class="apiKeysHeader"><h2>Your API Keys</h2><button type="button" class="apiCopyBtn" id="refreshAutomationKeysBtn">↻ Refresh</button></div>
+ <div id="automationKeysList" class="automationKeysList"><div class="apiHint">Loading API keys…</div></div>
  <div class="apiDocs">
-  <h2>কীভাবে automation চালাবে</h2>
-  <div class="apiEndpointLine"><b>Profile পড়া</b><code>GET ?action=profile</code></div>
-  <div class="apiEndpointLine"><b>নিজের chat list পড়া</b><code>GET ?action=chats</code></div>
-  <div class="apiEndpointLine"><b>Message পাঠানো</b><code>POST · action=send_message</code></div>
-  <p>প্রতি request-এ এই header দেবে:</p>
+  <h2>How to use automation</h2>
+  <div class="apiEndpointLine"><b>Read profile</b><code>GET ?action=profile</code></div>
+  <div class="apiEndpointLine"><b>Read your chat list</b><code>GET ?action=chats</code></div>
+  <div class="apiEndpointLine"><b>Send a message</b><code>POST · action=send_message</code></div>
+  <p>Include this header in each request:</p>
   <pre><code>apikey: YOUR_PUBLISHABLE_KEY
 Authorization: Bearer YOUR_CHATLINK_AUTOMATION_KEY
 Content-Type: application/json</code></pre>
-  <p>Message পাঠানোর JSON body:</p>
+  <p>JSON body for sending a message:</p>
   <pre><code>{
   "action": "send_message",
   "conversation_id": "CONVERSATION_ID_FROM_CHATS",
   "message": "Hello from automation"
 }</code></pre>
-  <p>এন্ডপয়েন্ট:</p><pre><code id="apiDocsEndpoint">https://mtitrkspgoqaqdeiluud.supabase.co/functions/v1/chatlink-automation</code></pre>
-  <div class="apiHint">API key কেবল নিজের profile ও নিজের সদস্য থাকা chat-এর জন্য কাজ করবে। অন্যের account, admin/maintenance settings বা সম্পূর্ণ Supabase database নিয়ন্ত্রণের permission এতে নেই।</div>
+  <p>Endpoint:</p><pre><code id="apiDocsEndpoint">https://mtitrkspgoqaqdeiluud.supabase.co/functions/v1/chatlink-automation</code></pre>
+  <div class="apiHint">The API key only works for your profile and chats you belong to. It cannot access other accounts, admin/maintenance settings, or control the entire Supabase database.</div>
  </div>
  <div class="apiHint" id="apiCopyStatus">Automation API status.</div>
 
@@ -284,54 +291,54 @@ Content-Type: application/json</code></pre>
   <div class="automationComingSoonCard">
    <div class="automationComingSoonIcon">🔒</div>
    <span class="automationComingSoonBadge">USER PAGE · LOCKED</span>
-   <h2>API Key Controls আপাতত বন্ধ</h2>
-   <p>এখানে endpoint ও permission-এর তথ্য দেখা যাবে, কিন্তু key তৈরি, show/copy বা ব্যবহার করা যাবে না। Admin Console-এর ON/OFF switch শুধু server-side Automation API request নিয়ন্ত্রণ করে; এই User Page-এর key interface এখনো প্রকাশিত হয়নি।</p>
+   <h2>API Key Controls are currently disabled</h2>
+   <p>Endpoint and permission information is available here, but keys cannot be created, revealed, copied, or used. The Admin Console switch controls server-side Automation API requests; the key interface on this User Page is not enabled yet.</p>
    <div class="automationComingSoonActions">
-    <span>সাধারণ ChatLink চ্যাট, login ও message চালু আছে</span>
-    <span>Admin Console → Automation API থেকে server switch নিয়ন্ত্রণ করো</span>
+    <span>ChatLink chats, login, and messaging are available</span>
+    <span>Control the server switch from Admin Console → Automation API</span>
    </div>
   </div>
  </div>
 </section>
 <section class="panel hidden" id="profilePanel">
- <div class="profileTopbar"><button type="button" class="profileBack" id="profileBackBtn" aria-label="ফিরে যাও">←</button><div><strong>Profile</strong><small>ChatLink account</small></div></div>
+ <div class="profileTopbar"><button type="button" class="profileBack" id="profileBackBtn" aria-label="Go back">←</button><div><strong>Profile</strong><small>ChatLink account</small></div></div>
  <div class="profileHero">
-  <div class="profileAvatarWrap"><img id="profileAvatarImage" class="profileAvatarImage hidden" alt="প্রোফাইল ছবি"><div id="profileAvatarInitial" class="profileAvatarInitial">C</div><button type="button" class="dpCameraBadge" id="dpCameraBadge" aria-label="প্রোফাইল ছবি বদলাও">📷</button></div>
+  <div class="profileAvatarWrap"><img id="profileAvatarImage" class="profileAvatarImage hidden" alt="Profile photo"><div id="profileAvatarInitial" class="profileAvatarInitial">C</div><button type="button" class="dpCameraBadge" id="dpCameraBadge" aria-label="Change profile photo">📷</button></div>
   <h2 id="profileDisplayLabel">ChatLink User</h2><div class="profileUsername" id="profileUsernameLabel">@username</div>
-  <div class="profileOnline" id="profileOnlineLabel"><span class="online"></span> অনলাইন</div>
+  <div class="profileOnline" id="profileOnlineLabel"><span class="online"></span> Online</div>
  </div>
- <div class="profileAboutCard"><div class="profileAboutHeading"><span>About</span><span id="profileAboutCount">0/139</span></div><p id="profileAboutPreview">Hey there! I am using ChatLink.</p></div><div class="profileInfoBlock"><div class="profileInfoLabel">নাম</div><div id="profileInfoName" class="profileInfoValue">—</div><div class="profileInfoLabel">Username</div><div id="profileInfoUsername" class="profileInfoValue">—</div><div class="profileInfoLabel">অ্যাকাউন্ট তৈরি</div><div id="profileCreatedLabel" class="profileInfoValue">—</div><div class="profileInfoLabel">Account type</div><div class="profileInfoValue">ChatLink Personal</div></div>
+ <div class="profileAboutCard"><div class="profileAboutHeading"><span>About</span><span id="profileAboutCount">0/139</span></div><p id="profileAboutPreview">Hey there! I am using ChatLink.</p></div><div class="profileInfoBlock"><div class="profileInfoLabel">Name</div><div id="profileInfoName" class="profileInfoValue">—</div><div class="profileInfoLabel">Username</div><div id="profileInfoUsername" class="profileInfoValue">—</div><div class="profileInfoLabel">Account created</div><div id="profileCreatedLabel" class="profileInfoValue">—</div><div class="profileInfoLabel">Account type</div><div class="profileInfoValue">ChatLink Personal</div></div>
  <form id="profileEditForm" class="profileEditBlock">
-  <div class="sectionTitle">আমার প্রোফাইল পরিবর্তন</div>
-  <div class="dpEditRow"><div><b>Profile photo / DP</b><small>এটি অন্য ChatLink ব্যবহারকারীরাও দেখতে পাবে।</small></div><div class="dpButtons"><input id="avatarFileInput" class="hidden" type="file" accept="image/jpeg,image/png,image/webp"><button id="chooseAvatarBtn" class="secondary" type="button">📷 DP বদলাও</button><button id="removeAvatarBtn" class="secondary" type="button">ছবি সরাও</button></div></div>
-  <div class="footerHint" id="avatarUploadHint">JPG, PNG বা WebP · সর্বোচ্চ ৫ MB</div>
-  <label for="profileDisplayNameInput">তোমার নাম</label><input id="profileDisplayNameInput" maxlength="40" required placeholder="নাম লিখো">
+  <div class="sectionTitle">Edit my profile</div>
+  <div class="dpEditRow"><div><b>Profile photo / DP</b><small>Other ChatLink users can see this.</small></div><div class="dpButtons"><input id="avatarFileInput" class="hidden" type="file" accept="image/jpeg,image/png,image/webp"><button id="chooseAvatarBtn" class="secondary" type="button">📷 DP বদলাও</button><button id="removeAvatarBtn" class="secondary" type="button">Remove photo</button></div></div>
+  <div class="footerHint" id="avatarUploadHint">JPG, PNG, or WebP · Max 5 MB</div>
+  <label for="profileDisplayNameInput">Your name</label><input id="profileDisplayNameInput" maxlength="40" required placeholder="Enter your name">
   <label for="profileUsernameInput">Username</label><input id="profileUsernameInput" maxlength="30" autocapitalize="none" required placeholder="username">
-  <label for="profileAboutInput">About</label><textarea id="profileAboutInput" maxlength="139" rows="3" placeholder="Hey there! I am using ChatLink."></textarea><div class="footerHint aboutLengthHint"><span id="profileAboutEditCount">0/139</span> · সর্বোচ্চ ১৩৯ অক্ষর</div>
-  <div class="footerHint">Username ৩–৩০ অক্ষরের ইংরেজি ছোট হাতের অক্ষর, সংখ্যা বা underscore দিয়ে লিখবে।</div>
-  <button id="profileSaveBtn" type="submit" style="width:100%;margin-top:12px">পরিবর্তন সেভ করো</button>
+  <label for="profileAboutInput">About</label><textarea id="profileAboutInput" maxlength="139" rows="3" placeholder="Hey there! I am using ChatLink."></textarea><div class="footerHint aboutLengthHint"><span id="profileAboutEditCount">0/139</span> · Max 139 characters</div>
+  <div class="footerHint">Username must be 3–30 characters using lowercase English letters, numbers, or underscores.</div>
+  <button id="profileSaveBtn" type="submit" style="width:100%;margin-top:12px">Save changes</button>
   <div class="alert hidden" id="profileError"></div><div class="note hidden" id="profileSuccess" style="margin-top:10px"></div>
  </form>
- <div id="profilePublicActions" class="profileEditBlock hidden"><div class="sectionTitle">ব্যবহারকারীর প্রোফাইল</div><p class="muted">এই প্রোফাইলের DP, নাম এবং username অন্য ব্যবহারকারীরা দেখতে পাবে।</p><button id="profileMessageBtn" type="button" style="width:100%;margin-top:8px">মেসেজ পাঠাও</button></div>
+ <div id="profilePublicActions" class="profileEditBlock hidden"><div class="sectionTitle">User profile</div><p class="muted">Other users can see this profile photo, name, and username.</p><button id="profileMessageBtn" type="button" style="width:100%;margin-top:8px">Send a message</button></div>
 </section>
-<section class="hidden" id="chatPanel" style="flex:1;min-height:0;display:flex;flex-direction:column"><div class="toolbar"><button class="topBack" id="backBtn" aria-label="চ্যাট তালিকায় ফিরে যাও" title="চ্যাট তালিকায় ফিরে যাও">←</button><div class="avatar" id="chatAvatar">?</div><div class="grow"><strong id="chatName">User</strong><div style="font-size:12px;color:var(--muted)" id="chatStatus">সংযোগ হচ্ছে…</div></div><button class="danger hidden" id="deleteSelectedBtn" title="সবার জন্য মুছুন">🗑 সবার জন্য</button><button class="secondary hidden" id="cancelSelectionBtn" title="বাতিল">✕</button><button class="secondary" id="refreshBtn" title="সিঙ্ক">↻</button></div><div class="chatBG" id="messages"></div><button type="button" id="scrollToLatestBtn" class="scrollToLatestBtn hidden" aria-label="সর্বশেষ মেসেজে যাও" title="সর্বশেষ মেসেজে যাও">↓</button><div class="footerHint" id="chatHint">Realtime সংযোগ হচ্ছে…</div><div class="imagePending hidden" id="imagePending"><img id="pendingImageThumb" alt="নির্বাচিত ছবি"><div class="imagePendingInfo"><strong id="pendingImageName">ছবি</strong><small id="pendingImageSize"></small></div><button id="removePendingImageBtn" type="button" aria-label="ছবি সরাও">✕</button></div><input class="hidden" id="imageFileInput" type="file" accept="image/*"><form class="composer" id="sendForm"><button class="secondary imagePickBtn" id="imagePickBtn" type="button" aria-label="ছবি নির্বাচন করো" title="ছবি পাঠাও">📷</button><input class="grow" id="messageInput" maxlength="10000" placeholder="মেসেজ বা ছবির ক্যাপশন লিখো…" autocomplete="off"><button id="sendBtn" type="submit" aria-label="পাঠাও">➤</button></form></section>
+<section class="hidden" id="chatPanel" style="flex:1;min-height:0;display:flex;flex-direction:column"><div class="toolbar"><button class="topBack" id="backBtn" aria-label="Back to chats" title="Back to chats">←</button><div class="avatar" id="chatAvatar">?</div><div class="grow"><strong id="chatName">User</strong><div style="font-size:12px;color:var(--muted)" id="chatStatus">Connecting…</div></div><button class="danger hidden" id="deleteSelectedBtn" title="Delete for everyone">🗑 Allার জন্য</button><button class="secondary hidden" id="cancelSelectionBtn" title="Cancel">✕</button><button class="secondary" id="refreshBtn" title="Sync">↻</button></div><div class="chatBG" id="messages"></div><button type="button" id="scrollToLatestBtn" class="scrollToLatestBtn hidden" aria-label="Jump to latest message" title="Jump to latest message">↓</button><div class="footerHint" id="chatHint">Realtime Connecting…</div><div class="imagePending hidden" id="imagePending"><img id="pendingImageThumb" alt="Selected photo"><div class="imagePendingInfo"><strong id="pendingImageName">photo</strong><small id="pendingImageSize"></small></div><button id="removePendingImageBtn" type="button" aria-label="Remove photo">✕</button></div><input class="hidden" id="imageFileInput" type="file" accept="image/*"><form class="composer" id="sendForm"><button class="secondary imagePickBtn" id="imagePickBtn" type="button" aria-label="Choose photo" title="Send photo">📷</button><input class="grow" id="messageInput" maxlength="10000" placeholder="Type a message or photo caption…" autocomplete="off"><button id="sendBtn" type="submit" aria-label="Send">➤</button></form></section>
 </main>
-<div id="profilePhotoViewer" class="profilePhotoViewer hidden" role="dialog" aria-modal="true" aria-label="প্রোফাইল ছবি দেখুন">
+<div id="profilePhotoViewer" class="profilePhotoViewer hidden" role="dialog" aria-modal="true" aria-label="View profile photo">
  <div class="profilePhotoTopbar">
-  <button type="button" id="profilePhotoCloseBtn" class="profilePhotoCloseBtn" aria-label="বন্ধ করো">←</button>
+  <button type="button" id="profilePhotoCloseBtn" class="profilePhotoCloseBtn" aria-label="Close">←</button>
   <div class="profilePhotoIdentity"><strong id="profilePhotoName">Profile photo</strong><small id="profilePhotoUsername">@username</small></div>
-  <button type="button" id="profilePhotoZoomOutBtn" class="profilePhotoToolBtn" aria-label="ছোট করো">−</button>
-  <button type="button" id="profilePhotoZoomInBtn" class="profilePhotoToolBtn" aria-label="বড় করো">＋</button>
-  <button type="button" id="profilePhotoResetBtn" class="profilePhotoToolBtn" aria-label="আসল আকারে ফেরাও">1:1</button>
+  <button type="button" id="profilePhotoZoomOutBtn" class="profilePhotoToolBtn" aria-label="Zoom out">−</button>
+  <button type="button" id="profilePhotoZoomInBtn" class="profilePhotoToolBtn" aria-label="Zoom in">＋</button>
+  <button type="button" id="profilePhotoResetBtn" class="profilePhotoToolBtn" aria-label="Reset zoom">1:1</button>
  </div>
- <div id="profilePhotoStage" class="profilePhotoStage" aria-label="ছবিতে দুই আঙুল দিয়ে zoom করো">
-  <div id="profilePhotoLoading" class="profilePhotoLoading">ছবি লোড হচ্ছে…</div>
-  <img id="profilePhotoFull" class="profilePhotoFull" alt="সম্পূর্ণ রেজোলিউশনের প্রোফাইল ছবি" draggable="false">
-  <div id="profilePhotoError" class="profilePhotoError hidden">ছবি লোড করা যায়নি। আবার চেষ্টা করো।</div>
+ <div id="profilePhotoStage" class="profilePhotoStage" aria-label="Pinch to zoom">
+  <div id="profilePhotoLoading" class="profilePhotoLoading">photo load in progress…</div>
+  <img id="profilePhotoFull" class="profilePhotoFull" alt="Full-resolution profile photo" draggable="false">
+  <div id="profilePhotoError" class="profilePhotoError hidden">photo load করা not available। again try do it।</div>
  </div>
- <div class="profilePhotoFooter"><span>দুই আঙুলে Zoom · দুইবার ট্যাপ করলে বড় হবে</span><span id="profilePhotoZoomLevel">100%</span></div>
-</div><div class="avatarCropModal hidden" id="avatarCropModal" role="dialog" aria-modal="true" aria-labelledby="avatarCropTitle"> <div class="avatarCropCard">  <div class="avatarCropHeader"><button type="button" id="avatarCropCancelTop" aria-label="বাতিল">×</button><div><h2 id="avatarCropTitle">প্রোফাইল ছবি</h2><p>ছবিটি সরিয়ে বা বড় করে ফ্রেম ঠিক করো</p></div></div>  <div class="avatarCropStage" id="avatarCropStage"><canvas id="avatarCropCanvas" width="320" height="320" aria-label="ছবির crop preview"></canvas><div class="avatarCropCircle" aria-hidden="true"></div></div>  <div class="avatarCropActions"><button type="button" class="cropIconBtn" id="avatarCropRotateBtn">↻ ঘোরাও</button><button type="button" class="cropIconBtn" id="avatarCropResetBtn">রিসেট</button></div>  <div class="avatarCropZoom"><span aria-hidden="true">−</span><input id="avatarCropZoomInput" aria-label="ছবির zoom" type="range" min="1" max="3" step="0.05" value="1"><span aria-hidden="true">＋</span></div>  <p class="avatarCropHint">গোল ফ্রেমের মধ্যে DP দেখা যাবে। আঙুল দিয়ে ছবি টেনে নিজের মতো করে ঠিক করো।</p>  <div class="avatarCropFooter"><button type="button" id="avatarCropCancelBtn" class="secondary">বাতিল</button><button type="button" id="avatarCropUseBtn" class="avatarCropUseBtn">ছবি ব্যবহার করো</button></div>  <div id="avatarCropError" class="alert hidden"></div> </div></div>
-<div class="imageViewer hidden" id="imageViewer" role="dialog" aria-modal="true" aria-label="ছবি দেখুন"><div class="imageViewerBar"><button id="closeImageViewerBtn" type="button" aria-label="ছবি বন্ধ করো">✕ বন্ধ</button><div class="imageViewerName" id="imageViewerName">ছবি</div><button id="viewerDownloadBtn" class="hidden" type="button">⬇ ডাউনলোড</button></div><div class="imageViewerStage"><img id="imageViewerImg" alt="সম্পূর্ণ ছবি" decoding="async"></div><div class="imageViewerCaption" id="imageViewerCaption"></div></div>
+ <div class="profilePhotoFooter"><span>দুই আঙুলে Zoom · দুইবার ট্যাপ করলে বড় will be</span><span id="profilePhotoZoomLevel">100%</span></div>
+</div><div class="avatarCropModal hidden" id="avatarCropModal" role="dialog" aria-modal="true" aria-labelledby="avatarCropTitle"> <div class="avatarCropCard">  <div class="avatarCropHeader"><button type="button" id="avatarCropCancelTop" aria-label="Cancel">×</button><div><h2 id="avatarCropTitle">Profile photo</h2><p>photoটি remove বা বড় করে ফ্রেম ঠিক do it</p></div></div>  <div class="avatarCropStage" id="avatarCropStage"><canvas id="avatarCropCanvas" width="320" height="320" aria-label="Photo crop preview"></canvas><div class="avatarCropCircle" aria-hidden="true"></div></div>  <div class="avatarCropActions"><button type="button" class="cropIconBtn" id="avatarCropRotateBtn">↻ ঘোরাও</button><button type="button" class="cropIconBtn" id="avatarCropResetBtn">রিসেট</button></div>  <div class="avatarCropZoom"><span aria-hidden="true">−</span><input id="avatarCropZoomInput" aria-label="Photo zoom" type="range" min="1" max="3" step="0.05" value="1"><span aria-hidden="true">＋</span></div>  <p class="avatarCropHint">গোল ফ্রেমের মধ্যে DP দেখা যাবে। আঙুল দিয়ে photo টেনে your own মতো করে ঠিক do it।</p>  <div class="avatarCropFooter"><button type="button" id="avatarCropCancelBtn" class="secondary">Cancel</button><button type="button" id="avatarCropUseBtn" class="avatarCropUseBtn">Use photo</button></div>  <div id="avatarCropError" class="alert hidden"></div> </div></div>
+<div class="imageViewer hidden" id="imageViewer" role="dialog" aria-modal="true" aria-label="View photo"><div class="imageViewerBar"><button id="closeImageViewerBtn" type="button" aria-label="Close photo">✕ disabled</button><div class="imageViewerName" id="imageViewerName">photo</div><button id="viewerDownloadBtn" class="hidden" type="button">⬇ Download</button></div><div class="imageViewerStage"><img id="imageViewerImg" alt="Full image" decoding="async"></div><div class="imageViewerCaption" id="imageViewerCaption"></div></div>
 <script>
 (async()=>{
 const loadSupabaseScript = src => new Promise(resolve=>{
@@ -347,7 +354,7 @@ const loadSupabaseScript = src => new Promise(resolve=>{
  s.onload=()=>finish(true);s.onerror=()=>finish(false);document.head.appendChild(s);
 });
 const supabaseCdnCandidates=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js','https://unpkg.com/@supabase/supabase-js@2.57.0/dist/umd/supabase.js','https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0','https://unpkg.com/@supabase/supabase-js@2.118.0'];let libraryLoaded=false;for(const src of supabaseCdnCandidates){if(await loadSupabaseScript(src)){libraryLoaded=true;break}}
-if(!libraryLoaded){document.body.innerHTML='<main style="font:16px system-ui;padding:20px"><h2>লাইব্রেরি লোড হয়নি</h2><p>Supabase JavaScript library CDN থেকে আসেনি। Internet সংযোগ ও browser পরীক্ষা করো।</p><p><b>চেষ্টা করা URL:</b></p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">'+supabaseCdnCandidates.join('\n')+'</pre><p>এই বার্তাটি ডেটাবেস থেকে নয়; ব্রাউজার লাইব্রেরি ডাউনলোড করতে পারেনি।</p></main>';return}
+if(!libraryLoaded){document.body.innerHTML='<main style="font:16px system-ui;padding:20px"><h2>Library could not be loaded</h2><p>The Supabase JavaScript library could not be loaded from the CDN. Check your internet connection and browser.</p><p><b>URLs tried:</b></p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">'+supabaseCdnCandidates.join('\n')+'</pre><p>This message is not from the database; the browser could not download the library.</p></main>';return}
 const SUPABASE_URL='https://mtitrkspgoqaqdeiluud.supabase.co';const SUPABASE_KEY='sb_publishable_MNm-dTK29hrtVkiyLRkLIw_qbtbxJu_';const AUTOMATION_API_URL=SUPABASE_URL+'/functions/v1/chatlink-automation';const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const initialSessionPromise=supa.auth.getSession();
 const $=id=>document.getElementById(id);
@@ -362,8 +369,9 @@ async function refreshMaintenanceGate(){
   const state=data&&typeof data==='object'?data:{enabled:false,message:'on maintenance'};
   maintenanceIsOn=state.enabled===true;
   if(maintenanceIsOn){
-   $('maintenanceGateMessage').textContent=String(state.message||'on maintenance');
+   $('maintenanceGateMessage').textContent=String(state.message||'Maintenance is in progress.');
    maintenanceGate.classList.remove('hidden');
+   $('appBootLoader').classList.add('hidden');
    chatAppShell.style.visibility='hidden';
   }else{
    maintenanceGate.classList.add('hidden');
@@ -395,7 +403,7 @@ $('maintenanceRetry').addEventListener('click',()=>void checkMaintenanceTransiti
 setInterval(()=>{if(!document.hidden)void checkMaintenanceTransition()},3000);
 window.addEventListener('focus',()=>{if(!document.hidden)void checkMaintenanceTransition()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)void checkMaintenanceTransition()});
-if(maintenanceInitiallyOn)return;let me=null,profile=null,viewedProfileId=null,pendingAvatarFile=null,avatarPreviewUrl=null,removeAvatarRequested=false,currentChatFilter="all",activeChat=null,activePeer=null,profileReturnPanel="usersPanel",currentPanel="authPanel",chatStickToBottom=true,avatarCropImage=null,avatarCropObjectUrl=null,avatarCropZoom=1,avatarCropOffsetX=0,avatarCropOffsetY=0,avatarCropRotation=0,avatarCropDrag=null,avatarCropPointers=new Map(),avatarCropPinch=null,profilePhotoScale=1,profilePhotoX=0,profilePhotoY=0,profilePhotoPointers=new Map(),profilePhotoGesture=null,profilePhotoLastTap=null,profilePhotoSkipPan=new Set(),profilePhotoPreviousOverflow="",chatResizeObserver=null,chatMutationObserver=null,msgChannel=null,profileChannel=null,recentChannel=null,recentRefreshTimer=null,recentRealtimeRetryTimer=null,recentRealtimeRetryCount=0,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
+if(maintenanceInitiallyOn)return;let me=null,profile=null,viewedProfileId=null,pendingAvatarFile=null,avatarPreviewUrl=null,removeAvatarRequested=false,currentChatFilter="all",activeChat=null,activePeer=null,profileReturnPanel="usersPanel",currentPanel="authPanel",chatStickToBottom=true,avatarCropImage=null,avatarCropObjectUrl=null,avatarCropZoom=1,avatarCropOffsetX=0,avatarCropOffsetY=0,avatarCropRotation=0,avatarCropDrag=null,avatarCropPointers=new Map(),avatarCropPinch=null,profilePhotoScale=1,profilePhotoX=0,profilePhotoY=0,profilePhotoPointers=new Map(),profilePhotoGesture=null,profilePhotoLastTap=null,profilePhotoSkipPan=new Set(),profilePhotoPreviousOverflow="",chatResizeObserver=null,chatMutationObserver=null,msgChannel=null,profileChannel=null,recentChannel=null,recentRefreshTimer=null,recentRealtimeRetryTimer=null,recentRealtimeRetryCount=0,recentPollTimer=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
 function setConn(s,ok=false){$('connection').textContent=s;$('connection').style.background=ok?'#ffffff30':'#ffffff20'}function alertBox(id,s){$(id).textContent=s;$(id).classList.remove('hidden')}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function showPanel(id){
  currentPanel=id;
  for(const p of ['authPanel','usersPanel','morePanel','apiPanel','profilePanel','chatPanel'])$(p).classList.toggle('hidden',p!==id);
@@ -426,14 +434,14 @@ function refreshHeaderProfileButton(){
  const button=$('headerProfileBtn');if(!button)return;
  const display=profile?.display_name||profile?.username||'ChatLink';
  button.innerHTML=avatarMarkup(profile?.avatar_url,display);
- button.title=profile?'আমার প্রোফাইল: '+display:'আমার প্রোফাইল';
+ button.title=profile?'My profile: '+display:'My profile';
  button.setAttribute('aria-label',button.title);
 }
 function clearAvatarPreview(){
  if(avatarPreviewUrl){try{URL.revokeObjectURL(avatarPreviewUrl)}catch{}}
  avatarPreviewUrl=null;pendingAvatarFile=null;removeAvatarRequested=false;
  const input=$('avatarFileInput');if(input)input.value='';
- const hint=$('avatarUploadHint');if(hint)hint.textContent='JPG, PNG বা WebP · সর্বোচ্চ ৫ MB';
+ const hint=$('avatarUploadHint');if(hint)hint.textContent='JPG, PNG, or WebP · Max 5 MB';
 }
 function clampProfilePhotoTransform(){
  const stage=$('profilePhotoStage'),img=$('profilePhotoFull');
@@ -459,12 +467,12 @@ async function openProfilePhoto(userId){
  if(!me){showPanel('authPanel');return}
  try{
   const record=userId===me.id?profile:await getProfile(userId);
-  if(!record)throw new Error('এই ব্যবহারকারীর প্রোফাইল পাওয়া যায়নি।');
+  if(!record)throw new Error('This user’s profile was not found.');
   const url=String(record.avatar_url||'');
   if(!/^https?:\/\//i.test(url)){await openUserProfile(userId);return}
   const viewer=$('profilePhotoViewer'),img=$('profilePhotoFull'),display=record.display_name||record.username||'ChatLink User';
   profilePhotoScale=1;profilePhotoX=0;profilePhotoY=0;profilePhotoPointers.clear();profilePhotoGesture=null;profilePhotoLastTap=null;profilePhotoSkipPan.clear();
-  img.style.transform='none';img.removeAttribute('src');img.alt=display+'-এর সম্পূর্ণ প্রোফাইল ছবি';
+  img.style.transform='none';img.removeAttribute('src');img.alt=display+'-এর সম্পূর্ণ Profile photo';
   $('profilePhotoName').textContent=display;$('profilePhotoUsername').textContent='@'+(record.username||'');
   $('profilePhotoError').classList.add('hidden');$('profilePhotoLoading').classList.remove('hidden');
   profilePhotoPreviousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';
@@ -475,7 +483,7 @@ async function openProfilePhoto(userId){
   const loadId=String(Date.now())+'-'+Math.random().toString(36).slice(2);img.dataset.loadId=loadId;
   source.src=url;
   if(source.complete&&source.naturalWidth>0)source.onload();
- }catch(e){alertBox('userError','প্রোফাইল ছবি খোলা যায়নি: '+(e.message||String(e)))}
+ }catch(e){alertBox('userError','Profile photo open not available: '+(e.message||String(e)))}
 }
 function closeProfilePhotoViewer(){
  $('profilePhotoViewer').classList.add('hidden');$('profilePhotoFull').removeAttribute('src');$('profilePhotoFull').style.transform='none';
@@ -539,7 +547,7 @@ function fillProfileView(record,own){
  $('profileInfoUsername').textContent='@'+(record.username||'');
  $('profileCreatedLabel').textContent=profileDate(record.created_at);
  $('profileAboutPreview').textContent=String(record.about||'');$('profileAboutCount').textContent=String((record.about||'').length)+'/139';
- $('profileOnlineLabel').innerHTML=record.is_online?'<span class="online"></span> অনলাইন':'<span class="offline"></span> অফলাইন';
+ $('profileOnlineLabel').innerHTML=record.is_online?'<span class="online"></span> Online':'<span class="offline"></span> Offline';
  setProfileAvatarView(record);
  $('profileEditForm').classList.toggle('hidden',!own);
  $('profilePublicActions').classList.toggle('hidden',own);
@@ -552,19 +560,19 @@ async function openUserProfile(userId){
  const own=userId===me.id;
  try{
   const record=own?profile:await getProfile(userId);
-  if(!record)throw new Error('এই ব্যবহারকারীর প্রোফাইল পাওয়া যায়নি।');
+  if(!record)throw new Error('This user’s profile was not found.');
   if(avatarPreviewUrl){try{URL.revokeObjectURL(avatarPreviewUrl)}catch{}avatarPreviewUrl=null}
   pendingAvatarFile=null;removeAvatarRequested=false;
   if($('avatarFileInput'))$('avatarFileInput').value='';
   viewedProfileId=record.id;
   fillProfileView(record,own);
   showPanel('profilePanel');
-  $('headerSub').textContent=own?'আমার প্রোফাইল':'@'+(record.username||'প্রোফাইল');
- }catch(e){alertBox('userError','প্রোফাইল খোলা যায়নি: '+(e.message||String(e)))}
+  $('headerSub').textContent=own?'My profile':'@'+(record.username||'Profile');
+ }catch(e){alertBox('userError','Profile open not available: '+(e.message||String(e)))}
 }
 function openMyProfile(){return openUserProfile(me?.id)}
 function cropGeometry(size=320){
- const image=avatarCropImage;if(!image||!image.naturalWidth||!image.naturalHeight)throw new Error('ছবিটি লোড হয়নি।');
+ const image=avatarCropImage;if(!image||!image.naturalWidth||!image.naturalHeight)throw new Error('photoটি load failed।');
  const quarter=Math.abs(avatarCropRotation%180)===90;
  const fitW=quarter?image.naturalHeight:image.naturalWidth,fitH=quarter?image.naturalWidth:image.naturalHeight;
  const baseScale=Math.max(size/fitW,size/fitH),scale=baseScale*avatarCropZoom;
@@ -588,46 +596,46 @@ function closeAvatarCrop(){
 function chooseProfileAvatar(file){
  if(!file||!me||viewedProfileId!==me.id)return;
  const type=String(file.type||'').toLowerCase();
- if(!['image/jpeg','image/png','image/webp'].includes(type)){alertBox('profileError','JPG, PNG বা WebP ছবি বেছে নাও।');return}
- if(file.size>5242880){alertBox('profileError','ছবির আকার ৫ MB-এর কম হতে হবে।');return}
+ if(!['image/jpeg','image/png','image/webp'].includes(type)){alertBox('profileError','Choose a JPG, PNG, or WebP image.');return}
+ if(file.size>5242880){alertBox('profileError','Image size must be under 5 MB.');return}
  if(avatarCropObjectUrl){try{URL.revokeObjectURL(avatarCropObjectUrl)}catch{}}
- avatarCropObjectUrl=URL.createObjectURL(file);avatarCropImage=new Image();avatarCropZoom=1;avatarCropOffsetX=0;avatarCropOffsetY=0;avatarCropRotation=0;$('avatarCropZoomInput').value='1';$('avatarCropUseBtn').disabled=false;$('avatarCropUseBtn').textContent='ছবি ব্যবহার করো';$('avatarCropError').classList.add('hidden');
+ avatarCropObjectUrl=URL.createObjectURL(file);avatarCropImage=new Image();avatarCropZoom=1;avatarCropOffsetX=0;avatarCropOffsetY=0;avatarCropRotation=0;$('avatarCropZoomInput').value='1';$('avatarCropUseBtn').disabled=false;$('avatarCropUseBtn').textContent='Use photo';$('avatarCropError').classList.add('hidden');
  avatarCropImage.onload=()=>{drawAvatarCrop();$('avatarCropModal').classList.remove('hidden');document.body.style.overflow='hidden'};
- avatarCropImage.onerror=()=>{closeAvatarCrop();alertBox('profileError','ছবিটি খোলা যায়নি। অন্য ছবি বেছে নাও।')};
+ avatarCropImage.onerror=()=>{closeAvatarCrop();alertBox('profileError','Could not open the image. Choose another photo.')};
  avatarCropImage.src=avatarCropObjectUrl;
 }
 async function saveCroppedAvatar(file){
  if(!file||!me||viewedProfileId!==me.id)return;
  const saveBtn=$('avatarCropUseBtn'),oldUrl=profile?.avatar_url||null;let uploadedPath=null;
- saveBtn.disabled=true;saveBtn.textContent='সেভ হচ্ছে…';$('avatarCropError').classList.add('hidden');
+ saveBtn.disabled=true;saveBtn.textContent='Saving…';$('avatarCropError').classList.add('hidden');
  try{
   const unique=(window.crypto&&typeof window.crypto.randomUUID==='function')?window.crypto.randomUUID():(Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
   uploadedPath=me.id+'/'+unique+'.jpg';
   const {error:uploadError}=await supa.storage.from('chat-avatars').upload(uploadedPath,file,{cacheControl:'31536000',upsert:false,contentType:'image/jpeg'});if(uploadError)throw uploadError;
   const avatarUrl=supa.storage.from('chat-avatars').getPublicUrl(uploadedPath).data.publicUrl;
   const {data,error}=await supa.from('profiles').update({avatar_url:avatarUrl,updated_at:new Date().toISOString()}).eq('id',me.id).select('*').maybeSingle();
-  if(error)throw error;if(!data)throw new Error('প্রোফাইল ছবি সেভ হয়নি। আবার চেষ্টা করো।');
+  if(error)throw error;if(!data)throw new Error('Profile photo was not saved. Try again.');
   profile=data;closeAvatarCrop();clearAvatarPreview();
   const oldPath=avatarStoragePath(oldUrl);if(oldPath&&oldPath!==avatarStoragePath(avatarUrl)){try{const {error:removeError}=await supa.storage.from('chat-avatars').remove([oldPath]);if(removeError)console.warn('old avatar cleanup',removeError.message)}catch(e){console.warn('old avatar cleanup',e)}}
-  await openUserProfile(me.id);$('profileSuccess').textContent='নতুন DP সেভ হয়েছে। এখন অন্য ব্যবহারকারীরাও এটি দেখতে পাবে।';$('profileSuccess').classList.remove('hidden');$('avatarUploadHint').textContent='DP সফলভাবে আপডেট হয়েছে।';
+  await openUserProfile(me.id);$('profileSuccess').textContent='New profile photo saved. Other users can now see it.';$('profileSuccess').classList.remove('hidden');$('avatarUploadHint').textContent='Profile photo updated successfully.';
   void loadRecentChats();const q=String($('searchInput').value||'').trim();if(q.length>=2)void searchUsers();
- }catch(err){if(uploadedPath){try{await supa.storage.from('chat-avatars').remove([uploadedPath])}catch(cleanupError){console.warn('avatar cleanup',cleanupError)}}$('avatarCropError').textContent='ছবি সেভ হয়নি: '+(err&&err.message?err.message:String(err));$('avatarCropError').classList.remove('hidden');}
- finally{if(!$('avatarCropModal').classList.contains('hidden')){saveBtn.disabled=false;saveBtn.textContent='ছবি ব্যবহার করো'}}
+ }catch(err){if(uploadedPath){try{await supa.storage.from('chat-avatars').remove([uploadedPath])}catch(cleanupError){console.warn('avatar cleanup',cleanupError)}}$('avatarCropError').textContent='Photo was not saved: '+(err&&err.message?err.message:String(err));$('avatarCropError').classList.remove('hidden');}
+ finally{if(!$('avatarCropModal').classList.contains('hidden')){saveBtn.disabled=false;saveBtn.textContent='Use photo'}}
 }
 async function finishAvatarCrop(){
  if(!avatarCropImage)return;
  try{
   const g=cropGeometry(320),canvas=document.createElement('canvas'),out=canvas.getContext('2d');canvas.width=640;canvas.height=640;out.fillStyle='#111b21';out.fillRect(0,0,640,640);
   out.save();out.scale(2,2);out.translate(160+g.x,160+g.y);out.rotate(avatarCropRotation*Math.PI/180);out.drawImage(avatarCropImage,-g.width/2,-g.height/2,g.width,g.height);out.restore();
-  canvas.toBlob(async blob=>{if(!blob){$('avatarCropError').textContent='ছবি crop করা যায়নি। আবার চেষ্টা করো।';$('avatarCropError').classList.remove('hidden');return}let file;try{file=new File([blob],'chatlink-profile.jpg',{type:'image/jpeg',lastModified:Date.now()})}catch{file=blob}await saveCroppedAvatar(file)},'image/jpeg',0.92);
+  canvas.toBlob(async blob=>{if(!blob){$('avatarCropError').textContent='Could not crop the photo. Try again.';$('avatarCropError').classList.remove('hidden');return}let file;try{file=new File([blob],'chatlink-profile.jpg',{type:'image/jpeg',lastModified:Date.now()})}catch{file=blob}await saveCroppedAvatar(file)},'image/jpeg',0.92);
  }catch(e){$('avatarCropError').textContent=e.message||String(e);$('avatarCropError').classList.remove('hidden')}
 }
 function resetAvatarCrop(){avatarCropZoom=1;avatarCropOffsetX=0;avatarCropOffsetY=0;avatarCropRotation=0;$('avatarCropZoomInput').value='1';drawAvatarCrop()}
 function removeProfileAvatar(){
  if(!me||viewedProfileId!==me.id)return;
- if(!profile?.avatar_url){alertBox('profileError','এখনও কোনো DP সেট করা নেই।');return}
- if(!confirm('বর্তমান প্রোফাইল ছবি সরিয়ে দেবে?'))return;
- void(async()=>{const oldUrl=profile.avatar_url;try{const {data,error}=await supa.from('profiles').update({avatar_url:null,updated_at:new Date().toISOString()}).eq('id',me.id).select('*').maybeSingle();if(error)throw error;if(!data)throw new Error('প্রোফাইল আপডেট হয়নি।');profile=data;const path=avatarStoragePath(oldUrl);if(path){try{const {error:removeError}=await supa.storage.from('chat-avatars').remove([path]);if(removeError)console.warn('avatar removal cleanup',removeError.message)}catch(e){console.warn('avatar removal cleanup',e)}}await openUserProfile(me.id);$('profileSuccess').textContent='প্রোফাইল ছবি সরিয়ে দেওয়া হয়েছে।';$('profileSuccess').classList.remove('hidden');void loadRecentChats()}catch(e){alertBox('profileError','ছবি সরানো যায়নি: '+(e.message||String(e)))}})();
+ if(!profile?.avatar_url){alertBox('profileError','No profile photo is set yet.');return}
+ if(!confirm('Remove your current profile photo?'))return;
+ void(async()=>{const oldUrl=profile.avatar_url;try{const {data,error}=await supa.from('profiles').update({avatar_url:null,updated_at:new Date().toISOString()}).eq('id',me.id).select('*').maybeSingle();if(error)throw error;if(!data)throw new Error('Profile was not updated.');profile=data;const path=avatarStoragePath(oldUrl);if(path){try{const {error:removeError}=await supa.storage.from('chat-avatars').remove([path]);if(removeError)console.warn('avatar removal cleanup',removeError.message)}catch(e){console.warn('avatar removal cleanup',e)}}await openUserProfile(me.id);$('profileSuccess').textContent='Profile photo removed.';$('profileSuccess').classList.remove('hidden');void loadRecentChats()}catch(e){alertBox('profileError','Could not remove photo: '+(e.message||String(e)))}})();
 }
 function avatarStoragePath(url){
  const marker='/storage/v1/object/public/chat-avatars/';
@@ -642,8 +650,8 @@ async function saveMyProfile(e){
  const username=String($('profileUsernameInput').value||'').trim().toLowerCase();
  const about=String($('profileAboutInput').value||'').trim().slice(0,139);
  $('profileError').classList.add('hidden');$('profileSuccess').classList.add('hidden');
- if(display.length<2){alertBox('profileError','নাম অন্তত ২ অক্ষরের হতে হবে।');return}
- if(!/^[a-z0-9_]{3,30}$/.test(username)){alertBox('profileError','Username ৩–৩০ অক্ষরের a-z, 0-9 বা underscore দিয়ে লিখো।');return}
+ if(display.length<2){alertBox('profileError','Name must be at least 2 characters.');return}
+ if(!/^[a-z0-9_]{3,30}$/.test(username)){alertBox('profileError','Username must be 3–30 characters using a-z, 0-9, or underscores.');return}
  $('profileSaveBtn').disabled=true;
  let uploadedPath=null;
  const oldAvatarUrl=profile.avatar_url||null;
@@ -658,22 +666,22 @@ async function saveMyProfile(e){
    avatarUrl=supa.storage.from('chat-avatars').getPublicUrl(uploadedPath).data.publicUrl;
   }
   const {data,error}=await supa.from('profiles').update({display_name:display,username,about,avatar_url:avatarUrl,updated_at:new Date().toISOString()}).eq('id',me.id).select('*').maybeSingle();
-  if(error){if(error.code==='23505')throw new Error('এই username অন্য কেউ ব্যবহার করছে। অন্য username দাও।');throw error}
-  if(!data)throw new Error('প্রোফাইল সেভ হয়নি। আবার চেষ্টা করো।');
+  if(error){if(error.code==='23505')throw new Error('That username is already taken. Choose another username.');throw error}
+  if(!data)throw new Error('Profile was not saved. Try again.');
   profile=data;
   clearAvatarPreview();
   refreshHeaderProfileButton();
   const oldPath=avatarStoragePath(oldAvatarUrl),newPath=avatarStoragePath(avatarUrl);
   if(oldPath&&oldPath!==newPath){try{const {error:removeError}=await supa.storage.from('chat-avatars').remove([oldPath]);if(removeError)console.warn('old avatar cleanup failed',removeError.message)}catch(err){console.warn('old avatar cleanup failed',err)}}
   await openUserProfile(me.id);
-  $('profileSuccess').textContent='প্রোফাইল ও DP সফলভাবে সেভ হয়েছে। অন্য ব্যবহারকারীরাও তোমার DP দেখতে পাবে।';
+  $('profileSuccess').textContent='Profile and photo saved successfully. Other users can now see your photo.';
   $('profileSuccess').classList.remove('hidden');
-  $('avatarUploadHint').textContent=avatarUrl?'DP সেভ হয়েছে।':'নতুন DP নির্বাচন করতে পারো।';
+  $('avatarUploadHint').textContent=avatarUrl?'Profile photo saved.':'You can select a new profile photo.';
   void loadRecentChats();
   const q=$('searchInput').value.trim();if(q.length>=2)void searchUsers();
  }catch(err){
   if(uploadedPath){try{await supa.storage.from('chat-avatars').remove([uploadedPath])}catch(cleanupError){console.warn('avatar upload cleanup failed',cleanupError)}}
-  alertBox('profileError','প্রোফাইল আপডেট হয়নি: '+(err.message||String(err)));
+  alertBox('profileError','Profile update failed: '+(err.message||String(err)));
  }finally{$('profileSaveBtn').disabled=false}
 }
 function updateAboutCounters(){
@@ -703,7 +711,7 @@ function loadPublicApiDetails(){
 async function automationManager(action,payload={}){
  const {data,error}=await supa.auth.getSession();
  const session=data?.session;
- if(error||!session?.access_token)throw new Error('আগে ChatLink-এ লগইন করো, তারপর API key পরিচালনা করো।');
+ if(error||!session?.access_token)throw new Error('Log in to ChatLink before managing API keys.');
  const response=await fetch(AUTOMATION_API_URL,{
   method:'POST',
   headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},
@@ -721,21 +729,21 @@ async function copyAutomationValue(value,label,statusId='apiCopyStatus'){
    const el=document.createElement('textarea');el.value=value;el.style.position='fixed';el.style.opacity='0';document.body.appendChild(el);el.focus();el.select();
    const ok=document.execCommand('copy');el.remove();if(!ok)throw new Error('copy failed');
   }
-  status.textContent=label+' কপি হয়েছে।';status.classList.remove('apiError');
- }catch(e){status.textContent='কপি করা যায়নি। টেক্সটটি সিলেক্ট করে Copy করো।';status.classList.add('apiError')}
+  status.textContent=label+' Copied.';status.classList.remove('apiError');
+ }catch(e){status.textContent='Could not copy. Select the text and copy it.';status.classList.add('apiError')}
 }
-function apiDateLabel(value){if(!value)return 'এখনও ব্যবহার হয়নি';try{return new Intl.DateTimeFormat('bn-IN',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value))}catch{return String(value)}}
+function apiDateLabel(value){if(!value)return 'Never used';try{return new Intl.DateTimeFormat('bn-IN',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value))}catch{return String(value)}}
 async function renderAutomationKeys(){
  const list=$('automationKeysList');if(!list)return;
- list.innerHTML='<div class="apiHint">API keys লোড হচ্ছে…</div>';
+ list.innerHTML='<div class="apiHint">Loading API keys…</div>';
  try{
   const result=await automationManager('list_keys');
   const keys=result.keys||[];
-  if(!keys.length){list.innerHTML='<div class="apiEmptyState">এখনও কোনো Automation Key নেই। উপরে Create Automation Key চাপো।</div>';return}
+  if(!keys.length){list.innerHTML='<div class="apiEmptyState">No Automation Keys yet. Select Create Automation Key above.</div>';return}
   list.innerHTML=keys.map(k=>{
    const revoked=!!k.revoked_at;
    const scopes=(k.scopes||[]).map(s=>'<span class="apiScopeBadge">'+esc(API_SCOPE_LABELS[s]||s)+'</span>').join('');
-   return '<article class="apiKeyCard '+(revoked?'revoked':'')+'"><div class="apiKeyCardTop"><div class="apiKeyIcon">🔑</div><div class="apiKeyMain"><strong>'+esc(k.name||'ChatLink automation')+'</strong><code>'+esc(k.key_prefix)+'••••••••••</code></div><span class="apiKeyStatus '+(revoked?'revoked':'active')+'">'+(revoked?'REVOKED':'ACTIVE')+'</span></div><div class="apiScopeBadges">'+scopes+'</div><div class="apiKeyMeta">তৈরি: '+esc(apiDateLabel(k.created_at))+'<br>শেষ ব্যবহার: '+esc(apiDateLabel(k.last_used_at))+'</div>'+(revoked?'':'<button type="button" class="apiRevokeBtn" data-revoke-api-key="'+esc(k.id)+'">Revoke key</button>')+'</article>';
+   return '<article class="apiKeyCard '+(revoked?'revoked':'')+'"><div class="apiKeyCardTop"><div class="apiKeyIcon">🔑</div><div class="apiKeyMain"><strong>'+esc(k.name||'ChatLink automation')+'</strong><code>'+esc(k.key_prefix)+'••••••••••</code></div><span class="apiKeyStatus '+(revoked?'revoked':'active')+'">'+(revoked?'REVOKED':'ACTIVE')+'</span></div><div class="apiScopeBadges">'+scopes+'</div><div class="apiKeyMeta">Created: '+esc(apiDateLabel(k.created_at))+'<br>Last used: '+esc(apiDateLabel(k.last_used_at))+'</div>'+(revoked?'':'<button type="button" class="apiRevokeBtn" data-revoke-api-key="'+esc(k.id)+'">Revoke key</button>')+'</article>';
   }).join('');
   list.querySelectorAll('[data-revoke-api-key]').forEach(btn=>btn.addEventListener('click',()=>void revokeAutomationKey(btn.dataset.revokeApiKey)));
  }catch(e){list.innerHTML='<div class="apiEmptyState apiError">'+esc(e.message||String(e))+'</div>'}
@@ -746,33 +754,54 @@ async function createAutomationKey(){
  if($('scopeProfileRead').checked)scopes.push('profile:read');
  if($('scopeChatsRead').checked)scopes.push('chats:read');
  if($('scopeMessagesSend').checked)scopes.push('messages:send');
- if(!scopes.length){status.textContent='কমপক্ষে একটি permission বেছে নাও।';status.classList.add('apiError');return}
- btn.disabled=true;status.classList.remove('apiError');status.textContent='Automation Key তৈরি হচ্ছে…';
+ if(!scopes.length){status.textContent='Select at least one permission.';status.classList.add('apiError');return}
+ btn.disabled=true;status.classList.remove('apiError');status.textContent='Creating Automation Key…';
  try{
   const result=await automationManager('create_key',{name:String($('apiKeyName').value||'').trim()||'ChatLink automation',scopes});
   $('newAutomationKeyInput').value=result.key.token;
   $('newAutomationKeyPanel').classList.remove('hidden');
   newAutomationKeyVisible=true;$('newAutomationKeyInput').type='text';$('toggleNewAutomationKeyBtn').textContent='Hide';
-  status.textContent='Key তৈরি হয়েছে। সম্পূর্ণ token এখনই কপি করে নিরাপদে রাখো—পরে আর দেখানো হবে না।';
+  status.textContent='Key created. Copy the full token now and store it safely; it will not be shown again.';
   await renderAutomationKeys();
  }catch(e){status.textContent=e.message||String(e);status.classList.add('apiError')}
  finally{btn.disabled=false}
 }
 async function revokeAutomationKey(id){
- if(!id||!confirm('এই Automation Key বাতিল করবে? এই key দিয়ে আর API ব্যবহার করা যাবে না।'))return;
- try{await automationManager('revoke_key',{key_id:id});$('apiCopyStatus').textContent='Automation Key বাতিল হয়েছে।';$('apiCopyStatus').classList.remove('apiError');await renderAutomationKeys()}
+ if(!id||!confirm('Revoke this Automation Key? It will no longer be able to access the API.'))return;
+ try{await automationManager('revoke_key',{key_id:id});$('apiCopyStatus').textContent='Automation Key revoked.';$('apiCopyStatus').classList.remove('apiError');await renderAutomationKeys()}
  catch(e){$('apiCopyStatus').textContent=e.message||String(e);$('apiCopyStatus').classList.add('apiError')}
 }
-async function enter(){const display=$('displayName').value.trim(),username=$('username').value.trim().toLowerCase();if(!display||!/^[a-z0-9_]{3,30}$/.test(username)){alertBox('authError','নাম লিখো এবং username ৩–৩০ অক্ষরের a-z, 0-9 বা underscore দিয়ে দাও।');return}$('enterBtn').disabled=true;try{let {data,error}=await supa.auth.getSession();if(error)throw error;if(!data.session){const res=await supa.auth.signInAnonymously();if(res.error)throw res.error;me=res.data.user}else me=data.session.user;const {data:existing,error:readErr}=await supa.from('profiles').select('id').eq('id',me.id).maybeSingle();if(readErr)throw readErr;if(existing){const {error:updateErr}=await supa.from('profiles').update({display_name:display,username,updated_at:new Date().toISOString()}).eq('id',me.id);if(updateErr)throw updateErr}else{const {error:insertErr}=await supa.from('profiles').update({display_name:display,username,updated_at:new Date().toISOString()}).eq('id',me.id);if(insertErr)throw insertErr}profile=await getProfile(me.id);if(!profile)throw new Error('প্রোফাইল তৈরি হয়নি');await startApp()}catch(e){alertBox('authError',e.message||String(e))}finally{$('enterBtn').disabled=false}}
+async function enter(){const display=$('displayName').value.trim(),username=$('username').value.trim().toLowerCase();if(!display||!/^[a-z0-9_]{3,30}$/.test(username)){alertBox('authError','Enter a name and a username using 3–30 lowercase letters, numbers, or underscores.');return}$('enterBtn').disabled=true;try{let {data,error}=await supa.auth.getSession();if(error)throw error;if(!data.session){const res=await supa.auth.signInAnonymously();if(res.error)throw res.error;me=res.data.user}else me=data.session.user;const {data:existing,error:readErr}=await supa.from('profiles').select('id').eq('id',me.id).maybeSingle();if(readErr)throw readErr;if(existing){const {error:updateErr}=await supa.from('profiles').update({display_name:display,username,updated_at:new Date().toISOString()}).eq('id',me.id);if(updateErr)throw updateErr}else{const {error:insertErr}=await supa.from('profiles').update({display_name:display,username,updated_at:new Date().toISOString()}).eq('id',me.id);if(insertErr)throw insertErr}profile=await getProfile(me.id);if(!profile)throw new Error('Profile could not be created');await startApp()}catch(e){alertBox('authError',e.message||String(e))}finally{$('enterBtn').disabled=false}}
 async function startApp(){
- showPanel('usersPanel');appBootReady=true;if(!maintenanceIsOn)chatAppShell.style.visibility='visible';
- $('headerSub').textContent=(profile?.display_name||'')+' · @'+(profile?.username||'');refreshHeaderProfileButton();setConn('অনলাইন',true);
+ showPanel('usersPanel');
+ appBootReady=false;
+ chatAppShell.style.visibility='hidden';
+ $('headerSub').textContent=(profile?.display_name||'')+' · @'+(profile?.username||'');
+ refreshHeaderProfileButton();setConn('Online',true);
  await setOnline(true);
  if(heartbeat)clearInterval(heartbeat);
  heartbeat=setInterval(()=>setOnline(true),30000);
  const recent=await loadRecentChats();
- for(const chat of recent){if(chat.conversation_id){void(async()=>{try{const {error}=await callRpc('mark_direct_messages_delivered',{p_conversation_id:chat.conversation_id});if(error)console.warn('delivery sync',error.message)}catch(e){console.warn('delivery sync',e.message)}})()}}
+ for(const chat of recent){
+  if(chat.conversation_id){
+   void(async()=>{
+    try{const {error}=await callRpc('mark_direct_messages_delivered',{p_conversation_id:chat.conversation_id});if(error)console.warn('delivery sync',error.message)}
+    catch(e){console.warn('delivery sync',e.message)}
+   })();
+  }
+ }
  connectRecentRealtime();
+ if(recentPollTimer)clearInterval(recentPollTimer);
+ // Fallback refresh: keep unread counts current while the app is visible without an open chat.
+ recentPollTimer=setInterval(()=>{
+  if(document.hidden||!me||currentPanel==='chatPanel'||currentPanel==='authPanel')return;
+  void loadRecentChats();
+ },4000);
+ appBootReady=true;
+ if(!maintenanceIsOn){
+  chatAppShell.style.visibility='visible';
+  $('appBootLoader').classList.add('hidden');
+ }
 }
 function updateChatFilterUi(){
  const map={all:'filterAllBtn',unread:'filterUnreadBtn',new:'filterNewChatBtn'};
@@ -783,21 +812,21 @@ function applyChatFilter(filter){
  document.querySelectorAll('#recentList .recentRow').forEach(row=>row.classList.toggle('filterHidden',filter==='unread'&&row.dataset.unread!=='1'));
  const rows=Array.from(document.querySelectorAll('#recentList .recentRow'));
  const visible=rows.filter(row=>!row.classList.contains('filterHidden')).length;
- if(filter==='unread'&&visible===0){$('recentEmpty').textContent='কোনও অপঠিত চ্যাট নেই';$('recentEmpty').classList.remove('hidden')}else{$('recentEmpty').textContent='এখনও কোনো চ্যাট নেই';$('recentEmpty').classList.toggle('hidden',rows.length>0)}
+ if(filter==='unread'&&visible===0){$('recentEmpty').textContent='No unread chats';$('recentEmpty').classList.remove('hidden')}else{$('recentEmpty').textContent='No chats yet';$('recentEmpty').classList.toggle('hidden',rows.length>0)}
 }
 function clearSearchUi(){
  const input=$('searchInput');if(input)input.value='';
  const clear=$('clearSearchBtn');if(clear)clear.classList.add('hidden');
  const panel=$('searchResultsPanel');if(panel)panel.classList.add('hidden');
  if($('userList'))$('userList').innerHTML='';if($('userError'))$('userError').classList.add('hidden');
- if($('searchHint'))$('searchHint').textContent='নাম বা username লিখে সার্চ করো';
+ if($('searchHint'))$('searchHint').textContent='Search by name or username';
 }
 async function searchUsers(){
  const q=String($('searchInput').value||'').trim();
  $('userList').innerHTML='';$('userError').classList.add('hidden');
  $('clearSearchBtn').classList.toggle('hidden',!q);$('searchResultsPanel').classList.toggle('hidden',q.length<2);
- if(q.length<2){$('searchHint').textContent='কমপক্ষে ২ অক্ষর লিখো';return}
- $('searchHint').textContent='খোঁজা হচ্ছে…';
+ if(q.length<2){$('searchHint').textContent='Enter at least 2 characters';return}
+ $('searchHint').textContent='Searching…';
  try{
   const {data,error}=await callRpc('search_chat_users',{search_text:q});if(error)throw error;
   if(String($('searchInput').value||'').trim()!==q)return;
@@ -805,16 +834,16 @@ async function searchUsers(){
   const ids=rows.map(x=>x.user_id);let profileRows=[];
   if(ids.length){const {data:p,error:pe}=await supa.from('profiles').select('id,avatar_url,display_name,username').in('id',ids);if(pe)throw pe;profileRows=p||[]}
   const map=new Map(profileRows.map(p=>[p.id,p]));
-  $('searchHint').textContent=rows.length?rows.length+' জন পাওয়া গেছে':'কোনও ব্যবহারকারী পাওয়া যায়নি';
+  $('searchHint').textContent=rows.length?rows.length+' users found':'No users found';
   $('userList').innerHTML=rows.map(u=>{
    const p=map.get(u.user_id)||{};const display=u.display_name||p.display_name||u.username||p.username||'User';
-   return '<div class="userCardRow"><button type="button" class="userProfileTap" data-view-profile="'+esc(u.user_id)+'" aria-label="'+esc(display)+'-এর প্রোফাইল"><span class="avatar">'+avatarMarkup(p.avatar_url,display)+'</span></button><button type="button" class="userCard" data-user="'+esc(u.user_id)+'"><span class="userInfo"><strong>'+esc(display)+'</strong><small>@'+esc(u.username||p.username||'')+' · '+(u.is_online?'অনলাইন':'অফলাইন')+'</small></span><span class="userChatArrow">›</span></button></div>';
+   return '<div class="userCardRow"><button type="button" class="userProfileTap" data-view-profile="'+esc(u.user_id)+'" aria-label="'+esc(display)+'’s profile"><span class="avatar">'+avatarMarkup(p.avatar_url,display)+'</span></button><button type="button" class="userCard" data-user="'+esc(u.user_id)+'"><span class="userInfo"><strong>'+esc(display)+'</strong><small>@'+esc(u.username||p.username||'')+' · '+(u.is_online?'Online':'Offline')+'</small></span><span class="userChatArrow">›</span></button></div>';
   }).join('');
   $('userList').querySelectorAll('[data-user]').forEach(el=>el.addEventListener('click',()=>{clearSearchUi();void openDirectChat(el.dataset.user)}));
   $('userList').querySelectorAll('[data-view-profile]').forEach(el=>el.addEventListener('click',()=>{clearSearchUi();void openProfilePhoto(el.dataset.viewProfile)}));
  }catch(e){$('searchHint').textContent='';alertBox('userError',e.message||String(e))}
 }
-async function openDirectChat(id){try{setConn('চ্যাট খুলছে…');const {data,error}=await callRpc('get_or_create_direct_chat',{target_user:id});if(error)throw error;const convId=typeof data==='string'?data:data?.id||data?.conversation_id;if(!convId)throw new Error('চ্যাট ID পাওয়া যায়নি');const peer=await getProfile(id);if(!peer)throw new Error('ব্যবহারকারী পাওয়া যায়নি');clearSearchUi();await openChat(convId,peer)}catch(e){alertBox('userError','চ্যাট খোলা যায়নি: '+e.message);setConn('ত্রুটি')}}
+async function openDirectChat(id){try{setConn('Opening chat…');const {data,error}=await callRpc('get_or_create_direct_chat',{target_user:id});if(error)throw error;const convId=typeof data==='string'?data:data?.id||data?.conversation_id;if(!convId)throw new Error('Chat ID was not found');const peer=await getProfile(id);if(!peer)throw new Error('User was not found');clearSearchUi();await openChat(convId,peer)}catch(e){alertBox('userError','Could not open chat: '+e.message);setConn('Error')}}
 // Keep the in-app unread count display without native notification integration.
 function updateUnreadChatCount(count){
  const unread=Math.max(0,Math.floor(Number(count)||0));
@@ -846,23 +875,23 @@ async function loadRecentChats(){
   const profileMap=new Map(profileRows.map(p=>[p.id,p]));
   $('recentList').innerHTML=rows.map(r=>{
    const p=profileMap.get(r.peer_id)||{};
-   const display=r.peer_display_name||p.display_name||r.peer_username||p.username||'ব্যবহারকারী';
-   return '<div class="recentRow" data-unread="'+(Number(r.unread_count)>0?'1':'0')+'"><button type="button" class="recentProfileTap" data-view-profile="'+esc(r.peer_id)+'" aria-label="'+esc(display)+'-এর প্রোফাইল"><span class="avatar">'+avatarMarkup(p.avatar_url,display)+'</span></button><button type="button" class="recentCard" data-conv="'+esc(r.conversation_id)+'" data-peer="'+esc(r.peer_id)+'"><span class="recentInfo"><span class="recentTop"><strong>'+esc(display)+'</strong><span class="recentTime">'+timeStr(r.last_created_at)+'</span></span><span class="recentPreview"><span class="previewText">'+esc(r.last_body||'নতুন চ্যাট')+'</span>'+(Number(r.unread_count)>0?'<span class="unreadBadge">'+Number(r.unread_count)+'</span>':'')+'</span></span></button></div>';
+   const display=r.peer_display_name||p.display_name||r.peer_username||p.username||'User';
+   return '<div class="recentRow" data-unread="'+(Number(r.unread_count)>0?'1':'0')+'"><button type="button" class="recentProfileTap" data-view-profile="'+esc(r.peer_id)+'" aria-label="'+esc(display)+'’s profile"><span class="avatar">'+avatarMarkup(p.avatar_url,display)+'</span></button><button type="button" class="recentCard" data-conv="'+esc(r.conversation_id)+'" data-peer="'+esc(r.peer_id)+'"><span class="recentInfo"><span class="recentTop"><strong>'+esc(display)+'</strong><span class="recentTime">'+timeStr(r.last_created_at)+'</span></span><span class="recentPreview"><span class="previewText">'+esc(r.last_body||'New chat')+'</span>'+(Number(r.unread_count)>0?'<span class="unreadBadge">'+Number(r.unread_count)+'</span>':'')+'</span></span></button></div>';
   }).join('');
   const totalUnread=rows.reduce((n,r)=>n+(Number(r.unread_count)||0),0);
   void updateUnreadChatCount(totalUnread);
-  $('recentCountLabel').textContent=rows.length?rows.length+' চ্যাট':'';
+  $('recentCountLabel').textContent=rows.length?rows.length+' Chat':'';
   $('recentEmpty').classList.toggle('hidden',rows.length>0);
   applyChatFilter(currentChatFilter);
   $('recentList').querySelectorAll('[data-conv]').forEach(el=>el.addEventListener('click',async()=>{
-   try{const p=await getProfile(el.dataset.peer);if(!p)throw new Error('ব্যবহারকারী পাওয়া যায়নি');await openChat(el.dataset.conv,p)}
+   try{const p=await getProfile(el.dataset.peer);if(!p)throw new Error('User was not found');await openChat(el.dataset.conv,p)}
    catch(e){alertBox('userError',e.message||String(e))}
   }));
   $('recentList').querySelectorAll('[data-view-profile]').forEach(el=>el.addEventListener('click',()=>openProfilePhoto(el.dataset.viewProfile)));
   return rows;
  }catch(e){
   $('recentList').innerHTML='';$('recentEmpty').classList.remove('hidden');
-  $('recentEmpty').textContent='চ্যাট তালিকা লোড হয়নি: '+(e.message||String(e));return [];
+  $('recentEmpty').textContent='Could not load chat list: '+(e.message||String(e));return [];
  }
 }
 function scheduleRecentChatRefresh(delay=120){
@@ -914,7 +943,7 @@ function connectRecentRealtime(){
     activePeer={...activePeer,...row};
     $('chatAvatar').innerHTML=avatarMarkup(row.avatar_url,row.display_name||row.username||'?');
     $('chatName').textContent=row.display_name||row.username||'User';
-    $('chatStatus').textContent=row.is_online?'অনলাইন':'@'+(row.username||'');
+    $('chatStatus').textContent=row.is_online?'Online':'@'+(row.username||'');
    }
    if(viewedProfileId===row.id&&row.id!==me.id&&!$('profilePanel').classList.contains('hidden'))fillProfileView(row,false);
    if(document.querySelector('[data-peer="'+row.id+'"]'))scheduleRecentChatRefresh(90);
@@ -937,24 +966,24 @@ function connectRecentRealtime(){
    }
   });
 }
-function chatLoadingMarkup(label='চ্যাট লোড হচ্ছে…'){
+function chatLoadingMarkup(label='Loading chat…'){
  return '<div class="chatLoadingState" role="status" aria-live="polite"><div class="chatLoadingDots" aria-hidden="true"><span></span><span></span><span></span></div><div class="chatLoadingText">'+esc(label)+'</div></div>';
 }
 function chatLoadErrorMarkup(message){
- return '<div class="chatLoadError"><div class="chatLoadingIcon">⌁</div><strong>মেসেজ লোড হয়নি</strong><p>'+esc(message||'ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করো।')+'</p><button type="button" id="retryChatLoadBtn">আবার চেষ্টা করুন</button></div>';
+ return '<div class="chatLoadError"><div class="chatLoadingIcon">⌁</div><strong>message load failed</strong><p>'+esc(message||'internet connection পরীক্ষা করে again try do it।')+'</p><button type="button" id="retryChatLoadBtn">again try please</button></div>';
 }
 async function openChat(convId,peer){
- if(!convId||!peer)throw new Error('চ্যাটের তথ্য অসম্পূর্ণ');
+ if(!convId||!peer)throw new Error('Chatের তথ্য অসম্পূর্ণ');
  if(msgChannel){try{await supa.removeChannel(msgChannel)}catch{}}
  activeChat=convId;activePeer=peer;chatStickToBottom=true;updateJumpLatestButton();clearMessageSelection();clearPendingImage();knownMsgs.clear();chatHistoryPushed=false;
  showPanel('chatPanel');
  $('messages').innerHTML=chatLoadingMarkup();
- $('chatHint').textContent='নিরাপদ সংযোগ তৈরি হচ্ছে…';
- $('headerSub').textContent='ব্যক্তিগত চ্যাট';
+ $('chatHint').textContent='Establishing a secure connection…';
+ $('headerSub').textContent='ব্যক্তিগত Chat';
  $('chatName').textContent=peer.display_name||peer.username||'User';
  $('chatAvatar').innerHTML=avatarMarkup(peer.avatar_url,peer.display_name||peer.username||'?');
- $('chatStatus').textContent=peer.is_online?'অনলাইন':'@'+(peer.username||'');
- setConn('চ্যাট সংযুক্ত',true);pushChatHistory(convId);
+ $('chatStatus').textContent=peer.is_online?'Online':'@'+(peer.username||'');
+ setConn('Chat connected',true);pushChatHistory(convId);
  try{
   await loadMessages({forceBottom:true});
   await connectMessageRealtime();
@@ -966,18 +995,18 @@ async function openChat(convId,peer){
   $('chatHint').textContent='';
   const retry=$('retryChatLoadBtn');
   if(retry)retry.addEventListener('click',async()=>{
-   $('messages').innerHTML=chatLoadingMarkup('আবার সংযোগ হচ্ছে…');
-   $('chatHint').textContent='নিরাপদ সংযোগ তৈরি হচ্ছে…';
+   $('messages').innerHTML=chatLoadingMarkup('Reconnecting…');
+   $('chatHint').textContent='Establishing a secure connection…';
    try{await loadMessages({forceBottom:true});await connectMessageRealtime();setChatHint('');scheduleChatBottom(true)}
    catch(err){$('messages').innerHTML=chatLoadErrorMarkup(err?.message||String(err));$('chatHint').textContent=''}
   });
  }
 }
 function pushChatHistory(convId){if(chatHistoryPushed)return;try{history.pushState({studyChatOpen:true,conversationId:convId},'',location.href);chatHistoryPushed=true}catch{chatHistoryPushed=false}}
-async function closeChatView(){if(closingChat)return;closingChat=true;clearMessageSelection();if(realtimeRetryTimer){clearTimeout(realtimeRetryTimer);realtimeRetryTimer=null}if(msgChannel){const ch=msgChannel;msgChannel=null;try{await supa.removeChannel(ch)}catch{}}activeChat=null;activePeer=null;knownMsgs.clear();subscribed=false;chatHistoryPushed=false;showPanel('usersPanel');$('headerSub').textContent='নাম দিয়ে ব্যবহারকারী খুঁজুন';setConn('অনলাইন',true);try{await loadRecentChats()}catch{}closingChat=false}
+async function closeChatView(){if(closingChat)return;closingChat=true;clearMessageSelection();if(realtimeRetryTimer){clearTimeout(realtimeRetryTimer);realtimeRetryTimer=null}if(msgChannel){const ch=msgChannel;msgChannel=null;try{await supa.removeChannel(ch)}catch{}}activeChat=null;activePeer=null;knownMsgs.clear();subscribed=false;chatHistoryPushed=false;showPanel('usersPanel');$('headerSub').textContent='Find users by name';setConn('Online',true);try{await loadRecentChats()}catch{}closingChat=false}
 async function goBackToRecentChats(){if(!activeChat){showPanel('usersPanel');return}if(chatHistoryPushed){try{history.back();setTimeout(()=>{if(activeChat&&chatHistoryPushed)void closeChatView()},300);return}catch{}}await closeChatView()}
 window.addEventListener('popstate',()=>{if(activeChat)void closeChatView()});document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('profilePhotoViewer').classList.contains('hidden')){e.preventDefault();closeProfilePhotoViewer();return}if(!$('imageViewer').classList.contains('hidden')){e.preventDefault();closeImageViewer();return}if(activeChat){if(selectedMessageIds.size>0)clearMessageSelection();else void goBackToRecentChats()}})
-async function connectMessageRealtime(){if(!activeChat)return;if(msgChannel){try{await supa.removeChannel(msgChannel)}catch{}}subscribed=false;const cid=activeChat;msgChannel=supa.channel('messages-'+cid+'-'+Date.now()).on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:'conversation_id=eq.'+cid},payload=>{const row=payload.new||payload.old;if(row&&row.conversation_id===activeChat)loadMessages().catch(e=>setChatHint('মেসেজ আপডেট হয়নি: '+e.message))}).subscribe(status=>{if(status==='SUBSCRIBED'){subscribed=true;realtimeRetryCount=0;setConn('লাইভ সংযুক্ত',true)}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){subscribed=false;setChatHint('Realtime: '+status+' — আবার সংযোগ হচ্ছে…');setConn('পুনরায় সংযোগ হচ্ছে…');scheduleRealtimeRetry()}})}
+async function connectMessageRealtime(){if(!activeChat)return;if(msgChannel){try{await supa.removeChannel(msgChannel)}catch{}}subscribed=false;const cid=activeChat;msgChannel=supa.channel('messages-'+cid+'-'+Date.now()).on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:'conversation_id=eq.'+cid},payload=>{const row=payload.new||payload.old;if(row&&row.conversation_id===activeChat)loadMessages().catch(e=>setChatHint('Messages failed to update: '+e.message))}).subscribe(status=>{if(status==='SUBSCRIBED'){subscribed=true;realtimeRetryCount=0;setConn('Live connection established',true)}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){subscribed=false;setChatHint('Realtime: '+status+' — Reconnecting…');setConn('Reconnecting…');scheduleRealtimeRetry()}})}
 function scheduleRealtimeRetry(){if(realtimeRetryTimer||!activeChat)return;const delay=Math.min(15000,1000*Math.pow(2,Math.min(realtimeRetryCount,4)));realtimeRetryCount++;realtimeRetryTimer=setTimeout(()=>{realtimeRetryTimer=null;connectMessageRealtime().catch(()=>scheduleRealtimeRetry())},delay)}function setChatHint(v){$('chatHint').textContent=v}
 function chatDistanceToBottom(el=$('messages')){if(!el)return 0;return Math.max(0,el.scrollHeight-el.scrollTop-el.clientHeight)}
 function updateJumpLatestButton(){const btn=$('scrollToLatestBtn'),box=$('messages');if(!btn||!box)return;const visible=!$('chatPanel').classList.contains('hidden'),away=chatDistanceToBottom(box)>150;btn.classList.toggle('hidden',!visible||!away)}
@@ -1023,10 +1052,10 @@ async function loadMessages(options={}){
  knownMsgs=new Map(msgs.map(m=>[m.id,m]));
  messageBox.innerHTML=msgs.map(m=>{
   const mine=m.sender_id===me.id,deleted=!!m.deleted_at||m.delete_for_everyone;
-  const bodyText=deleted?'<span class="deleted">এই মেসেজটি মুছে ফেলা হয়েছে</span>':(!m.image_path||m.body!=='📷 ছবি'?esc(m.body):'');
-  const imagePart=m.image_path&&!deleted?'<div class="imageMessage"><img class="chatImage" id="chat-image-'+esc(m.id)+'" data-open-image="'+esc(m.id)+'" alt="চ্যাটে পাঠানো ছবি" loading="lazy" decoding="async">'+(mine?'<button class="imageDownloadButton" type="button" data-download-image="'+esc(m.id)+'">⬇ ডাউনলোড</button>':'')+'</div>':'';
-  const receipt=mine&&!deleted?'<span class="messageTicks '+(m.read_at?'read':'')+'" title="'+(m.read_at?'পড়া হয়েছে':m.delivered_at?'পৌঁছেছে':'পাঠানো হয়েছে')+'">'+(m.read_at||m.delivered_at?'✓✓':'✓')+'</span>':'';
-  return '<div class="msg '+(mine?'mine':'')+'" data-msg="'+esc(m.id)+'"><div class="bubble">'+bodyText+imagePart+'</div><div class="meta"><span>'+timeStr(m.created_at)+'</span>'+(m.edited_at&&!deleted?'<span>সম্পাদিত</span>':'')+receipt+'</div></div>';
+  const bodyText=deleted?'<span class="deleted">This message was deleted</span>':(!m.image_path||m.body!=='📷 photo'?esc(m.body):'');
+  const imagePart=m.image_path&&!deleted?'<div class="imageMessage"><img class="chatImage" id="chat-image-'+esc(m.id)+'" data-open-image="'+esc(m.id)+'" alt="Chatে sent photo" loading="lazy" decoding="async">'+(mine?'<button class="imageDownloadButton" type="button" data-download-image="'+esc(m.id)+'">⬇ Download</button>':'')+'</div>':'';
+  const receipt=mine&&!deleted?'<span class="messageTicks '+(m.read_at?'read':'')+'" title="'+(m.read_at?'Read':m.delivered_at?'Delivered':'Sent')+'">'+(m.read_at||m.delivered_at?'✓✓':'✓')+'</span>':'';
+  return '<div class="msg '+(mine?'mine':'')+'" data-msg="'+esc(m.id)+'"><div class="bubble">'+bodyText+imagePart+'</div><div class="meta"><span>'+timeStr(m.created_at)+'</span>'+(m.edited_at&&!deleted?'<span>Edited</span>':'')+receipt+'</div></div>';
  }).join('');
  bindMessageLongPress();
  syncMessageSelection();
@@ -1068,16 +1097,16 @@ async function hydrateChatImages(msgs){
   if(!img)return;
   const cached=imageUrlCache.get(m.image_path);
   if(cached&&cached.url){if(img.src!==cached.url){img.onload=()=>{if(chatStickToBottom)scheduleChatBottom(false)};img.src=cached.url}}
-  else {img.alt='ছবি লোড হয়নি';img.classList.add('imageLoadError')}
+  else {img.alt='Photo failed to load';img.classList.add('imageLoadError')}
  }));
 }
 async function openImageViewer(id){
  const m=knownMsgs.get(id);
- if(!m||!m.image_path||m.deleted_at||m.delete_for_everyone){setChatHint('এই ছবিটি আর পাওয়া যাচ্ছে না।');return}
+ if(!m||!m.image_path||m.deleted_at||m.delete_for_everyone){setChatHint('This photo is no longer available.');return}
  const viewer=$('imageViewer'),image=$('imageViewerImg');
- $('imageViewerName').textContent=m.image_name||'ছবি';
- $('imageViewerCaption').textContent=m.body&&m.body!=='📷 ছবি'?m.body:'';
- image.alt=m.image_name||'সম্পূর্ণ ছবি';
+ $('imageViewerName').textContent=m.image_name||'photo';
+ $('imageViewerCaption').textContent=m.body&&m.body!=='📷 photo'?m.body:'';
+ image.alt=m.image_name||'Full image';
  const cachedNow=imageUrlCache.get(m.image_path);
  image.src=cachedNow&&cachedNow.expiresAt>Date.now()?cachedNow.url:'';
  viewer.classList.remove('hidden');
@@ -1094,7 +1123,7 @@ async function openImageViewer(id){
   }
   if(!viewer.classList.contains('hidden'))image.src=cached.url;
  }catch(e){
-  $('imageViewerCaption').textContent='ছবি লোড করা যায়নি: '+(e.message||String(e));
+  $('imageViewerCaption').textContent='Could not load photo: '+(e.message||String(e));
  }
 }
 function closeImageViewer(){
@@ -1111,22 +1140,22 @@ function clearMessageSelection(){
  suppressMessageClickId=null;suppressMessageClickUntil=0;
  document.querySelectorAll('.msg.selected').forEach(el=>el.classList.remove('selected'));
  $('deleteSelectedBtn').classList.add('hidden');
- $('deleteSelectedBtn').textContent='🗑 সবার জন্য';
+ $('deleteSelectedBtn').textContent='🗑 Allার জন্য';
  $('cancelSelectionBtn').classList.add('hidden');
- $('chatHint').textContent='মেসেজ নির্বাচন বাতিল করা হয়েছে';
+ $('chatHint').textContent='Message selection cleared';
 }
 function updateMessageSelectionUI(){
  document.querySelectorAll('.msg').forEach(el=>el.classList.toggle('selected',selectedMessageIds.has(el.dataset.msg)));
  const count=selectedMessageIds.size;
  $('deleteSelectedBtn').classList.toggle('hidden',count===0);
  $('cancelSelectionBtn').classList.toggle('hidden',count===0);
- $('deleteSelectedBtn').textContent=count>1?'🗑 সবার জন্য ('+count+')':'🗑 সবার জন্য';
- if(count>0)$('chatHint').textContent=count+'টি মেসেজ নির্বাচিত — আরও মেসেজ ট্যাপ করে নির্বাচন করো';
+ $('deleteSelectedBtn').textContent=count>1?'🗑 Allার জন্য ('+count+')':'🗑 Allার জন্য';
+ if(count>0)$('chatHint').textContent=count+' messages selected — tap more messages to select them';
 }
 function toggleMessageSelection(id,fromLongPress=false){
  const m=knownMsgs.get(id);
  if(!m||m.sender_id!==me.id||m.deleted_at||m.delete_for_everyone){
-  if(selectedMessageIds.size>0)$('chatHint').textContent='শুধু নিজের পাঠানো ও আগে ডিলিট না হওয়া মেসেজ নির্বাচন করা যাবে';
+  if(selectedMessageIds.size>0)$('chatHint').textContent='Only your own messages that have not already been deleted can be selected.';
   return;
  }
  if(selectedMessageIds.has(id))selectedMessageIds.delete(id);else selectedMessageIds.add(id);
@@ -1183,21 +1212,21 @@ function clearPendingImage(){
   const input=$('imageFileInput');if(input)input.value='';
   const box=$('imagePending');if(box)box.classList.add('hidden');
   const thumb=$('pendingImageThumb');if(thumb)thumb.removeAttribute('src');
-  if($('pendingImageName'))$('pendingImageName').textContent='ছবি';
+  if($('pendingImageName'))$('pendingImageName').textContent='photo';
   if($('pendingImageSize'))$('pendingImageSize').textContent='';
 }
 function chooseChatImage(file){
  if(!file)return;
- if(!file.type||!file.type.toLowerCase().startsWith('image/')){alert('শুধু image file নির্বাচন করো।');return}
- if(file.size>10485760){alert('ছবির আকার ১০ MB-এর কম হতে হবে।');return}
+ if(!file.type||!file.type.toLowerCase().startsWith('image/')){alert('Select an image file only.');return}
+ if(file.size>10485760){alert('Image must be smaller than 10 MB.');return}
  const allowed=['image/jpeg','image/jpg','image/png','image/webp','image/gif','image/heic','image/heif','image/avif'];
- if(!allowed.includes(file.type.toLowerCase())){alert('এই image format সমর্থিত নয়। JPG, PNG, WebP, GIF, HEIC বা AVIF ব্যবহার করো।');return}
+ if(!allowed.includes(file.type.toLowerCase())){alert('This image format is not supported. Use JPG, PNG, WebP, GIF, HEIC, or AVIF.');return}
  clearPendingImage();
  pendingImageFile=file;
  pendingImagePreviewUrl=URL.createObjectURL(file);
  $('pendingImageThumb').src=pendingImagePreviewUrl;
- $('pendingImageName').textContent=file.name||'ছবি';
- $('pendingImageSize').textContent=(file.size/1024/1024).toFixed(2)+' MB · পাঠাতে ➤ চাপো';
+ $('pendingImageName').textContent=file.name||'photo';
+ $('pendingImageSize').textContent=(file.size/1024/1024).toFixed(2)+'  MB · Press ➤ to send';
  $('imagePending').classList.remove('hidden');
 }
 function fileExtension(file){
@@ -1208,16 +1237,16 @@ function fileExtension(file){
 }
 async function downloadChatImage(id){
  const m=knownMsgs.get(id);
- if(!m||!m.image_path||m.deleted_at||m.delete_for_everyone){setChatHint('এই ছবিটি আর পাওয়া যাচ্ছে না।');return}
- if(m.sender_id!==me.id){setChatHint('এই অ্যাপে ছবির ডাউনলোড অপশন শুধু প্রেরকের জন্য আছে।');return}
+ if(!m||!m.image_path||m.deleted_at||m.delete_for_everyone){setChatHint('This photo is no longer available.');return}
+ if(m.sender_id!==me.id){setChatHint('Photo downloads are available only to the sender in this app.');return}
  try{
   const filename=(m.image_name||('study-chat-image.'+fileExtension({type:m.image_mime_type,name:m.image_name||''}))).replace(/[\\/:*?\"<>|]/g,'_').slice(0,120)||'study-chat-image.jpg';
   const {data,error}=await supa.storage.from('chat-images').createSignedUrl(m.image_path,120,{download:filename});
   if(error)throw error;
   const a=document.createElement('a');a.href=data.signedUrl;a.download=filename;a.rel='noopener';
   document.body.appendChild(a);a.click();a.remove();
-  setChatHint('ডাউনলোড শুরু করা হয়েছে। ফোনের Downloads/Files-এ খুঁজে দেখো; Gallery-তে সেভ করার সুবিধা WebIntoApp-এর download support-এর ওপর নির্ভর করে।');
- }catch(e){setChatHint('ছবি ডাউনলোড করা যায়নি: '+(e.message||String(e)))}
+  setChatHint('Download started. Check Downloads/Files on your phone; saving to Gallery depends on WebIntoApp download support.');
+ }catch(e){setChatHint('Photo download failed: '+(e.message||String(e)))}
 }
 async function sendMessage(e){
  e.preventDefault();
@@ -1230,7 +1259,7 @@ async function sendMessage(e){
  let uploadedPath=null;
  try{
   let body=caption;
-  const record={conversation_id:activeChat,sender_id:me.id,body:caption||'📷 ছবি'};
+  const record={conversation_id:activeChat,sender_id:me.id,body:caption||'📷 photo'};
   if(file){
    const ext=fileExtension(file);
    const unique=(window.crypto&&typeof window.crypto.randomUUID==='function')?window.crypto.randomUUID():(Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
@@ -1250,24 +1279,24 @@ async function sendMessage(e){
   $('messageInput').value='';
   clearPendingImage();
   await loadMessages({forceBottom:true});await loadRecentChats();
- }catch(e){setChatHint('মেসেজ/ছবি পাঠানো যায়নি: '+(e.message||String(e)))}
+ }catch(e){setChatHint('Message/photo failed to send: '+(e.message||String(e)))}
  finally{$('sendBtn').disabled=false;$('imagePickBtn').disabled=false;const input=$('messageInput');if(input&&!$('chatPanel').classList.contains('hidden')){try{input.focus({preventScroll:true})}catch{input.focus()}scheduleChatBottom(true);setTimeout(()=>{if(document.activeElement===input)scheduleChatBottom(true)},90)}}
 }
 async function deleteForEveryone(){
  const ids=Array.from(selectedMessageIds);
  if(!ids.length)return;
  const validIds=ids.filter(id=>{const m=knownMsgs.get(id);return !!m&&m.sender_id===me.id&&!m.deleted_at&&!m.delete_for_everyone});
- if(!validIds.length){clearMessageSelection();setChatHint('ডিলিট করার মতো নিজের কোনো মেসেজ নির্বাচন করা নেই');return}
- if(!confirm('নির্বাচিত '+validIds.length+'টি মেসেজ সবার জন্য মুছে ফেলবে? দুই পাশের চ্যাটেই এগুলো আর পড়া যাবে না।'))return;
+ if(!validIds.length){clearMessageSelection();setChatHint('No message of yours is selected for deletion.');return}
+ if(!confirm('Selected '+validIds.length+' messages will be deleted for everyone? They will no longer be visible to either person.'))return;
  $('deleteSelectedBtn').disabled=true;
  const now=new Date().toISOString();let deletedCount=0;const failures=[];
  try{
   for(const id of validIds){
    try{
     const m=knownMsgs.get(id);const imagePath=m?.image_path||null;
-    const {data,error}=await supa.from('messages').update({body:'এই মেসেজটি মুছে ফেলা হয়েছে',deleted_at:now,deleted_by:me.id,delete_for_everyone:true,edited_at:now,image_path:null,image_name:null,image_mime_type:null,image_size:null}).eq('id',id).eq('sender_id',me.id).select('id').maybeSingle();
+    const {data,error}=await supa.from('messages').update({body:'This message was deleted',deleted_at:now,deleted_by:me.id,delete_for_everyone:true,edited_at:now,image_path:null,image_name:null,image_mime_type:null,image_size:null}).eq('id',id).eq('sender_id',me.id).select('id').maybeSingle();
     if(error)throw error;
-    if(!data)throw new Error('database policy অনুযায়ী মেসেজটি আপডেট হয়নি');
+    if(!data)throw new Error('The message could not be updated because of the database policy.');
     if(imagePath){try{const {error:storageError}=await supa.storage.from('chat-images').remove([imagePath]);if(storageError)console.warn('image removal failed',storageError.message)}catch(storageError){console.warn('image removal failed',storageError)}}
     deletedCount++;
    }catch(e){failures.push(e.message||String(e))}
@@ -1275,17 +1304,21 @@ async function deleteForEveryone(){
   clearMessageSelection();
   await loadMessages();
   await loadRecentChats();
-  if(failures.length)setChatHint(deletedCount+'/'+validIds.length+'টি মুছেছে; '+failures.length+'টি মুছতে পারেনি: '+failures[0]);
-  else setChatHint(deletedCount+'টি মেসেজ সবার জন্য মুছে ফেলা হয়েছে');
- }catch(e){setChatHint('মুছতে পারিনি: '+(e.message||String(e)))}
+  if(failures.length)setChatHint(deletedCount+'/'+validIds.length+' deleted; '+failures.length+' failed to delete: '+failures[0]);
+  else setChatHint(deletedCount+' messages deleted for everyone.');
+ }catch(e){setChatHint('Could not delete: '+(e.message||String(e)))}
  finally{$('deleteSelectedBtn').disabled=false}
 }
 
 $('headerNewChatBtn').addEventListener('click',()=>{showPanel('usersPanel');clearSearchUi();$('searchInput').focus();$('searchInput').scrollIntoView({behavior:'smooth',block:'start'})});$('headerMoreBtn').addEventListener('click',e=>{e.stopPropagation();const menu=$('headerMenu');menu.classList.toggle('hidden');$('headerMoreBtn').setAttribute('aria-expanded',String(!menu.classList.contains('hidden')))});$('menuProfileBtn').addEventListener('click',()=>{ $('headerMenu').classList.add('hidden');$('headerMoreBtn').setAttribute('aria-expanded','false');profileReturnPanel='usersPanel';void openMyProfile()});$('menuRefreshBtn').addEventListener('click',()=>{ $('headerMenu').classList.add('hidden');$('headerMoreBtn').setAttribute('aria-expanded','false');void loadRecentChats()});$('menuLogoutBtn').addEventListener('click',()=>{ $('headerMenu').classList.add('hidden');$('logoutBtn').click()});document.addEventListener('click',e=>{if(!e.target.closest('#headerMenu')&&!e.target.closest('#headerMoreBtn')){$('headerMenu').classList.add('hidden');$('headerMoreBtn').setAttribute('aria-expanded','false')}});$('newChatFab').addEventListener('click',()=>{$('searchInput').focus();$('searchInput').scrollIntoView({behavior:'smooth',block:'start'})});$('navChatsBtn').addEventListener('click',()=>{showPanel('usersPanel');clearSearchUi();applyChatFilter('all');$('navChatsBtn').classList.add('active');$('navMoreBtn').classList.remove('active')});$('navMoreBtn').addEventListener('click',()=>{showPanel('morePanel');$('navChatsBtn').classList.remove('active');$('navMoreBtn').classList.add('active')});$('moreBackBtn').addEventListener('click',()=>{showPanel('usersPanel');$('navChatsBtn').classList.add('active');$('navMoreBtn').classList.remove('active')});$('moreAccountCard').addEventListener('click',()=>{profileReturnPanel='morePanel';void openMyProfile()});$('moreApiBtn').addEventListener('click',()=>showPanel('apiPanel'));$('moreRefreshBtn').addEventListener('click',()=>{void loadRecentChats();showPanel('usersPanel')});$('moreLogoutBtn').addEventListener('click',()=> $('logoutBtn').click());$('apiBackBtn').addEventListener('click',()=>showPanel('morePanel'));$('profileAboutInput').addEventListener('input',updateAboutCounters);$('toggleApiGatewayKeyBtn').addEventListener('click',()=>{apiGatewayKeyVisible=!apiGatewayKeyVisible;loadPublicApiDetails()});$('copyApiEndpointBtn').addEventListener('click',()=>copyAutomationValue(AUTOMATION_API_URL,'Automation endpoint'));$('copyApiGatewayKeyBtn').addEventListener('click',()=>copyAutomationValue(SUPABASE_KEY,'Publishable gateway key'));$('createAutomationKeyBtn').addEventListener('click',()=>void createAutomationKey());$('refreshAutomationKeysBtn').addEventListener('click',()=>void renderAutomationKeys());$('toggleNewAutomationKeyBtn').addEventListener('click',()=>{newAutomationKeyVisible=!newAutomationKeyVisible;$('newAutomationKeyInput').type=newAutomationKeyVisible?'text':'password';$('toggleNewAutomationKeyBtn').textContent=newAutomationKeyVisible?'Hide':'Show'});$('copyNewAutomationKeyBtn').addEventListener('click',()=>copyAutomationValue($('newAutomationKeyInput').value,'Automation Key'));$('scrollToLatestBtn').addEventListener('click',()=>{chatStickToBottom=true;scheduleChatBottom(true);try{$('messageInput').focus({preventScroll:true})}catch{}});$('enterBtn').addEventListener('click',enter);$('searchInput').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(searchUsers,250)});$('clearSearchBtn').addEventListener('click',()=>{clearTimeout(searchTimer);clearSearchUi();applyChatFilter(currentChatFilter)});$('filterAllBtn').addEventListener('click',()=>applyChatFilter('all'));$('filterUnreadBtn').addEventListener('click',()=>applyChatFilter('unread'));$('filterNewChatBtn').addEventListener('click',()=>{$('searchInput').focus();$('searchInput').scrollIntoView({behavior:'smooth',block:'nearest'})});$('imagePickBtn').addEventListener('click',()=> $('imageFileInput').click());$('imageFileInput').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(file)chooseChatImage(file)});$('removePendingImageBtn').addEventListener('click',clearPendingImage);$('messages').addEventListener('click',e=>{const button=e.target&&e.target.closest?e.target.closest('[data-download-image]'):null;if(button){e.preventDefault();e.stopPropagation();downloadChatImage(button.dataset.downloadImage);return}const image=e.target&&e.target.closest?e.target.closest('[data-open-image]'):null;if(image){e.preventDefault();e.stopPropagation();openImageViewer(image.dataset.openImage)}});$('viewerDownloadBtn').addEventListener('click',()=>{const id=$('viewerDownloadBtn').dataset.downloadImage;if(id)downloadChatImage(id)});$('profilePhotoCloseBtn').addEventListener('click',closeProfilePhotoViewer);$('profilePhotoZoomInBtn').addEventListener('click',()=>zoomProfilePhotoBy(.5));$('profilePhotoZoomOutBtn').addEventListener('click',()=>zoomProfilePhotoBy(-.5));$('profilePhotoResetBtn').addEventListener('click',()=>setProfilePhotoZoom(1,0,0));$('profilePhotoViewer').addEventListener('click',e=>{if(e.target===$('profilePhotoViewer'))closeProfilePhotoViewer()});$('profilePhotoStage').addEventListener('pointerdown',onProfilePhotoPointerDown);$('profilePhotoStage').addEventListener('pointermove',onProfilePhotoPointerMove);$('profilePhotoStage').addEventListener('pointerup',onProfilePhotoPointerUp);$('profilePhotoStage').addEventListener('pointercancel',onProfilePhotoPointerUp);$('closeImageViewerBtn').addEventListener('click',closeImageViewer);$('imageViewer').addEventListener('click',e=>{if(e.target===$('imageViewer'))closeImageViewer()});$('sendForm').addEventListener('submit',sendMessage);$('backBtn').addEventListener('click',goBackToRecentChats);$('recentRefreshBtn').addEventListener('click',loadRecentChats);$('refreshBtn').addEventListener('click',()=>loadMessages().catch(e=>setChatHint(e.message)));$('deleteSelectedBtn').addEventListener('click',()=>deleteForEveryone());$('cancelSelectionBtn').addEventListener('click',clearMessageSelection);$('myProfileBtn').addEventListener('click',openMyProfile);$('profileAvatarImage').addEventListener('click',()=>{if(viewedProfileId)void openProfilePhoto(viewedProfileId)});
-$('dpCameraBadge').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(viewedProfileId===me?.id)$('avatarFileInput').click()});$('chatAvatar').addEventListener('click',()=>{if(activePeer?.id)void openProfilePhoto(activePeer.id)});$('chooseAvatarBtn').addEventListener('click',()=> $('avatarFileInput').click());$('avatarFileInput').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(file)chooseProfileAvatar(file)});$('avatarCropCancelTop').addEventListener('click',closeAvatarCrop);$('avatarCropCancelBtn').addEventListener('click',closeAvatarCrop);$('avatarCropUseBtn').addEventListener('click',finishAvatarCrop);$('avatarCropResetBtn').addEventListener('click',resetAvatarCrop);$('avatarCropRotateBtn').addEventListener('click',()=>{avatarCropRotation=(avatarCropRotation+90)%360;drawAvatarCrop()});$('avatarCropZoomInput').addEventListener('input',e=>{avatarCropZoom=Number(e.target.value)||1;drawAvatarCrop()});$('avatarCropModal').addEventListener('click',e=>{if(e.target===$('avatarCropModal'))closeAvatarCrop()});const cropStage=$('avatarCropStage');cropStage.addEventListener('pointerdown',e=>{ if(!avatarCropImage)return;e.preventDefault(); try{cropStage.setPointerCapture(e.pointerId)}catch{} avatarCropPointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(avatarCropPointers.size>=2){const pts=[...avatarCropPointers.values()].slice(0,2);avatarCropPinch={distance:Math.max(1,Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y)),zoom:avatarCropZoom};avatarCropDrag=null} else{const rect=cropStage.getBoundingClientRect();avatarCropDrag={id:e.pointerId,x:e.clientX,y:e.clientY,offsetX:avatarCropOffsetX,offsetY:avatarCropOffsetY,scale:320/rect.width}}});cropStage.addEventListener('pointermove',e=>{ if(!avatarCropPointers.has(e.pointerId))return;e.preventDefault();avatarCropPointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(avatarCropPointers.size>=2&&avatarCropPinch){const pts=[...avatarCropPointers.values()].slice(0,2),distance=Math.max(1,Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y));avatarCropZoom=Math.min(3,Math.max(1,avatarCropPinch.zoom*distance/avatarCropPinch.distance));$('avatarCropZoomInput').value=String(avatarCropZoom);drawAvatarCrop();return} if(!avatarCropDrag||avatarCropDrag.id!==e.pointerId)return; avatarCropOffsetX=avatarCropDrag.offsetX+(e.clientX-avatarCropDrag.x)*avatarCropDrag.scale;avatarCropOffsetY=avatarCropDrag.offsetY+(e.clientY-avatarCropDrag.y)*avatarCropDrag.scale;drawAvatarCrop();});const endAvatarCropDrag=e=>{ avatarCropPointers.delete(e.pointerId); if(avatarCropPointers.size<2)avatarCropPinch=null; if(avatarCropPointers.size===1){const [id,p]=[...avatarCropPointers.entries()][0],rect=cropStage.getBoundingClientRect();avatarCropDrag={id,x:p.x,y:p.y,offsetX:avatarCropOffsetX,offsetY:avatarCropOffsetY,scale:320/rect.width}}else avatarCropDrag=null;};cropStage.addEventListener('pointerup',endAvatarCropDrag);cropStage.addEventListener('pointercancel',endAvatarCropDrag);installChatViewportFix();$('removeAvatarBtn').addEventListener('click',removeProfileAvatar);$('profileMessageBtn').addEventListener('click',()=>{if(viewedProfileId&&viewedProfileId!==me?.id)void openDirectChat(viewedProfileId)});$('profileBackBtn').addEventListener('click',()=>{const target=profileReturnPanel||'usersPanel';showPanel(target);if(target==='morePanel')$('navMoreBtn').classList.add('active');else $('navChatsBtn').classList.add('active');$('headerSub').textContent=(profile?.display_name||'')+' · @'+(profile?.username||'')});$('profileEditForm').addEventListener('submit',saveMyProfile);$('logoutBtn').addEventListener('click',async()=>{if(!confirm('এই ডিভাইস থেকে বের হবে? guest account অন্য ফোনে restore করা যাবে না।'))return;try{await setOnline(false);if(heartbeat)clearInterval(heartbeat);if(msgChannel)await supa.removeChannel(msgChannel);if(profileChannel)await supa.removeChannel(profileChannel);if(recentChannel)await supa.removeChannel(recentChannel);await supa.auth.signOut();me=null;profile=null;showPanel('authPanel');setConn('অফলাইন')}catch(e){alertBox('userError',e.message)}});window.addEventListener('online',()=>{void syncAfterNetworkRecovery()});document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(activeChat&&!subscribed)connectMessageRealtime().catch(()=>{});void syncAfterNetworkRecovery()}});window.addEventListener('beforeunload',()=>{if(heartbeat)clearInterval(heartbeat)});
-initialSessionPromise.then(async({data,error})=>{if(error){setConn('Auth error');return}if(data.session){me=data.session.user;try{profile=await getProfile(me.id);if(profile){$('displayName').value=profile.display_name||'';$('username').value=profile.username||'';await startApp()}else showPanel('authPanel')}catch(e){showPanel('authPanel');alertBox('authError','Profile load error: '+e.message)}}else{try{const d=JSON.parse(localStorage.getItem('study-chat-profile-draft')||'{}');$('displayName').value=d.display||'';$('username').value=d.username||''}catch{}setConn('লগইন করুন')}})
-.catch(e=>{console.warn('Initial session restore failed',e);setConn('লগইন করুন')})
-.finally(()=>{appBootReady=true;if(!maintenanceIsOn)chatAppShell.style.visibility='visible'});
+$('dpCameraBadge').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(viewedProfileId===me?.id)$('avatarFileInput').click()});$('chatAvatar').addEventListener('click',()=>{if(activePeer?.id)void openProfilePhoto(activePeer.id)});$('chooseAvatarBtn').addEventListener('click',()=> $('avatarFileInput').click());$('avatarFileInput').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(file)chooseProfileAvatar(file)});$('avatarCropCancelTop').addEventListener('click',closeAvatarCrop);$('avatarCropCancelBtn').addEventListener('click',closeAvatarCrop);$('avatarCropUseBtn').addEventListener('click',finishAvatarCrop);$('avatarCropResetBtn').addEventListener('click',resetAvatarCrop);$('avatarCropRotateBtn').addEventListener('click',()=>{avatarCropRotation=(avatarCropRotation+90)%360;drawAvatarCrop()});$('avatarCropZoomInput').addEventListener('input',e=>{avatarCropZoom=Number(e.target.value)||1;drawAvatarCrop()});$('avatarCropModal').addEventListener('click',e=>{if(e.target===$('avatarCropModal'))closeAvatarCrop()});const cropStage=$('avatarCropStage');cropStage.addEventListener('pointerdown',e=>{ if(!avatarCropImage)return;e.preventDefault(); try{cropStage.setPointerCapture(e.pointerId)}catch{} avatarCropPointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(avatarCropPointers.size>=2){const pts=[...avatarCropPointers.values()].slice(0,2);avatarCropPinch={distance:Math.max(1,Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y)),zoom:avatarCropZoom};avatarCropDrag=null} else{const rect=cropStage.getBoundingClientRect();avatarCropDrag={id:e.pointerId,x:e.clientX,y:e.clientY,offsetX:avatarCropOffsetX,offsetY:avatarCropOffsetY,scale:320/rect.width}}});cropStage.addEventListener('pointermove',e=>{ if(!avatarCropPointers.has(e.pointerId))return;e.preventDefault();avatarCropPointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(avatarCropPointers.size>=2&&avatarCropPinch){const pts=[...avatarCropPointers.values()].slice(0,2),distance=Math.max(1,Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y));avatarCropZoom=Math.min(3,Math.max(1,avatarCropPinch.zoom*distance/avatarCropPinch.distance));$('avatarCropZoomInput').value=String(avatarCropZoom);drawAvatarCrop();return} if(!avatarCropDrag||avatarCropDrag.id!==e.pointerId)return; avatarCropOffsetX=avatarCropDrag.offsetX+(e.clientX-avatarCropDrag.x)*avatarCropDrag.scale;avatarCropOffsetY=avatarCropDrag.offsetY+(e.clientY-avatarCropDrag.y)*avatarCropDrag.scale;drawAvatarCrop();});const endAvatarCropDrag=e=>{ avatarCropPointers.delete(e.pointerId); if(avatarCropPointers.size<2)avatarCropPinch=null; if(avatarCropPointers.size===1){const [id,p]=[...avatarCropPointers.entries()][0],rect=cropStage.getBoundingClientRect();avatarCropDrag={id,x:p.x,y:p.y,offsetX:avatarCropOffsetX,offsetY:avatarCropOffsetY,scale:320/rect.width}}else avatarCropDrag=null;};cropStage.addEventListener('pointerup',endAvatarCropDrag);cropStage.addEventListener('pointercancel',endAvatarCropDrag);installChatViewportFix();$('removeAvatarBtn').addEventListener('click',removeProfileAvatar);$('profileMessageBtn').addEventListener('click',()=>{if(viewedProfileId&&viewedProfileId!==me?.id)void openDirectChat(viewedProfileId)});$('profileBackBtn').addEventListener('click',()=>{const target=profileReturnPanel||'usersPanel';showPanel(target);if(target==='morePanel')$('navMoreBtn').classList.add('active');else $('navChatsBtn').classList.add('active');$('headerSub').textContent=(profile?.display_name||'')+' · @'+(profile?.username||'')});$('profileEditForm').addEventListener('submit',saveMyProfile);$('logoutBtn').addEventListener('click',async()=>{if(!confirm('Log out from this device? The guest account cannot be restored on another phone.'))return;try{await setOnline(false);if(heartbeat)clearInterval(heartbeat);if(msgChannel)await supa.removeChannel(msgChannel);if(profileChannel)await supa.removeChannel(profileChannel);if(recentChannel)await supa.removeChannel(recentChannel);await supa.auth.signOut();me=null;profile=null;showPanel('authPanel');setConn('Offline')}catch(e){alertBox('userError',e.message)}});window.addEventListener('online',()=>{void syncAfterNetworkRecovery()});document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(activeChat&&!subscribed)connectMessageRealtime().catch(()=>{});void syncAfterNetworkRecovery()}});window.addEventListener('beforeunload',()=>{if(heartbeat)clearInterval(heartbeat)});
+initialSessionPromise.then(async({data,error})=>{if(error){setConn('Auth error');return}if(data.session){me=data.session.user;try{profile=await getProfile(me.id);if(profile){$('displayName').value=profile.display_name||'';$('username').value=profile.username||'';await startApp()}else showPanel('authPanel')}catch(e){showPanel('authPanel');alertBox('authError','Profile load error: '+e.message)}}else{try{const d=JSON.parse(localStorage.getItem('study-chat-profile-draft')||'{}');$('displayName').value=d.display||'';$('username').value=d.username||''}catch{}setConn('Please log in')}})
+.catch(e=>{console.warn('Initial session restore failed',e);setConn('Please log in')})
+.finally(()=>{
+ appBootReady=true;
+ $('appBootLoader').classList.add('hidden');
+ if(!maintenanceIsOn)chatAppShell.style.visibility='visible';
+});
 })();
 </script>
 </body>

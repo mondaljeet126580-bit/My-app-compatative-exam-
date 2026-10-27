@@ -120,7 +120,9 @@ Deno.serve(async(req:Request)=>{
    const banned=action==="ban_user";
    const {data:p,error}=await admin.from("profiles").update({is_banned:banned,ban_reason:banned?(clean(input.reason,500)||"Admin decision"):null,banned_at:banned?new Date().toISOString():null,banned_by:banned?caller.id:null}).eq("id",target).select("id,is_banned,ban_reason,banned_at").maybeSingle();
    if(error)throw error;if(!p)return out({error:"User profile পাওয়া যায়নি।"},404,origin);
-   // Keep Supabase Auth sign-in available so the app can show a ban banner. RLS blocks banned users from chat/profile data until they are unbanned.
+   // Keep sign-in available on ban so the app can show the banner; account RLS blocks access while is_banned=true.
+   // On unban, also clear any legacy Auth-level ban set by older deployed versions.
+   if(!banned){const {error:authError}=await admin.auth.admin.updateUserById(target,{ban_duration:"none"});if(authError)throw authError;}
    await audit(action,target,{reason:banned?p.ban_reason:null});return out({ok:true,user:p},200,origin);
   }
   if(action==="audit_logs"){

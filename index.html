@@ -479,11 +479,27 @@ const initialSessionPromise=supa.auth.getSession();
 const $=id=>document.getElementById(id);
 const maintenanceGate=$('maintenanceGate'),chatAppShell=$('chatAppShell');
 let maintenanceIsOn=false,maintenanceCheckBusy=false,appBootReady=false;
+// Safety release: a stalled network request must never leave the full-screen loader forever.
+const bootSafetyTimer=setTimeout(()=>{
+ if(appBootReady||maintenanceIsOn)return;
+ appBootReady=true;
+ maintenanceGate.classList.add('hidden');
+ $('appBootLoader').classList.add('hidden');
+ chatAppShell.style.visibility='visible';
+ const connection=$('connection');
+ if(connection){connection.textContent='Connection slow';connection.style.background='#ffffff20'}
+ const authError=$('authError');
+ if(authError){authError.textContent='The server is taking too long to respond. Check your internet connection and try again.';authError.classList.remove('hidden')}
+},12000);
 async function refreshMaintenanceGate(){
  if(maintenanceCheckBusy)return maintenanceIsOn;
  maintenanceCheckBusy=true;
  try{
-  const {data,error}=await supa.rpc('get_app_maintenance');
+  let timeoutId;
+  const timeout=new Promise((_,reject)=>{
+   timeoutId=setTimeout(()=>reject(new Error('Maintenance status check timed out.')),5000);
+  });
+  const {data,error}=await Promise.race([supa.rpc('get_app_maintenance'),timeout]);
   if(error)throw error;
   const state=data&&typeof data==='object'?data:{enabled:false,message:'Maintenance is in progress.'};
   maintenanceIsOn=state.enabled===true;
@@ -507,7 +523,7 @@ async function refreshMaintenanceGate(){
    chatAppShell.style.visibility=appBootReady?'visible':'hidden';
   }
  }
- finally{maintenanceCheckBusy=false}
+ finally{if(timeoutId)clearTimeout(timeoutId);maintenanceCheckBusy=false}
  return maintenanceIsOn;
 }
 const maintenanceInitiallyOn=await refreshMaintenanceGate();
@@ -1273,22 +1289,26 @@ async function submitScheduledMessage(event){
 }
 async function startApp(){
  showPanel('usersPanel');
- appBootReady=false;
- chatAppShell.style.visibility='hidden';
+ appBootReady=true;
+ clearTimeout(bootSafetyTimer);
+ if(!maintenanceIsOn)chatAppShell.style.visibility='visible';
+ $('appBootLoader').classList.add('hidden');
  $('headerSub').textContent=(profile?.display_name||'')+' · @'+(profile?.username||'');
- refreshHeaderProfileButton();setConn('Online',true);
- await setOnline(true);
+ refreshHeaderProfileButton();setConn('Connecting…',false);
+ // Presence and chat history load in the background so neither can block the first screen.
+ void setOnline(true).then(()=>setConn('Online',true)).catch(e=>{console.warn('presence update failed',e?.message||e);setConn('Offline')});
  if(heartbeat)clearInterval(heartbeat);
- heartbeat=setInterval(()=>setOnline(true),30000);
- const recent=await loadRecentChats();
- for(const chat of recent){
-  if(chat.conversation_id){
-   void(async()=>{
-    try{const {error}=await callRpc('mark_direct_messages_delivered',{p_conversation_id:chat.conversation_id});if(error)console.warn('delivery sync',error.message)}
-    catch(e){console.warn('delivery sync',e.message)}
-   })();
+ heartbeat=setInterval(()=>{void setOnline(true).catch(e=>console.warn('presence heartbeat failed',e?.message||e))},30000);
+ void loadRecentChats().then(recent=>{
+  for(const chat of recent||[]){
+   if(chat.conversation_id){
+    void(async()=>{
+     try{const {error}=await callRpc('mark_direct_messages_delivered',{p_conversation_id:chat.conversation_id});if(error)console.warn('delivery sync',error.message)}
+     catch(e){console.warn('delivery sync',e.message)}
+    })();
+   }
   }
- }
+ }).catch(e=>console.warn('Initial chat list load failed',e?.message||e));
  connectRecentRealtime();
  if(recentPollTimer)clearInterval(recentPollTimer);
  // Fallback refresh: keep unread counts current while the app is visible without an open chat.
@@ -1829,6 +1849,7 @@ $('dpCameraBadge').addEventListener('click',e=>{e.preventDefault();e.stopPropaga
 initialSessionPromise.then(async({data,error})=>{if(error){setConn('Auth error');showPanel('authPanel');return}if(data.session){try{await routeSignedInSession(data.session)}catch(e){showPanel('authPanel');alertBox('authError','Account check error: '+(e?.message||String(e)))}}else{showPanel('authPanel');setConn('Please log in')}})
 .catch(e=>{console.warn('Initial session restore failed',e);setConn('Please log in')})
 .finally(()=>{
+ clearTimeout(bootSafetyTimer);
  appBootReady=true;
  $('appBootLoader').classList.add('hidden');
  if(!maintenanceIsOn)chatAppShell.style.visibility='visible';

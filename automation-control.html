@@ -3,109 +3,47 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#091722">
 <meta name="color-scheme" content="dark">
-<title>ChatLink · Automation Control</title>
+<title>ChatLink Automation · Coming Soon</title>
 <style>
-:root{color-scheme:dark;--bg:#07131e;--card:#102334;--line:#294258;--text:#edf6ff;--muted:#9db0c0;--green:#13b889;--red:#c94a5a}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:22px;background:radial-gradient(circle at top,#17374b,#07131e 58%);color:var(--text);font:16px system-ui,-apple-system,"Noto Sans Bengali",Arial,sans-serif}.wrap{width:min(620px,100%);margin:auto}.card{padding:22px;background:#102334ed;border:1px solid var(--line);border-radius:22px;box-shadow:0 20px 60px #0005;margin-bottom:16px}h1{margin:0 0 8px;font-size:clamp(24px,6vw,31px)}h2{font-size:17px;margin:0 0 10px}.muted{color:var(--muted);line-height:1.6}.status{margin:16px 0;padding:15px;border-radius:13px;background:#091a27;border:1px solid var(--line)}.status strong{display:block;font-size:18px;margin-bottom:5px}.state{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:800;border-radius:20px;padding:6px 10px;background:#35232a;color:#ffd9de}.state.on{background:#10382f;color:#b8f6df}.dot{width:8px;height:8px;border-radius:50%;background:currentColor}.row{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}button{flex:1;min-width:135px;border:0;border-radius:12px;padding:13px 15px;font:inherit;font-weight:750;cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}.primary{background:var(--green);color:#06231c}.danger{background:var(--red);color:white}.secondary{background:#1a3043;color:#dceaf4}.feedback{margin-top:13px;padding:12px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere;background:#091a27;color:var(--muted)}.feedback.error{color:#ffd9de;border:1px solid #65343c}.feedback.ok{color:#b8f6df;border:1px solid #235845}.small{font-size:12px;color:var(--muted);line-height:1.55}.rule{height:1px;background:var(--line);margin:18px 0}a{color:#8ee8ce}@media(max-width:420px){body{padding:12px}.card{padding:17px;border-radius:18px}.row{flex-direction:column}button{width:100%}}
+:root{color-scheme:dark;--bg:#07131e;--card:#102334;--line:#294258;--text:#edf6ff;--muted:#a0b3c1;--green:#5ee1b6}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 15% 0,#17384a,transparent 42%),radial-gradient(circle at 100% 100%,#112c35,transparent 38%),var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Noto Sans Bengali",Arial,sans-serif}
+.wrap{width:min(600px,100%)}
+.card{padding:clamp(24px,6vw,40px);border-radius:26px;background:linear-gradient(155deg,#122737f5,#0c1c28f5);border:1px solid #2b4658;box-shadow:0 24px 80px #0007;text-align:center}
+.brandIcon{width:76px;height:76px;margin:0 auto 19px;border-radius:24px;display:grid;place-items:center;background:linear-gradient(145deg,#174b48,#143145);border:1px solid #317568;font-size:34px}
+.badge{display:inline-block;padding:6px 12px;border-radius:20px;background:#20392f;color:#bdf5dc;font-size:12px;font-weight:800;letter-spacing:.3px}
+h1{font-size:clamp(27px,7vw,36px);line-height:1.2;margin:15px 0 12px;letter-spacing:-.6px}
+.lead{color:#c3d2dc;margin:0;font-size:15px;line-height:1.8}
+.details{display:grid;gap:10px;text-align:left;margin:24px 0;padding:15px;border-radius:16px;background:#0a1a25;border:1px solid #223d4d}
+.details div{display:flex;align-items:flex-start;gap:10px;color:#aebfca;font-size:13px}
+.tick{color:var(--green);font-weight:900}
+.note{color:#8fa7b6;font-size:12px;line-height:1.7;margin:0 0 22px}
+.actions{display:grid;gap:10px}
+a{display:block;text-decoration:none;border-radius:13px;padding:13px 17px;font-weight:800;font-size:14px}
+.primary{background:#14775e;color:#e0fff4;border:1px solid #269b7c}
+.secondary{background:#172e3f;color:#d7e7f0;border:1px solid #2b4658}
 </style>
 </head>
 <body>
 <main class="wrap">
-<section class="card">
-<h1>ChatLink Automation Control</h1>
-<p class="muted">অটো-ফিচারের master switch এখানে নিয়ন্ত্রণ করা হয়। এটি শুধু অনুমোদিত Admin account ব্যবহার করতে পারবে।</p>
-<div class="status" aria-live="polite">
-<span id="stateBadge" class="state"><span class="dot"></span><span id="stateBadgeText">অবস্থা যাচাই হচ্ছে…</span></span>
-<strong id="stateTitle">লোড হচ্ছে…</strong>
-<div class="muted" id="stateDescription">সার্ভারের বর্তমান অবস্থা যাচাই করা হচ্ছে।</div>
+<section class="card" aria-live="polite">
+<div class="brandIcon">⚙️</div>
+<span class="badge">COMING SOON · শীঘ্রই চালু হবে</span>
+<h1>ChatLink Automation</h1>
+<p class="lead">Automation ফিচারটি বর্তমানে চালু নেই। এটি প্রস্তুত ও যাচাই হওয়ার পর Admin Console থেকে নিয়ন্ত্রিতভাবে চালু করা হবে।</p>
+<div class="details">
+<div><span class="tick">✓</span><span>এই মুহূর্তে Automation API key তৈরি বা ব্যবহার করা যাবে না।</span></div>
+<div><span class="tick">✓</span><span>ChatLink-এর সাধারণ চ্যাট, লগইন ও মেসেজিং স্বাভাবিকভাবে চালু থাকবে।</span></div>
+<div><span class="tick">✓</span><span>ফিচারটি চালু হলে Admin Console-এর Automation API মেনু থেকে ON/OFF করা যাবে।</span></div>
 </div>
-<div class="row">
-<button class="primary" id="enableBtn" type="button" disabled>Automation চালু করো</button>
-<button class="danger" id="disableBtn" type="button" disabled>Automation বন্ধ করো</button>
-<button class="secondary" id="refreshBtn" type="button">↻ Refresh</button>
+<p class="note">এটি কোনো ত্রুটি নয়। ফিচারটি প্রকাশের আগে সাময়িকভাবে নিষ্ক্রিয় রাখা হয়েছে।</p>
+<div class="actions">
+<a class="primary" href="index.html">ChatLink অ্যাপে ফিরে যাও</a>
+<a class="secondary" href="https://mondaljeet126580-bit.github.io/ssc-smart-study/">Admin Console খুলুন</a>
 </div>
-<div id="feedback" class="feedback" role="status">একই ব্রাউজারে ChatLink-এ Admin account দিয়ে লগইন করো।</div>
-<div class="rule"></div>
-<h2>গুরুত্বপূর্ণ</h2>
-<p class="small">Automation এখন ডিফল্টভাবে OFF। OFF থাকলে API-এর profile/chats/send_message এবং নতুন key তৈরি বন্ধ থাকবে। ChatLink-এর সাধারণ chat, login ও message ব্যবহার বন্ধ হবে না। Maintenance Mode-ও আলাদা এবং এই switch সেটি পরিবর্তন করে না।</p>
-<p class="small">Admin account-এর অনুমতি সার্ভারে যাচাই হয়; শুধু এই পেজ খুলতে পারলেই switch পরিবর্তন করা যাবে না।</p>
-<p class="small"><a href="index.html">ChatLink অ্যাপে ফিরে যাও</a></p>
 </section>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL='https://mtitrkspgoqaqdeiluud.supabase.co';
-const SUPABASE_KEY='sb_publishable_MNm-dTK29hrtVkiyLRkLIw_qbtbxJu_';
-const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const $=id=>document.getElementById(id);
-let busy=false,currentEnabled=false,canControl=false;
-function feedback(message,kind=''){const el=$('feedback');el.textContent=message;el.className='feedback'+(kind?' '+kind:'')}
-function renderState(enabled){
- currentEnabled=enabled;
- $('stateBadge').className='state'+(enabled?' on':'');
- $('stateBadgeText').textContent=enabled?'ON':'OFF';
- $('stateTitle').textContent=enabled?'Automation চালু আছে':'Automation বন্ধ আছে';
- $('stateDescription').textContent=enabled?'API action অনুমোদিত scope অনুযায়ী চলতে পারবে।':'API runtime action এবং নতুন Automation Key তৈরি সার্ভার থেকে বন্ধ রাখা হয়েছে।';
- $('enableBtn').disabled=busy||!canControl||enabled;
- $('disableBtn').disabled=busy||!canControl||!enabled;
-}
-function renderUnknown(title,description){
- currentEnabled=false;
- $('stateBadge').className='state';
- $('stateBadgeText').textContent='UNKNOWN';
- $('stateTitle').textContent=title;
- $('stateDescription').textContent=description;
- $('enableBtn').disabled=true;
- $('disableBtn').disabled=true;
-}
-async function refresh(){
- busy=true;$('refreshBtn').disabled=true;$('enableBtn').disabled=true;$('disableBtn').disabled=true;
- feedback('সার্ভার যাচাই হচ্ছে…');
- try{
-  const {data:sessionData,error:sessionError}=await supa.auth.getSession();
-  if(sessionError)throw sessionError;
-  if(!sessionData?.session?.access_token){
-   canControl=false;renderUnknown('লগইন প্রয়োজন','একই ব্রাউজারে ChatLink খুলে Admin account দিয়ে লগইন করো, তারপর এই পেজে ফিরে এসো।');
-   feedback('কোনো পরিবর্তন করা হয়নি। লগইন সেশন পাওয়া যায়নি।','error');
-   return;
-  }
-  const {data,error}=await supa.rpc('get_chatlink_automation_status');
-  if(error)throw error;
-  canControl=true;renderState(data?.enabled===true);
-  feedback('স্ট্যাটাস সফলভাবে পড়া হয়েছে।','ok');
- }catch(e){
-  canControl=false;renderUnknown('স্ট্যাটাস যাচাই করা যায়নি','স্ট্যাটাস যাচাই না হওয়া পর্যন্ত এই পেজ থেকে কোনো পরিবর্তন করা যাবে না। সার্ভারও অনিশ্চিত অবস্থায় API request বন্ধ রাখে।');
-  feedback((e?.message||String(e))+'\nAdmin allowlist এবং লগইন সেশন যাচাই করো।','error');
- }finally{
-  busy=false;$('refreshBtn').disabled=false;
-  $('enableBtn').disabled=!canControl||currentEnabled;
-  $('disableBtn').disabled=!canControl||!currentEnabled;
- }
-}
-async function setEnabled(enabled){
- if(busy||!canControl)return;
- const message=enabled?'Automation API চালু হবে। নির্বাচিত API key-গুলোর অনুমতি অনুযায়ী বাইরের automation request চালু হবে। চালু করবে?':'Automation API বন্ধ হবে। ChatLink-এর সাধারণ chat চলবে। বন্ধ করবে?';
- if(!confirm(message))return;
- busy=true;$('enableBtn').disabled=true;$('disableBtn').disabled=true;$('refreshBtn').disabled=true;
- feedback('পরিবর্তন সেভ হচ্ছে…');
- try{
-  const {data,error}=await supa.rpc('admin_set_chatlink_automation',{p_enabled:enabled});
-  if(error)throw error;
-  renderState(data?.enabled===true);
-  feedback(data?.enabled===true?'Automation API চালু হয়েছে।':'Automation API বন্ধ হয়েছে।','ok');
- }catch(e){
-  feedback((e?.message||String(e))+'\nপরিবর্তন সেভ হয়নি।','error');
- }finally{
-  busy=false;$('refreshBtn').disabled=false;
-  $('enableBtn').disabled=!canControl||currentEnabled;
-  $('disableBtn').disabled=!canControl||!currentEnabled;
- }
-}
-$('refreshBtn').addEventListener('click',refresh);
-$('enableBtn').addEventListener('click',()=>setEnabled(true));
-$('disableBtn').addEventListener('click',()=>setEnabled(false));
-refresh();
-</script>
 </body>
 </html>

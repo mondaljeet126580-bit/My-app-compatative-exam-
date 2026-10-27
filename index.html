@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://unpkg.com" crossorigin>
 <link rel="preconnect" href="https://mtitrkspgoqaqdeiluud.supabase.co" crossorigin>
@@ -284,6 +287,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
  <button id="showExistingLoginBtn" type="button" class="secondary" style="width:100%;margin-top:10px">Existing user · Log in</button>
  <div class="alert hidden" id="authError"></div>
  <div class="footerHint">Already using a guest account on this device? Connect Google in More before logging out, to keep the same account and chats.</div>
+ <div style="text-align:center;font-size:11px;color:#71838d;padding:8px 0">ChatLink · build 2026.10.28.3</div>
  <div class="hidden" aria-hidden="true"><input id="displayName" maxlength="40"><input id="username" maxlength="30"><button id="enterBtn" type="button">Continue</button></div>
 </section>
 <section class="panel hidden" id="loginPanel">
@@ -328,7 +332,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
  <button type="button" class="moreOption" id="moreConnectGoogleBtn"><span class="moreOptionIcon">🔐</span><span class="moreOptionText"><strong>Connect Google account</strong><small id="moreGoogleLinkText">Connect Google to keep this account and chats on another device</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption" id="moreScheduleBtn"><span class="moreOptionIcon">◷</span><span class="moreOptionText"><strong>Schedule message</strong><small>Choose a chat and send a message later</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption moreLogout" id="moreLogoutBtn"><span class="moreOptionIcon">⎋</span><span class="moreOptionText"><strong>Log out</strong><small>Log out from this device</small></span><span class="moreChevron">›</span></button>
- <div class="moreBuild">ChatLink · build 2026.10.28.2</div>
+ <div class="moreBuild">ChatLink · build 2026.10.28.3</div>
 </section>
 <section class="panel hidden" id="schedulePanel">
  <div class="settingsHeader"><button type="button" class="profileBack" id="scheduleBackBtn" aria-label="Back to More">←</button><div><h1>Schedule message</h1><p>Choose a chat and a delivery time</p></div></div>
@@ -472,7 +476,13 @@ const loadSupabaseScript = src => new Promise(resolve=>{
  const timer=setTimeout(()=>finish(false),4000);
  s.onload=()=>finish(true);s.onerror=()=>finish(false);document.head.appendChild(s);
 });
-const supabaseCdnCandidates=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js','https://unpkg.com/@supabase/supabase-js@2.57.0/dist/umd/supabase.js','https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0','https://unpkg.com/@supabase/supabase-js@2.118.0'];let libraryLoaded=false;for(const src of supabaseCdnCandidates){if(await loadSupabaseScript(src)){libraryLoaded=true;break}}
+const supabaseCdnCandidates=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js','https://unpkg.com/@supabase/supabase-js@2.57.0/dist/umd/supabase.js'];
+// Parallel CDN fallback prevents multiple sequential 4-second waits on slow mobile networks.
+const libraryLoaded=await Promise.any(supabaseCdnCandidates.map(async src=>{
+ const ok=await loadSupabaseScript(src);
+ if(!ok)throw new Error('Supabase CDN unavailable: '+src);
+ return true;
+})).then(()=>true).catch(()=>false);
 if(!libraryLoaded){document.body.innerHTML='<main style="font:16px system-ui;padding:20px"><h2>Library could not be loaded</h2><p>The Supabase JavaScript library could not be loaded from the CDN. Check your internet connection and browser.</p><p><b>URLs tried:</b></p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">'+supabaseCdnCandidates.join('\n')+'</pre><p>This message is not from the database; the browser could not download the library.</p></main>';return}
 const SUPABASE_URL='https://mtitrkspgoqaqdeiluud.supabase.co';const SUPABASE_KEY='sb_publishable_MNm-dTK29hrtVkiyLRkLIw_qbtbxJu_';const AUTOMATION_API_URL=SUPABASE_URL+'/functions/v1/chatlink-automation';const ACCOUNT_AUTH_URL=SUPABASE_URL+'/functions/v1/chatlink-account-auth';const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let initialSessionPromise=null,authUiTouched=false;
@@ -540,7 +550,9 @@ async function refreshMaintenanceGate(){
  finally{if(timeoutId)clearTimeout(timeoutId);maintenanceCheckBusy=false}
  return maintenanceIsOn;
 }
-const maintenanceInitiallyOn=await refreshMaintenanceGate();
+const maintenancePromise=refreshMaintenanceGate();
+initialSessionPromise=supa.auth.getSession();
+const maintenanceInitiallyOn=await maintenancePromise;
 async function checkMaintenanceTransition(){
  if(maintenanceCheckBusy)return;
  const wasOn=maintenanceIsOn;
@@ -552,7 +564,7 @@ $('maintenanceRetry').addEventListener('click',()=>void checkMaintenanceTransiti
 setInterval(()=>{if(!document.hidden)void checkMaintenanceTransition()},3000);
 window.addEventListener('focus',()=>{if(!document.hidden)void checkMaintenanceTransition()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)void checkMaintenanceTransition()});
-if(maintenanceInitiallyOn)return;initialSessionPromise=supa.auth.getSession();let me=null,profile=null,viewedProfileId=null,pendingAvatarFile=null,avatarPreviewUrl=null,removeAvatarRequested=false,currentChatFilter="all",activeChat=null,activePeer=null,recentChatsCache=[],profileReturnPanel="usersPanel",currentPanel="authPanel",chatStickToBottom=true,avatarCropImage=null,avatarCropObjectUrl=null,avatarCropZoom=1,avatarCropOffsetX=0,avatarCropOffsetY=0,avatarCropRotation=0,avatarCropDrag=null,avatarCropPointers=new Map(),avatarCropPinch=null,profilePhotoScale=1,profilePhotoX=0,profilePhotoY=0,profilePhotoPointers=new Map(),profilePhotoGesture=null,profilePhotoLastTap=null,profilePhotoSkipPan=new Set(),profilePhotoPreviousOverflow="",chatResizeObserver=null,chatMutationObserver=null,msgChannel=null,profileChannel=null,recentChannel=null,recentRefreshTimer=null,recentRealtimeRetryTimer=null,recentRealtimeRetryCount=0,recentPollTimer=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
+if(maintenanceInitiallyOn)return;let me=null,profile=null,viewedProfileId=null,pendingAvatarFile=null,avatarPreviewUrl=null,removeAvatarRequested=false,currentChatFilter="all",activeChat=null,activePeer=null,recentChatsCache=[],profileReturnPanel="usersPanel",currentPanel="authPanel",chatStickToBottom=true,avatarCropImage=null,avatarCropObjectUrl=null,avatarCropZoom=1,avatarCropOffsetX=0,avatarCropOffsetY=0,avatarCropRotation=0,avatarCropDrag=null,avatarCropPointers=new Map(),avatarCropPinch=null,profilePhotoScale=1,profilePhotoX=0,profilePhotoY=0,profilePhotoPointers=new Map(),profilePhotoGesture=null,profilePhotoLastTap=null,profilePhotoSkipPan=new Set(),profilePhotoPreviousOverflow="",chatResizeObserver=null,chatMutationObserver=null,msgChannel=null,profileChannel=null,recentChannel=null,recentRefreshTimer=null,recentRealtimeRetryTimer=null,recentRealtimeRetryCount=0,recentPollTimer=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
 function setConn(s,ok=false){$('connection').textContent=s;$('connection').style.background=ok?'#ffffff30':'#ffffff20'}function alertBox(id,s){$(id).textContent=s;$(id).classList.remove('hidden')}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function showPanel(id){
  currentPanel=id;
  for(const p of ['authPanel','loginPanel','setupPanel','blockedPanel','usersPanel','morePanel','schedulePanel','apiPanel','profilePanel','chatPanel'])$(p).classList.toggle('hidden',p!==id);
@@ -1908,14 +1920,25 @@ $('appBootLoader').classList.add('hidden');
 if(!maintenanceIsOn)chatAppShell.style.visibility='visible';
 setConn('Checking saved account…',false);
 initialSessionPromise.then(async({data,error})=>{
- if(authUiTouched)return;
- if(error){setConn('Auth check failed');showPanel('authPanel');return}
+ if(error){
+  if(!authUiTouched){setConn('Auth check failed');showPanel('authPanel')}
+  console.warn('Initial session restore failed',error?.message||error);
+  return;
+ }
  if(data.session){
   try{await routeSignedInSession(data.session)}
-  catch(e){if(!authUiTouched){showPanel('authPanel');alertBox('authError','Account check error: '+(e?.message||String(e)))}}
- }else{showPanel('authPanel');setConn('Please log in')}
+  catch(e){
+   console.warn('Saved-session routing failed',e?.message||e);
+   if(!authUiTouched){showPanel('authPanel');alertBox('authError','Account check error: '+(e?.message||String(e)))}
+  }
+ }else if(!authUiTouched){
+  showPanel('authPanel');setConn('Please log in');
+ }
 })
-.catch(e=>{console.warn('Initial session restore failed',e);if(!authUiTouched)setConn('Please log in')})
+.catch(e=>{
+ console.warn('Initial session restore failed',e);
+ if(!authUiTouched){showPanel('authPanel');setConn('Please log in')}
+})
 .finally(()=>{
  clearTimeout(bootSafetyTimer);
  appBootReady=true;

@@ -958,6 +958,7 @@ async function openChat(convId,peer){
  try{
   await loadMessages({forceBottom:true});
   await connectMessageRealtime();
+  setChatHint('');
   scheduleChatBottom(true);
  }catch(e){
   if(activeChat!==convId)return;
@@ -967,7 +968,7 @@ async function openChat(convId,peer){
   if(retry)retry.addEventListener('click',async()=>{
    $('messages').innerHTML=chatLoadingMarkup('আবার সংযোগ হচ্ছে…');
    $('chatHint').textContent='নিরাপদ সংযোগ তৈরি হচ্ছে…';
-   try{await loadMessages({forceBottom:true});await connectMessageRealtime();scheduleChatBottom(true)}
+   try{await loadMessages({forceBottom:true});await connectMessageRealtime();setChatHint('');scheduleChatBottom(true)}
    catch(err){$('messages').innerHTML=chatLoadErrorMarkup(err?.message||String(err));$('chatHint').textContent=''}
   });
  }

@@ -1,49 +1,37 @@
 # ChatLink Automation API
 
-ChatLink now has a separate server-side Automation API. It is intentionally different from the browser Supabase publishable key.
-
-## Endpoint
+The Automation API is implemented by the Supabase Edge Function:
 
 `POST https://mtitrkspgoqaqdeiluud.supabase.co/functions/v1/chatlink-automation`
 
+## Global enable / disable
+
+The global master switch is stored in `public.app_settings` under `chatlink_automation`. It is **OFF by default**. When the status cannot be checked, the API fails closed.
+
+While OFF:
+- `profile`, `chats`, `send_message`, and `create_key` return HTTP `503`.
+- `list_keys` and `revoke_key` remain available so keys can be reviewed or revoked.
+- Normal ChatLink messaging is unaffected. This switch is separate from Maintenance Mode.
+
+To enable it later, log in to ChatLink using an account on the admin allowlist in the **same browser**, then open [Automation Control](automation-control.html). Only allowlisted admins can change the server-side switch.
+
 ## Authentication
 
-Send the dedicated automation credential in the `X-ChatLink-Automation-Key` header.
+For automation actions, use the dedicated API key in the header:
 
-Do **not** put this key in public HTML/JavaScript or commit it to GitHub. The server stores only a SHA-256 hash of the key.
+`Authorization: Bearer YOUR_CHATLINK_AUTOMATION_KEY`
 
-## Supported actions
+Do not put the automation key in public HTML/JavaScript, commit it to GitHub, or share it in screenshots. The server stores only a SHA-256 hash. The API key permissions are limited to the selected scopes:
+- `profile:read`
+- `chats:read`
+- `messages:send`
 
-### Health check
+The API can read the authenticated key owner's own profile and chats, and can send messages only to conversations that owner belongs to.
 
-```json
-{"action":"health"}
-```
+## Managing keys
 
-### Maintenance control
+Sign in to ChatLink and open **More → Automation API** to create, list, or revoke keys. Creating a new key is unavailable while the global switch is OFF. Turn the global switch ON from the admin-only Automation Control page first.
 
-Turn maintenance on:
+## Safety
 
-```json
-{"action":"maintenance","enabled":true,"message":"on maintenance"}
-```
-
-Turn maintenance off:
-
-```json
-{"action":"maintenance","enabled":false,"message":"on maintenance"}
-```
-
-This updates the existing `app_settings.maintenance` setting used by the user app, so the **user app** enters/leaves maintenance mode; the admin console is not the maintenance target.
-
-## External automation
-
-The endpoint can be called from an automation service, server, cron job, or webhook workflow. For example, a scheduled workflow can call the maintenance action before a planned deployment and call it again afterwards.
-
-## Separate control page
-
-GitHub Pages also contains `automation-control.html`, a small mobile-friendly control page. It accepts the automation key locally in the browser and can test the API or switch maintenance mode.
-
-## Security
-
-The normal Supabase publishable key is for the public client and is not an automation/control credential. Supabase's documentation recommends keeping secret keys on server-side code and using Edge Functions for authenticated HTTP endpoints. The ChatLink automation endpoint therefore uses a separate server-side credential and never exposes a secret Supabase key in the user app.
+The Supabase publishable key is a public client key, not an automation credential. The service-role/secret key must never be placed in browser code. The server-side switch does not replace per-key scopes or chat-membership checks.

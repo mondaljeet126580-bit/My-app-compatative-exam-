@@ -906,7 +906,7 @@ function updateSchedulePreview(){
  const date=getSelectedScheduleTime();
  const preview=$('schedulePreview');
  if(!date){preview.textContent='Choose a valid delivery time.';return}
- if(date.getTime()<=Date.now()+1000){preview.textContent='Choose a time in the future.';return}
+ if(date.getTime()<=Date.now()){preview.textContent='Choose a time in the future.';return}
  preview.textContent='This message will be sent on '+scheduledTimeLabel(date.toISOString())+'.';
 }
 function populateScheduleRecipients(){
@@ -973,7 +973,7 @@ async function submitScheduledMessage(event){
  const scheduledFor=getSelectedScheduleTime();
  if(!chat){status.textContent='Choose a chat first.';return}
  if(!body){status.textContent='Write a message first.';return}
- if(!scheduledFor||scheduledFor.getTime()<=Date.now()+1000){status.textContent='Choose a delivery time more than one second in the future.';return}
+ if(!scheduledFor||scheduledFor.getTime()<=Date.now()){status.textContent='Choose a delivery time in the future.';return}
  button.disabled=true;button.textContent='Scheduling…';status.textContent='Saving scheduled message…';
  try{
   const {data,error}=await callRpc('schedule_direct_chat_message',{

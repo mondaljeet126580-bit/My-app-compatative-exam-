@@ -51,6 +51,13 @@ async function sessionUser(req: Request) {
   if (profile.is_banned) return { user: null, error: 'This account is not allowed to manage API keys.' }
   return { user: data.user, error: null }
 }
+async function isAutomationEnabled(): Promise<boolean> {
+  const { data, error } = await admin.from('app_settings')
+    .select('value').eq('key', 'chatlink_automation').maybeSingle()
+  if (error) throw new Error('Could not read the Automation API switch.')
+  return data?.value?.enabled === true
+}
+
 async function manageKeys(req: Request, action: string, body: Record<string, unknown>) {
   const auth = await sessionUser(req)
   if (!auth.user) return json({ error: auth.error }, 401)
@@ -202,6 +209,20 @@ Deno.serve(async (req: Request) => {
   const action = normalize(reqUrl.searchParams.get('action') || body.action).toLowerCase()
   if (!action) return json({ error: 'Provide an action: profile, chats or send_message.' }, 400)
   try {
+    // Global kill switch: defaults to OFF in public.app_settings.
+    // Keep list/revoke available while paused so an owner can clean up old keys.
+    if (['create_key', 'profile', 'chats', 'send_message'].includes(action)) {
+      let enabled = false
+      try {
+        enabled = await isAutomationEnabled()
+      } catch (e) {
+        console.error('Automation switch could not be verified; failing closed.', e)
+        return json({ ok: false, enabled: false, error: 'Automation is paused because its status could not be verified.' }, 503)
+      }
+      if (!enabled) {
+        return json({ ok: false, enabled: false, error: 'ChatLink Automation API is currently disabled by the owner.' }, 503)
+      }
+    }
     if (['create_key', 'list_keys', 'revoke_key'].includes(action)) return await manageKeys(req, action, body)
     const auth = await authenticateAutomation(req)
     if (!auth.key) return json({ error: auth.error }, auth.rateLimited ? 429 : 401)

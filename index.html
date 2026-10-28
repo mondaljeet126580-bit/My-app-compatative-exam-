@@ -489,18 +489,33 @@ let initialSessionPromise=null,authUiTouched=false;
 const $=id=>document.getElementById(id);
 const maintenanceGate=$('maintenanceGate'),chatAppShell=$('chatAppShell');
 let maintenanceIsOn=false,maintenanceCheckBusy=false,appBootReady=false;
-// Safety release: a stalled network request must never leave the full-screen loader forever.
+// Keep the login page hidden while a stored session is still being restored.
 const bootSafetyTimer=setTimeout(()=>{
  if(appBootReady||maintenanceIsOn)return;
- appBootReady=true;
- maintenanceGate.classList.add('hidden');
- $('appBootLoader').classList.add('hidden');
- chatAppShell.style.visibility='visible';
- showPanel('authPanel');
- const connection=$('connection');
- if(connection){connection.textContent='Connection slow';connection.style.background='#ffffff20'}
- const authError=$('authError');
- if(authError&&!authUiTouched){authError.textContent='Saved-session restore is taking longer than usual. You can still continue with Google or use your existing username and password.';authError.classList.remove('hidden')}
+ const loadingText=$('appBootLoader').querySelector('small');
+ if(initialSessionPromise){
+  initialSessionPromise.then(({data,error})=>{
+   if(appBootReady||maintenanceIsOn)return;
+   if(data?.session){
+    if(loadingText)loadingText.textContent='Restoring your existing account…';
+    const connection=$('connection');
+    if(connection){connection.textContent='Restoring session';connection.style.background='#ffffff20'}
+    return;
+   }
+   appBootReady=true;
+   maintenanceGate.classList.add('hidden');
+   $('appBootLoader').classList.add('hidden');
+   chatAppShell.style.visibility='visible';
+   showPanel('authPanel');
+   if(error&&!authUiTouched)alertBox('authError','Could not restore the saved session. Please continue with Google or log in.');
+  }).catch(error=>{
+   if(appBootReady||maintenanceIsOn)return;
+   console.warn('Session restore timed out',error?.message||error);
+   if(loadingText)loadingText.textContent='Restoring your existing account…';
+  });
+ }else if(loadingText){
+  loadingText.textContent='Connecting to ChatLink…';
+ }
 },7000);
 async function refreshMaintenanceGate(){
  if(maintenanceCheckBusy)return maintenanceIsOn;
@@ -1130,6 +1145,22 @@ async function showAccountBlocked(state){
 }
 async function routeSignedInSession(session){
  if(!session?.access_token||!session?.user){showPanel('authPanel');return}
+ // Fast path for older/current users: an RLS-protected profile row means this
+ // account can read its own profile and is not blocked by the profile policy.
+ // Avoid the extra account-auth Edge Function round trip on every normal app open.
+ try{
+  const {data:existingProfile,error:profileReadError}=await supa.from('profiles').select('*').eq('id',session.user.id).maybeSingle();
+  if(!profileReadError&&existingProfile&&!existingProfile.is_banned&&existingProfile.username&&existingProfile.display_name&&existingProfile.display_name!=='New user'){
+   me=session.user;
+   profile=existingProfile;
+   $('displayName').value=profile.display_name||'';
+   $('username').value=profile.username||'';
+   await startApp();
+   return;
+  }
+ }catch(profileFastPathError){
+  console.warn('Fast profile restore unavailable; using full account verification',profileFastPathError?.message||profileFastPathError);
+ }
  let state;
  try{
   state=await callAccountAuth('status',{},session.access_token);

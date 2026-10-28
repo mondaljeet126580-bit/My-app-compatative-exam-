@@ -1163,18 +1163,9 @@ async function loginWithGoogle(){
   // silently replace the original user's ChatLink account.
   clearManualLogoutIntent();
   clearGoogleRestoreAttempt();
-  const {data:current,error:currentError}=await supa.auth.getSession();
-  if(currentError)throw currentError;
-  if(current?.session?.user&&me?.id!==current.session.user.id)me=current.session.user;
-  if(current?.session?.user&&hasGoogleIdentity(current.session.user)){
-   await routeSignedInSession(current.session);
-   if(currentPanel==='authPanel'){
-    button.disabled=false;
-    button.textContent=oldLabel;
-   }
-   return;
-  }
-  // OAuth sign-in restores the Auth user whose Google identity is already linked.
+  // Always run the explicit Google chooser here. A stale/partial local session
+  // must not keep the user on the login screen or open the wrong account.
+  // The routeSignedInSession guard below still checks the saved expected user ID.
   // It is intentionally different from linkIdentity(), which would attach Google
   // to whichever account happened to be active on this device.
   const {error}=await supa.auth.signInWithOAuth({

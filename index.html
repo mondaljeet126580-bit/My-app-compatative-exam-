@@ -1168,6 +1168,10 @@ async function loginWithGoogle(){
   if(current?.session?.user&&me?.id!==current.session.user.id)me=current.session.user;
   if(current?.session?.user&&hasGoogleIdentity(current.session.user)){
    await routeSignedInSession(current.session);
+   if(currentPanel==='authPanel'){
+    button.disabled=false;
+    button.textContent=oldLabel;
+   }
    return;
   }
   // OAuth sign-in restores the Auth user whose Google identity is already linked.

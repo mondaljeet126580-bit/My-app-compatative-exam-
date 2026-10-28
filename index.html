@@ -280,14 +280,14 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
 <body><div id="maintenanceGate" class="maintenanceGate hidden" role="status" aria-live="polite"><section class="maintenanceGateCard"><div class="maintenanceGateIcon">🛠️</div><h1>Maintenance in progress</h1><p id="maintenanceGateMessage">Checking app status…</p><small>ChatLink · Please try again shortly</small><button id="maintenanceRetry" type="button">Check again</button></section></div><div id="appBootLoader" class="appBootLoader" role="status" aria-live="polite"><div class="appBootLoaderCard"><div class="chatLoadingDots" aria-hidden="true"><span></span><span></span><span></span></div><strong>Loading ChatLink</strong><small>Loading your chats…</small></div></div>
 <main class="app" id="chatAppShell" style="visibility:hidden">
 <header class="chatLinkHeader"><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">Private messaging</small></div><div class="headerActions"><button type="button" id="headerNewChatBtn" class="headerActionBtn" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v6"/><path d="m16 18 5-5 2 2-5 5-3 1z"/></svg></button><button type="button" id="headerMoreBtn" class="headerActionBtn" aria-label="More options" title="More options" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button></div><span class="badge hidden" id="connection">Connecting…</span></header><div id="headerMenu" class="headerMenu hidden" role="menu"><button type="button" id="menuProfileBtn" role="menuitem">👤 My profile</button><button type="button" id="menuRefreshBtn" role="menuitem">↻ Refresh chats</button><button type="button" id="menuLogoutBtn" role="menuitem">⎋ Log out from this device</button><div class="menuBuildTag">ChatLink build · 2026.10.26.3</div></div>
-<section class="panel" id="authPanel">
+<section class="panel hidden" id="authPanel">
  <h2 class="sectionTitle">Welcome to ChatLink</h2>
  <div class="note">New users: sign in with Google, then create a name, username and password. Existing users can log in with their username or exact display name and password.</div>
  <button id="googleSignInBtn" type="button" style="width:100%;margin-top:14px">New user · Continue with Google</button>
  <button id="showExistingLoginBtn" type="button" class="secondary" style="width:100%;margin-top:10px">Existing user · Log in</button>
  <div class="alert hidden" id="authError"></div>
  <div class="footerHint">Already using a guest account on this device? Connect Google in More before logging out, to keep the same account and chats.</div>
- <div style="text-align:center;font-size:11px;color:#71838d;padding:8px 0">ChatLink · build 2026.10.28.4</div>
+ <div style="text-align:center;font-size:11px;color:#71838d;padding:8px 0">ChatLink · build 2026.10.28.5</div>
  <div class="hidden" aria-hidden="true"><input id="displayName" maxlength="40"><input id="username" maxlength="30"><button id="enterBtn" type="button">Continue</button></div>
 </section>
 <section class="panel hidden" id="loginPanel">
@@ -332,7 +332,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
  <button type="button" class="moreOption" id="moreConnectGoogleBtn"><span class="moreOptionIcon">🔐</span><span class="moreOptionText"><strong>Connect Google account</strong><small id="moreGoogleLinkText">Connect Google to keep this account and chats on another device</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption" id="moreScheduleBtn"><span class="moreOptionIcon">◷</span><span class="moreOptionText"><strong>Schedule message</strong><small>Choose a chat and send a message later</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption moreLogout" id="moreLogoutBtn"><span class="moreOptionIcon">⎋</span><span class="moreOptionText"><strong>Log out</strong><small>Log out from this device</small></span><span class="moreChevron">›</span></button>
- <div class="moreBuild">ChatLink · build 2026.10.28.4</div>
+ <div class="moreBuild">ChatLink · build 2026.10.28.5</div>
 </section>
 <section class="panel hidden" id="schedulePanel">
  <div class="settingsHeader"><button type="button" class="profileBack" id="scheduleBackBtn" aria-label="Back to More">←</button><div><h1>Schedule message</h1><p>Choose a chat and a delivery time</p></div></div>
@@ -541,6 +541,7 @@ async function refreshMaintenanceGate(){
   const {data,error}=await Promise.race([maintenanceRequest,timeout]);
   if(error)throw error;
   const state=data&&typeof data==='object'?data:{enabled:false,message:'Maintenance is in progress.'};
+  const wasMaintenanceOn=maintenanceIsOn;
   maintenanceIsOn=state.enabled===true;
   if(maintenanceIsOn){
    $('maintenanceGateMessage').textContent=String(state.message||'Maintenance is in progress.');
@@ -549,7 +550,13 @@ async function refreshMaintenanceGate(){
    chatAppShell.style.visibility='hidden';
   }else{
    maintenanceGate.classList.add('hidden');
-   chatAppShell.style.visibility=appBootReady?'visible':'hidden';
+   if(wasMaintenanceOn){
+    // Keep the dots visible over the page while the maintenance-off reload starts.
+    $('appBootLoader').classList.remove('hidden');
+    chatAppShell.style.visibility='hidden';
+   }else{
+    chatAppShell.style.visibility=appBootReady?'visible':'hidden';
+   }
   }
  }catch(e){
   console.warn('maintenance check failed',e&&e.message?e.message:e);
@@ -1385,30 +1392,40 @@ async function submitScheduledMessage(event){
 }
 async function startApp(){
  showPanel('usersPanel');
- appBootReady=true;
- clearTimeout(bootSafetyTimer);
- if(!maintenanceIsOn)chatAppShell.style.visibility='visible';
- $('appBootLoader').classList.add('hidden');
- $('authError').classList.add('hidden');
  $('headerSub').textContent=(profile?.display_name||'')+' · @'+(profile?.username||'');
  refreshHeaderProfileButton();setConn('Connecting…',false);
- // Presence and chat history load in the background so neither can block the first screen.
- void setOnline(true).then(()=>setConn('Online',true)).catch(e=>{console.warn('presence update failed',e?.message||e);setConn('Offline')});
+ $('authError').classList.add('hidden');
  if(heartbeat)clearInterval(heartbeat);
  heartbeat=setInterval(()=>{void setOnline(true).catch(e=>console.warn('presence heartbeat failed',e?.message||e))},30000);
- void loadRecentChats().then(recent=>{
-  for(const chat of recent||[]){
-   if(chat.conversation_id){
-    void(async()=>{
-     try{const {error}=await callRpc('mark_direct_messages_delivered',{p_conversation_id:chat.conversation_id});if(error)console.warn('delivery sync',error.message)}
-     catch(e){console.warn('delivery sync',e.message)}
-    })();
-   }
+ // Start presence in the background; it must not delay the first usable screen.
+ void setOnline(true).then(()=>setConn('Online',true)).catch(e=>{console.warn('presence update failed',e?.message||e);setConn('Offline')});
+ let recent=null,chatLoadTimer=null;
+ try{
+  recent=await Promise.race([
+   loadRecentChats(),
+   new Promise(resolve=>{chatLoadTimer=setTimeout(()=>resolve(null),8000)})
+  ]);
+ }catch(e){
+  console.warn('Initial chat list load failed',e?.message||e);
+ }
+ finally{if(chatLoadTimer)clearTimeout(chatLoadTimer)}
+ if(recent===null){
+  // Avoid an endless splash screen on an unavailable network; leave a useful retry state.
+  $('recentList').innerHTML='';
+  $('recentEmpty').textContent='Chat list is taking too long. Check your connection, then tap Refresh chats.';
+  $('recentEmpty').classList.remove('hidden');
+ }
+ for(const chat of recent||[]){
+  if(chat.conversation_id){
+   void(async()=>{
+    try{const {error}=await callRpc('mark_direct_messages_delivered',{p_conversation_id:chat.conversation_id});if(error)console.warn('delivery sync',error.message)}
+    catch(e){console.warn('delivery sync',e.message)}
+   })();
   }
- }).catch(e=>console.warn('Initial chat list load failed',e?.message||e));
+ }
  connectRecentRealtime();
  if(recentPollTimer)clearInterval(recentPollTimer);
- // Fallback refresh: keep unread counts current while the app is visible without an open chat.
+ // Keep unread counts current while the app is visible without an open chat.
  recentPollTimer=setInterval(()=>{
   if(document.hidden||!me||currentPanel==='chatPanel'||currentPanel==='authPanel')return;
   if(currentPanel==='schedulePanel'){void loadScheduledMessages();return}
@@ -1418,7 +1435,9 @@ async function startApp(){
  if(accountGuardTimer)clearInterval(accountGuardTimer);
  accountGuardTimer=setInterval(()=>{void checkAccountInBackground()},30000);
  appBootReady=true;
+ clearTimeout(bootSafetyTimer);
  if(!maintenanceIsOn){
+  maintenanceGate.classList.add('hidden');
   chatAppShell.style.visibility='visible';
   $('appBootLoader').classList.add('hidden');
  }
@@ -1943,38 +1962,49 @@ async function deleteForEveryone(){
 
 $('headerNewChatBtn').addEventListener('click',()=>{showPanel('usersPanel');clearSearchUi();$('searchInput').focus();$('searchInput').scrollIntoView({behavior:'smooth',block:'start'})});$('headerMoreBtn').addEventListener('click',e=>{e.stopPropagation();const menu=$('headerMenu');menu.classList.toggle('hidden');$('headerMoreBtn').setAttribute('aria-expanded',String(!menu.classList.contains('hidden')))});$('menuProfileBtn').addEventListener('click',()=>{ $('headerMenu').classList.add('hidden');$('headerMoreBtn').setAttribute('aria-expanded','false');profileReturnPanel='usersPanel';void openMyProfile()});$('menuRefreshBtn').addEventListener('click',()=>{ $('headerMenu').classList.add('hidden');$('headerMoreBtn').setAttribute('aria-expanded','false');void loadRecentChats()});$('menuLogoutBtn').addEventListener('click',()=>{ $('headerMenu').classList.add('hidden');$('logoutBtn').click()});document.addEventListener('click',e=>{if(!e.target.closest('#headerMenu')&&!e.target.closest('#headerMoreBtn')){$('headerMenu').classList.add('hidden');$('headerMoreBtn').setAttribute('aria-expanded','false')}});$('newChatFab').addEventListener('click',()=>{$('searchInput').focus();$('searchInput').scrollIntoView({behavior:'smooth',block:'start'})});$('navChatsBtn').addEventListener('click',()=>{showPanel('usersPanel');clearSearchUi();applyChatFilter('all');$('navChatsBtn').classList.add('active');$('navMoreBtn').classList.remove('active')});$('navMoreBtn').addEventListener('click',()=>{showPanel('morePanel');$('navChatsBtn').classList.remove('active');$('navMoreBtn').classList.add('active')});$('moreBackBtn').addEventListener('click',()=>{showPanel('usersPanel');$('navChatsBtn').classList.add('active');$('navMoreBtn').classList.remove('active')});$('moreAccountCard').addEventListener('click',()=>{profileReturnPanel='morePanel';void openMyProfile()});$('moreApiBtn').addEventListener('click',()=>showPanel('apiPanel'));$('moreRefreshBtn').addEventListener('click',()=>{void loadRecentChats();showPanel('usersPanel')});$('moreScheduleBtn').addEventListener('click',()=>void openSchedulePanel());$('scheduleBackBtn').addEventListener('click',()=>showPanel('morePanel'));$('refreshScheduleBtn').addEventListener('click',()=>void loadScheduledMessages());$('scheduleMode').addEventListener('change',updateScheduleMode);$('scheduleDateTime').addEventListener('input',updateSchedulePreview);$('scheduleDelayAmount').addEventListener('input',updateSchedulePreview);$('scheduleDelayUnit').addEventListener('change',updateSchedulePreview);$('scheduleForm').addEventListener('submit',submitScheduledMessage);$('moreLogoutBtn').addEventListener('click',()=> $('logoutBtn').click());$('moreConnectGoogleBtn').addEventListener('click',connectGoogleFromMore);$('apiBackBtn').addEventListener('click',()=>showPanel('morePanel'));$('profileAboutInput').addEventListener('input',updateAboutCounters);$('toggleApiGatewayKeyBtn').addEventListener('click',()=>{apiGatewayKeyVisible=!apiGatewayKeyVisible;loadPublicApiDetails()});$('copyApiEndpointBtn').addEventListener('click',()=>copyAutomationValue(AUTOMATION_API_URL,'Automation endpoint'));$('copyApiGatewayKeyBtn').addEventListener('click',()=>copyAutomationValue(SUPABASE_KEY,'Publishable gateway key'));$('createAutomationKeyBtn').addEventListener('click',()=>void createAutomationKey());$('refreshAutomationKeysBtn').addEventListener('click',()=>void renderAutomationKeys());$('toggleNewAutomationKeyBtn').addEventListener('click',()=>{newAutomationKeyVisible=!newAutomationKeyVisible;$('newAutomationKeyInput').type=newAutomationKeyVisible?'text':'password';$('toggleNewAutomationKeyBtn').textContent=newAutomationKeyVisible?'Hide':'Show'});$('copyNewAutomationKeyBtn').addEventListener('click',()=>copyAutomationValue($('newAutomationKeyInput').value,'Automation Key'));$('scrollToLatestBtn').addEventListener('click',()=>{chatStickToBottom=true;scheduleChatBottom(true);try{$('messageInput').focus({preventScroll:true})}catch{}});$('enterBtn').addEventListener('click',enter);$('googleSignInBtn').addEventListener('click',continueWithGoogle);$('showExistingLoginBtn').addEventListener('click',()=>{authUiTouched=true;showPanel('loginPanel');$('loginIdentifier').focus()});$('loginBackBtn').addEventListener('click',()=>showPanel('authPanel'));$('existingLoginForm').addEventListener('submit',loginWithUsernamePassword);$('setupForm').addEventListener('submit',submitAccountSetup);$('setupUseAnotherBtn').addEventListener('click',switchAccountFromBlocked);$('blockedLoginBtn').addEventListener('click',switchToLoginPanel);$('blockedNewAccountBtn').addEventListener('click',switchAccountFromBlocked);$('blockedCheckBtn').addEventListener('click',checkBlockedAccountAgain);$('linkGoogleBtn').addEventListener('click',linkGoogleToCurrentAccount);$('searchInput').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(searchUsers,250)});$('clearSearchBtn').addEventListener('click',()=>{clearTimeout(searchTimer);clearSearchUi();applyChatFilter(currentChatFilter)});$('filterAllBtn').addEventListener('click',()=>applyChatFilter('all'));$('filterUnreadBtn').addEventListener('click',()=>applyChatFilter('unread'));$('filterNewChatBtn').addEventListener('click',()=>{$('searchInput').focus();$('searchInput').scrollIntoView({behavior:'smooth',block:'nearest'})});$('imagePickBtn').addEventListener('click',()=> $('imageFileInput').click());$('imageFileInput').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(file)chooseChatImage(file)});$('removePendingImageBtn').addEventListener('click',clearPendingImage);$('messages').addEventListener('click',e=>{const button=e.target&&e.target.closest?e.target.closest('[data-download-image]'):null;if(button){e.preventDefault();e.stopPropagation();downloadChatImage(button.dataset.downloadImage);return}const image=e.target&&e.target.closest?e.target.closest('[data-open-image]'):null;if(image){e.preventDefault();e.stopPropagation();openImageViewer(image.dataset.openImage)}});$('viewerDownloadBtn').addEventListener('click',()=>{const id=$('viewerDownloadBtn').dataset.downloadImage;if(id)downloadChatImage(id)});$('profilePhotoCloseBtn').addEventListener('click',closeProfilePhotoViewer);$('profilePhotoZoomInBtn').addEventListener('click',()=>zoomProfilePhotoBy(.5));$('profilePhotoZoomOutBtn').addEventListener('click',()=>zoomProfilePhotoBy(-.5));$('profilePhotoResetBtn').addEventListener('click',()=>setProfilePhotoZoom(1,0,0));$('profilePhotoViewer').addEventListener('click',e=>{if(e.target===$('profilePhotoViewer'))closeProfilePhotoViewer()});$('profilePhotoStage').addEventListener('pointerdown',onProfilePhotoPointerDown);$('profilePhotoStage').addEventListener('pointermove',onProfilePhotoPointerMove);$('profilePhotoStage').addEventListener('pointerup',onProfilePhotoPointerUp);$('profilePhotoStage').addEventListener('pointercancel',onProfilePhotoPointerUp);$('closeImageViewerBtn').addEventListener('click',closeImageViewer);$('imageViewer').addEventListener('click',e=>{if(e.target===$('imageViewer'))closeImageViewer()});$('sendForm').addEventListener('submit',sendMessage);$('backBtn').addEventListener('click',goBackToRecentChats);$('recentRefreshBtn').addEventListener('click',loadRecentChats);$('refreshBtn').addEventListener('click',()=>loadMessages().catch(e=>setChatHint(e.message)));$('deleteSelectedBtn').addEventListener('click',()=>deleteForEveryone());$('cancelSelectionBtn').addEventListener('click',clearMessageSelection);$('myProfileBtn').addEventListener('click',openMyProfile);$('profileAvatarImage').addEventListener('click',()=>{if(viewedProfileId)void openProfilePhoto(viewedProfileId)});
 $('dpCameraBadge').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(viewedProfileId===me?.id)$('avatarFileInput').click()});$('chatAvatar').addEventListener('click',()=>{if(activePeer?.id)void openProfilePhoto(activePeer.id)});$('chooseAvatarBtn').addEventListener('click',()=> $('avatarFileInput').click());$('avatarFileInput').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(file)chooseProfileAvatar(file)});$('avatarCropCancelTop').addEventListener('click',closeAvatarCrop);$('avatarCropCancelBtn').addEventListener('click',closeAvatarCrop);$('avatarCropUseBtn').addEventListener('click',finishAvatarCrop);$('avatarCropResetBtn').addEventListener('click',resetAvatarCrop);$('avatarCropRotateBtn').addEventListener('click',()=>{avatarCropRotation=(avatarCropRotation+90)%360;drawAvatarCrop()});$('avatarCropZoomInput').addEventListener('input',e=>{avatarCropZoom=Number(e.target.value)||1;drawAvatarCrop()});$('avatarCropModal').addEventListener('click',e=>{if(e.target===$('avatarCropModal'))closeAvatarCrop()});const cropStage=$('avatarCropStage');cropStage.addEventListener('pointerdown',e=>{ if(!avatarCropImage)return;e.preventDefault(); try{cropStage.setPointerCapture(e.pointerId)}catch{} avatarCropPointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(avatarCropPointers.size>=2){const pts=[...avatarCropPointers.values()].slice(0,2);avatarCropPinch={distance:Math.max(1,Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y)),zoom:avatarCropZoom};avatarCropDrag=null} else{const rect=cropStage.getBoundingClientRect();avatarCropDrag={id:e.pointerId,x:e.clientX,y:e.clientY,offsetX:avatarCropOffsetX,offsetY:avatarCropOffsetY,scale:320/rect.width}}});cropStage.addEventListener('pointermove',e=>{ if(!avatarCropPointers.has(e.pointerId))return;e.preventDefault();avatarCropPointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(avatarCropPointers.size>=2&&avatarCropPinch){const pts=[...avatarCropPointers.values()].slice(0,2),distance=Math.max(1,Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y));avatarCropZoom=Math.min(3,Math.max(1,avatarCropPinch.zoom*distance/avatarCropPinch.distance));$('avatarCropZoomInput').value=String(avatarCropZoom);drawAvatarCrop();return} if(!avatarCropDrag||avatarCropDrag.id!==e.pointerId)return; avatarCropOffsetX=avatarCropDrag.offsetX+(e.clientX-avatarCropDrag.x)*avatarCropDrag.scale;avatarCropOffsetY=avatarCropDrag.offsetY+(e.clientY-avatarCropDrag.y)*avatarCropDrag.scale;drawAvatarCrop();});const endAvatarCropDrag=e=>{ avatarCropPointers.delete(e.pointerId); if(avatarCropPointers.size<2)avatarCropPinch=null; if(avatarCropPointers.size===1){const [id,p]=[...avatarCropPointers.entries()][0],rect=cropStage.getBoundingClientRect();avatarCropDrag={id,x:p.x,y:p.y,offsetX:avatarCropOffsetX,offsetY:avatarCropOffsetY,scale:320/rect.width}}else avatarCropDrag=null;};cropStage.addEventListener('pointerup',endAvatarCropDrag);cropStage.addEventListener('pointercancel',endAvatarCropDrag);installChatViewportFix();$('removeAvatarBtn').addEventListener('click',removeProfileAvatar);$('profileMessageBtn').addEventListener('click',()=>{if(viewedProfileId&&viewedProfileId!==me?.id)void openDirectChat(viewedProfileId)});$('profileBackBtn').addEventListener('click',()=>{const target=profileReturnPanel||'usersPanel';showPanel(target);if(target==='morePanel')$('navMoreBtn').classList.add('active');else $('navChatsBtn').classList.add('active');$('headerSub').textContent=(profile?.display_name||'')+' · @'+(profile?.username||'')});$('profileEditForm').addEventListener('submit',saveMyProfile);$('logoutBtn').addEventListener('click',async()=>{if(!confirm('Log out from this device? You will need your Google login or username/password to return. If this account is still a guest account, connect Google in More before logging out.'))return;try{await setOnline(false);if(heartbeat)clearInterval(heartbeat);if(msgChannel)await supa.removeChannel(msgChannel);if(profileChannel)await supa.removeChannel(profileChannel);if(recentChannel)await supa.removeChannel(recentChannel);await supa.auth.signOut();me=null;profile=null;showPanel('authPanel');setConn('Offline')}catch(e){alertBox('userError',e.message)}});window.addEventListener('online',()=>{void syncAfterNetworkRecovery()});document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(activeChat&&!subscribed)connectMessageRealtime().catch(()=>{});void syncAfterNetworkRecovery();void checkAccountInBackground()}});window.addEventListener('beforeunload',()=>{if(heartbeat)clearInterval(heartbeat)});
-// Render the authentication screen immediately; restore any existing session in the background.
-showPanel('authPanel');
-appBootReady=true;
-clearTimeout(bootSafetyTimer);
-$('appBootLoader').classList.add('hidden');
-if(!maintenanceIsOn)chatAppShell.style.visibility='visible';
+// Keep the splash dots on top until session routing and the first chat list are ready.
 setConn('Checking saved account…',false);
 initialSessionPromise.then(async({data,error})=>{
  if(error){
-  if(!authUiTouched){setConn('Auth check failed');showPanel('authPanel')}
   console.warn('Initial session restore failed',error?.message||error);
+  if(!authUiTouched){
+   showPanel('authPanel');
+   setConn('Auth check failed');
+   alertBox('authError','Could not restore the saved session. Please continue with Google or log in.');
+  }
   return;
  }
  if(data.session){
   try{await routeSignedInSession(data.session)}
   catch(e){
    console.warn('Saved-session routing failed',e?.message||e);
-   if(!authUiTouched){showPanel('authPanel');alertBox('authError','Account check error: '+(e?.message||String(e)))}
+   if(!authUiTouched){
+    showPanel('authPanel');
+    alertBox('authError','Account check error: '+(e?.message||String(e)));
+   }
   }
  }else if(!authUiTouched){
-  showPanel('authPanel');setConn('Please log in');
+  showPanel('authPanel');
+  setConn('Please log in');
  }
 })
 .catch(e=>{
  console.warn('Initial session restore failed',e);
- if(!authUiTouched){showPanel('authPanel');setConn('Please log in')}
+ if(!authUiTouched){
+  showPanel('authPanel');
+  setConn('Please log in');
+ }
 })
 .finally(()=>{
  clearTimeout(bootSafetyTimer);
  appBootReady=true;
- $('appBootLoader').classList.add('hidden');
- if(!maintenanceIsOn)chatAppShell.style.visibility='visible';
+ // startApp() already dismisses the loader after the initial chat list is ready.
+ // For unauthenticated / setup / blocked routes, hide it only after that route is shown.
+ if(!maintenanceIsOn&&currentPanel!=='usersPanel'&&currentPanel!=='chatPanel'){
+  maintenanceGate.classList.add('hidden');
+  chatAppShell.style.visibility='visible';
+  $('appBootLoader').classList.add('hidden');
+ }
 });
 })();
 </script>

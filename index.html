@@ -245,6 +245,29 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
 .scheduleForm label:first-child{margin-top:0}
 .scheduleForm input,.scheduleForm select,.scheduleForm textarea{width:100%;min-width:0;border:1px solid #33444c;border-radius:11px;background:#202c33;color:#e9edef;padding:12px;font:inherit;font-size:14px;color-scheme:dark}
 .scheduleForm select{appearance:auto}
+.scheduleRecipientPicker{position:relative;width:100%}
+.scheduleForm .scheduleRecipientTrigger{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #33444c;border-radius:12px;background:#202c33;color:#e9edef;font:inherit;font-size:14px;text-align:left}
+.scheduleRecipientTrigger:disabled{opacity:.65}
+.scheduleRecipientTrigger:focus-visible,.scheduleRecipientOption:focus-visible{outline:2px solid #00a884;outline-offset:2px}
+.scheduleRecipientTrigger #scheduleRecipientSelected{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.scheduleRecipientPlaceholder{color:#a6b4bb}
+.scheduleRecipientChevron{color:#a6b4bb;font-size:18px;flex:none}
+.scheduleRecipientAvatar{width:44px;height:44px;flex:none;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:#16483e;color:#a9f0d8;font-weight:800}
+.scheduleRecipientAvatar .avatarPhoto{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.scheduleRecipientAvatar .avatarFallback{display:grid;place-items:center;width:100%;height:100%}
+.scheduleRecipientSelectedText{display:flex;flex-direction:column;gap:3px;min-width:0}
+.scheduleRecipientSelectedText strong{font-size:14px;color:#eef4f6;overflow-wrap:anywhere}
+.scheduleRecipientSelectedText small{font-size:11px;color:#9eafb7;overflow-wrap:anywhere}
+.scheduleForm .scheduleRecipientOptions{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 5px);max-height:min(52vh,430px);overflow-y:auto;background:#f8fafb;border:1px solid #d7dfe3;border-radius:12px;box-shadow:0 16px 36px #0007;padding:0;color:#1b2930}
+.scheduleRecipientOption{display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;border:0;border-bottom:1px solid #e3e8eb;background:#f8fafb;color:#1b2930;text-align:left;min-height:65px}
+.scheduleRecipientOption:last-child{border-bottom:0}
+.scheduleRecipientOption:active,.scheduleRecipientOption[aria-selected="true"]{background:#e3f5ef}
+.scheduleRecipientOption .scheduleRecipientAvatar{width:46px;height:46px;background:#d9f4e9;color:#17644f}
+.scheduleRecipientOptionText{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.scheduleRecipientOptionText strong{font-size:14px;color:#1d2a30;overflow-wrap:anywhere}
+.scheduleRecipientOptionText small{font-size:11px;color:#62737b;overflow-wrap:anywhere}
+.scheduleRecipientOptionCheck{font-size:16px;color:#07876c;flex:none}
+
 .scheduleForm textarea{resize:vertical;min-height:94px;line-height:1.5}
 .scheduleDelayRow{display:grid;grid-template-columns:minmax(0,1fr) minmax(125px, .85fr);gap:8px}
 .schedulePreview{margin:15px 0 12px;padding:12px;border-radius:12px;background:#0b2d25;border:1px solid #185d4b;color:#a9f0d8;font-size:12px;line-height:1.5}
@@ -279,7 +302,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
 </head>
 <body><div id="maintenanceGate" class="maintenanceGate hidden" role="status" aria-live="polite"><section class="maintenanceGateCard"><div class="maintenanceGateIcon">🛠️</div><h1>Maintenance in progress</h1><p id="maintenanceGateMessage">Checking app status…</p><small>ChatLink · Please try again shortly</small><button id="maintenanceRetry" type="button">Check again</button></section></div><div id="appBootLoader" class="appBootLoader" role="status" aria-live="polite"><div class="appBootLoaderCard"><div class="chatLoadingDots" aria-hidden="true"><span></span><span></span><span></span></div><strong>Loading ChatLink</strong><small>Loading your chats…</small></div></div>
 <main class="app" id="chatAppShell" style="visibility:hidden">
-<header class="chatLinkHeader"><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">Private messaging</small></div><div class="headerActions"><button type="button" id="headerNewChatBtn" class="headerActionBtn" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v6"/><path d="m16 18 5-5 2 2-5 5-3 1z"/></svg></button><button type="button" id="headerMoreBtn" class="headerActionBtn" aria-label="More options" title="More options" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button></div><span class="badge hidden" id="connection">Connecting…</span></header><div id="headerMenu" class="headerMenu hidden" role="menu"><button type="button" id="menuProfileBtn" role="menuitem">👤 My profile</button><button type="button" id="menuLogoutBtn" role="menuitem">⎋ Log out from this device</button><div class="menuBuildTag">ChatLink build · 2026.10.28.12</div></div>
+<header class="chatLinkHeader"><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">Private messaging</small></div><div class="headerActions"><button type="button" id="headerNewChatBtn" class="headerActionBtn" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v6"/><path d="m16 18 5-5 2 2-5 5-3 1z"/></svg></button><button type="button" id="headerMoreBtn" class="headerActionBtn" aria-label="More options" title="More options" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button></div><span class="badge hidden" id="connection">Connecting…</span></header><div id="headerMenu" class="headerMenu hidden" role="menu"><button type="button" id="menuProfileBtn" role="menuitem">👤 My profile</button><button type="button" id="menuLogoutBtn" role="menuitem">⎋ Log out from this device</button><div class="menuBuildTag">ChatLink build · 2026.10.28.13</div></div>
 <section class="panel hidden" id="authPanel">
  <h2 class="sectionTitle">Welcome to ChatLink</h2>
  <div class="note">New users: continue with Google, then create a name, username and password. Existing users can log in with username/password or choose “Log in with Google” if their Google account is already connected to ChatLink.</div>
@@ -288,7 +311,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
  <button id="googleLoginBtn" type="button" class="secondary" style="width:100%;margin-top:10px">Log in with Google</button>
  <div class="alert hidden" id="authError"></div>
  <div class="footerHint">Already using a guest account on this device? Connect Google in More before logging out, to keep the same account and chats.</div>
- <div style="text-align:center;font-size:11px;color:#71838d;padding:8px 0">ChatLink · build 2026.10.28.12</div>
+ <div style="text-align:center;font-size:11px;color:#71838d;padding:8px 0">ChatLink · build 2026.10.28.13</div>
  <div class="hidden" aria-hidden="true"><input id="displayName" maxlength="40"><input id="username" maxlength="30"><button id="enterBtn" type="button">Continue</button></div>
 </section>
 <section class="panel hidden" id="loginPanel">
@@ -332,14 +355,20 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
  <button type="button" class="moreOption" id="moreConnectGoogleBtn"><span class="moreOptionIcon">🔐</span><span class="moreOptionText"><strong>Connect Google account</strong><small id="moreGoogleLinkText">Connect Google to keep this account and chats on another device</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption" id="moreScheduleBtn"><span class="moreOptionIcon">◷</span><span class="moreOptionText"><strong>Schedule message</strong><small>Choose a chat and send a message later</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption moreLogout" id="moreLogoutBtn"><span class="moreOptionIcon">⎋</span><span class="moreOptionText"><strong>Log out</strong><small>Log out from this device</small></span><span class="moreChevron">›</span></button>
- <div class="moreBuild">ChatLink · build 2026.10.28.12</div>
+ <div class="moreBuild">ChatLink · build 2026.10.28.13</div>
 </section>
 <section class="panel hidden" id="schedulePanel">
  <div class="settingsHeader"><button type="button" class="profileBack" id="scheduleBackBtn" aria-label="Back to More">←</button><div><h1>Schedule message</h1><p>Choose a chat and a delivery time</p></div></div>
  <div class="scheduleCard">
   <form id="scheduleForm" class="scheduleForm">
-   <label for="scheduleRecipient">Send to</label>
-   <select id="scheduleRecipient" required><option value="">Loading chats…</option></select>
+   <label for="scheduleRecipientButton">Send to</label>
+   <select id="scheduleRecipient" class="hidden" tabindex="-1" aria-hidden="true"><option value="">Choose a chat</option></select>
+   <div class="scheduleRecipientPicker">
+    <button type="button" id="scheduleRecipientButton" class="scheduleRecipientTrigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="scheduleRecipientOptions">
+     <span id="scheduleRecipientSelected"><span class="scheduleRecipientPlaceholder">Loading chats…</span></span><span class="scheduleRecipientChevron" aria-hidden="true">⌄</span>
+    </button>
+    <div id="scheduleRecipientOptions" class="scheduleRecipientOptions hidden" role="listbox" aria-label="Choose a chat"></div>
+   </div>
    <label for="scheduleBody">Message</label>
    <textarea id="scheduleBody" maxlength="10000" rows="4" required placeholder="Write your message"></textarea>
    <label for="scheduleMode">When should it be sent?</label>
@@ -636,7 +665,7 @@ $('maintenanceRetry').addEventListener('click',()=>void checkMaintenanceTransiti
 setInterval(()=>{if(!document.hidden)void checkMaintenanceTransition()},3000);
 window.addEventListener('focus',()=>{if(!document.hidden)void checkMaintenanceTransition()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)void checkMaintenanceTransition()});
-if(maintenanceInitiallyOn)return;let me=null,profile=null,viewedProfileId=null,pendingAvatarFile=null,avatarPreviewUrl=null,removeAvatarRequested=false,currentChatFilter="all",activeChat=null,activePeer=null,recentChatsCache=[],profileReturnPanel="usersPanel",currentPanel="authPanel",chatStickToBottom=true,avatarCropImage=null,avatarCropObjectUrl=null,avatarCropZoom=1,avatarCropOffsetX=0,avatarCropOffsetY=0,avatarCropRotation=0,avatarCropDrag=null,avatarCropPointers=new Map(),avatarCropPinch=null,profilePhotoScale=1,profilePhotoX=0,profilePhotoY=0,profilePhotoPointers=new Map(),profilePhotoGesture=null,profilePhotoLastTap=null,profilePhotoSkipPan=new Set(),profilePhotoPreviousOverflow="",chatResizeObserver=null,chatMutationObserver=null,msgChannel=null,profileChannel=null,recentChannel=null,recentRefreshTimer=null,recentRealtimeRetryTimer=null,recentRealtimeRetryCount=0,recentPollTimer=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
+if(maintenanceInitiallyOn)return;let me=null,profile=null,viewedProfileId=null,pendingAvatarFile=null,avatarPreviewUrl=null,removeAvatarRequested=false,currentChatFilter="all",activeChat=null,activePeer=null,recentChatsCache=[],scheduleRecipientProfileMap=new Map(),profileReturnPanel="usersPanel",currentPanel="authPanel",chatStickToBottom=true,avatarCropImage=null,avatarCropObjectUrl=null,avatarCropZoom=1,avatarCropOffsetX=0,avatarCropOffsetY=0,avatarCropRotation=0,avatarCropDrag=null,avatarCropPointers=new Map(),avatarCropPinch=null,profilePhotoScale=1,profilePhotoX=0,profilePhotoY=0,profilePhotoPointers=new Map(),profilePhotoGesture=null,profilePhotoLastTap=null,profilePhotoSkipPan=new Set(),profilePhotoPreviousOverflow="",chatResizeObserver=null,chatMutationObserver=null,msgChannel=null,profileChannel=null,recentChannel=null,recentRefreshTimer=null,recentRealtimeRetryTimer=null,recentRealtimeRetryCount=0,recentPollTimer=null,heartbeat=null,realtimeRetryTimer=null,realtimeRetryCount=0,subscribed=false,selectedMessageIds=new Set(),longPressTimer=null,suppressMessageClickId=null,suppressMessageClickUntil=0,knownMsgs=new Map(),imageUrlCache=new Map(),pendingImageFile=null,pendingImagePreviewUrl=null,searchTimer=null,chatHistoryPushed=false,closingChat=false;
 function setConn(s,ok=false){$('connection').textContent=s;$('connection').style.background=ok?'#ffffff30':'#ffffff20'}function alertBox(id,s){$(id).textContent=s;$(id).classList.remove('hidden')}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function showPanel(id){
  currentPanel=id;
  for(const p of ['authPanel','loginPanel','setupPanel','blockedPanel','usersPanel','morePanel','schedulePanel','apiPanel','profilePanel','chatPanel'])$(p).classList.toggle('hidden',p!==id);
@@ -1525,15 +1554,53 @@ function updateSchedulePreview(){
  preview.textContent='This message will be sent on '+scheduledTimeLabel(date.toISOString())+'.';
 }
 function populateScheduleRecipients(){
- const select=$('scheduleRecipient'),oldValue=select.value;
- const rows=recentChatsCache||[];
- select.innerHTML='<option value="">Choose a chat</option>'+rows.map(r=>{
-  const display=r.peer_display_name||r.peer_username||'User';
-  return '<option value="'+esc(r.conversation_id)+'">'+esc(display)+' (@'+esc(r.peer_username||'username')+')</option>';
- }).join('');
+ const select=$('scheduleRecipient'),trigger=$('scheduleRecipientButton'),selected=$('scheduleRecipientSelected'),menu=$('scheduleRecipientOptions');
+ if(!select||!trigger||!selected||!menu)return;
+ const oldValue=select.value,rows=recentChatsCache||[];
+ select.innerHTML='<option value="">Choose a chat</option>'+rows.map(r=>'<option value="'+esc(r.conversation_id)+'">'+esc(r.peer_display_name||r.peer_username||'User')+'</option>').join('');
  if(oldValue&&rows.some(r=>r.conversation_id===oldValue))select.value=oldValue;
- if(!rows.length)select.innerHTML='<option value="">No chats yet — start a chat first</option>';
+ if(!rows.some(r=>r.conversation_id===select.value))select.value='';
+ const rowFor=id=>rows.find(r=>r.conversation_id===id);
+ const recipientName=r=>{const p=scheduleRecipientProfileMap.get(r.peer_id)||{};return r.peer_display_name||p.display_name||r.peer_username||p.username||'User'};
+ const recipientUsername=r=>{const p=scheduleRecipientProfileMap.get(r.peer_id)||{};return r.peer_username||p.username||''};
+ const avatarFor=r=>{const p=scheduleRecipientProfileMap.get(r.peer_id)||{};return '<span class="scheduleRecipientAvatar">'+avatarMarkup(p.avatar_url,recipientName(r))+'</span>'};
+ const renderSelection=()=>{
+  const chosen=rowFor(select.value);
+  if(!chosen){selected.innerHTML='<span class="scheduleRecipientPlaceholder">'+(rows.length?'Choose a chat':'No chats yet — start a chat first')+'</span>';return}
+  selected.innerHTML=avatarFor(chosen)+'<span class="scheduleRecipientSelectedText"><strong>'+esc(recipientName(chosen))+'</strong><small>@'+esc(recipientUsername(chosen)||'username')+'</small></span>';
+ };
+ renderSelection();
+ menu.innerHTML=rows.map(r=>{
+  const chosen=select.value===r.conversation_id;
+  return '<button type="button" role="option" aria-selected="'+chosen+'" class="scheduleRecipientOption" data-schedule-conversation="'+esc(r.conversation_id)+'">'+avatarFor(r)+'<span class="scheduleRecipientOptionText"><strong>'+esc(recipientName(r))+'</strong><small>@'+esc(recipientUsername(r)||'username')+'</small></span>'+(chosen?'<span class="scheduleRecipientOptionCheck" aria-hidden="true">✓</span>':'')+'</button>';
+ }).join('');
  select.disabled=!rows.length;
+ trigger.disabled=!rows.length;
+ trigger.setAttribute('aria-expanded','false');
+ menu.classList.add('hidden');
+ trigger.onclick=()=>{
+  if(trigger.disabled)return;
+  const opening=menu.classList.contains('hidden');
+  menu.classList.toggle('hidden',!opening);
+  trigger.setAttribute('aria-expanded',String(opening));
+ };
+ menu.onclick=event=>{
+  const option=event.target?.closest?.('[data-schedule-conversation]');
+  if(!option)return;
+  const id=option.dataset.scheduleConversation;
+  if(!rows.some(r=>r.conversation_id===id))return;
+  select.value=id;
+  renderSelection();
+  menu.querySelectorAll('[data-schedule-conversation]').forEach(item=>{
+   const isSelected=item.dataset.scheduleConversation===id;
+   item.setAttribute('aria-selected',String(isSelected));
+   const check=item.querySelector('.scheduleRecipientOptionCheck');
+   if(isSelected&&!check){const mark=document.createElement('span');mark.className='scheduleRecipientOptionCheck';mark.setAttribute('aria-hidden','true');mark.textContent='✓';item.appendChild(mark)}
+   else if(!isSelected&&check)check.remove();
+  });
+  menu.classList.add('hidden');
+  trigger.setAttribute('aria-expanded','false');
+ };
 }
 async function openSchedulePanel(){
  showPanel('schedulePanel');
@@ -1726,7 +1793,7 @@ async function loadRecentChats(options={}){
   const peerIds=[...new Set(rows.map(r=>r.peer_id).filter(Boolean))];
   let profileRows=[];
   if(peerIds.length){const {data:p,error:pe}=await supa.from('profiles').select('id,avatar_url,display_name,username').in('id',peerIds);if(pe)throw pe;profileRows=p||[]}
-  const profileMap=new Map(profileRows.map(p=>[p.id,p]));
+  const profileMap=new Map(profileRows.map(p=>[p.id,p]));scheduleRecipientProfileMap=profileMap;
   $('recentList').innerHTML=rows.map(r=>{
    const p=profileMap.get(r.peer_id)||{};
    const display=r.peer_display_name||p.display_name||r.peer_username||p.username||'User';

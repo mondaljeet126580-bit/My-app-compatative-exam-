@@ -223,7 +223,36 @@ Deno.serve(async (req: Request) => {
       }, { onConflict: "id" }).select("id,username,display_name,is_banned,ban_reason,banned_at,password_login_enabled").single();
       if (saveError) throw saveError;
       if (saved.is_banned) return out({ status: "banned", message: bannedMessage, reason: saved.ban_reason ?? null }, 200, origin);
-      return out({ status: "ok", profile: saved, googleLinked: true }, 200, origin);
+
+      // Updating a password with the service role may leave the browser holding
+      // an old session/refresh token. Sign in again immediately and return a fresh
+      // session for this same Auth user so the client can continue loading chats.
+      const { data: refreshedLogin, error: refreshedLoginError } = await publicAuth.auth.signInWithPassword({
+        email: user.email,
+        password
+      });
+      if (refreshedLoginError || !refreshedLogin.session || refreshedLogin.user?.id !== user.id) {
+        console.error("setup session renewal failed", refreshedLoginError?.message ?? "no session or user ID mismatch");
+        return out({
+          status: "session_refresh_required",
+          message: "Password ও profile save হয়েছে, কিন্তু session refresh হয়নি। Existing user হিসেবে username এবং নতুন password দিয়ে একবার লগইন করুন।",
+          profile: saved
+        }, 200, origin);
+      }
+
+      const fresh = refreshedLogin.session;
+      return out({
+        status: "ok",
+        profile: saved,
+        googleLinked: true,
+        session: {
+          access_token: fresh.access_token,
+          refresh_token: fresh.refresh_token,
+          expires_at: fresh.expires_at,
+          expires_in: fresh.expires_in,
+          token_type: fresh.token_type
+        }
+      }, 200, origin);
     }
 
     return out({ status: "error", message: "অজানা account-auth action।" }, 400, origin);

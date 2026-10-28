@@ -1186,6 +1186,27 @@ async function showAccountBlocked(state){
 }
 async function routeSignedInSession(session){
  if(!session?.access_token||!session?.user){showPanel('authPanel');return}
+ // Keep Supabase JS's persisted Auth state aligned with the session that this
+ // routing function is actually validating (OAuth/setup/password login).
+ try{
+  const {data:currentState,error:currentError}=await supa.auth.getSession();
+  if(currentError)throw currentError;
+  if(!currentState?.session||currentState.session.user?.id!==session.user.id){
+   const {data:restoredState,error:restoreError}=await supa.auth.setSession({
+    access_token:session.access_token,
+    refresh_token:session.refresh_token
+   });
+   if(restoreError)throw restoreError;
+   if(restoredState?.session)session=restoredState.session;
+  }else{
+   session=currentState.session;
+  }
+ }catch(sessionRestoreError){
+  console.warn('Could not persist the session before loading chats',sessionRestoreError?.message||sessionRestoreError);
+  showPanel('authPanel');
+  alertBox('authError','Session restore failed. Please log in again; your profile and chats have not been deleted.');
+  return;
+ }
  // Fast path for older/current users: an RLS-protected profile row means this
  // account can read its own profile and is not blocked by the profile policy.
  // Avoid the extra account-auth Edge Function round trip on every normal app open.
@@ -1288,9 +1309,36 @@ async function submitAccountSetup(event){
   if(!data?.session){showPanel('authPanel');alertBox('authError','সেশন শেষ হয়েছে। Google দিয়ে আবার লগইন করুন।');return}
   const result=await callAccountAuth('setup',{displayName,username,password},data.session.access_token);
   if(result.status==='banned'||result.status==='deleted'){await showAccountBlocked(result);return}
+  if(result.status==='session_refresh_required'){
+   $('loginIdentifier').value=result.profile?.username||username;
+   $('loginPassword').value='';
+   showPanel('loginPanel');
+   alertBox('loginError',result.message||'Password save হয়েছে। Username ও নতুন password দিয়ে একবার লগইন করুন।');
+   return;
+  }
   if(result.status!=='ok'){alertBox('setupError',result.message||'Account setup সম্পূর্ণ হয়নি।');return}
-  profile=result.profile;me=data.session.user;
-  await routeSignedInSession(data.session);
+  if(!result.session?.access_token||!result.session?.refresh_token){
+   $('loginIdentifier').value=result.profile?.username||username;
+   $('loginPassword').value='';
+   showPanel('loginPanel');
+   alertBox('loginError','Password save হয়েছে, কিন্তু নতুন session ফেরত আসেনি। Username ও নতুন password দিয়ে একবার লগইন করুন।');
+   return;
+  }
+  // The setup endpoint changes the password server-side. Always install its fresh
+  // session before accessing RLS-protected profile rows and chat RPCs.
+  const {data:restored,error:restoreError}=await supa.auth.setSession({
+   access_token:result.session.access_token,
+   refresh_token:result.session.refresh_token
+  });
+  if(restoreError||!restored?.session){
+   $('loginIdentifier').value=result.profile?.username||username;
+   $('loginPassword').value='';
+   showPanel('loginPanel');
+   alertBox('loginError','Password save হয়েছে, কিন্তু session restore হয়নি। Username ও নতুন password দিয়ে একবার লগইন করুন।');
+   return;
+  }
+  profile=result.profile;me=restored.session.user;
+  await routeSignedInSession(restored.session);
  }catch(error){alertBox('setupError',error?.message||String(error))}
  finally{button.disabled=false;button.textContent='Save and open ChatLink'}
 }
@@ -1547,7 +1595,7 @@ async function syncAfterNetworkRecovery(){
   if(activeChat&&!$('chatPanel').classList.contains('hidden'))await loadMessages();
  }catch(e){console.warn('Message sync after reconnect failed',e?.message||e)}
 }
-async function loadRecentChats(){
+async function loadRecentChats(options={}){
  if(!me)return [];
  try{
   const {data,error}=await callRpc('get_recent_direct_chats',{});if(error)throw error;
@@ -1581,8 +1629,24 @@ async function loadRecentChats(){
   $('recentList').querySelectorAll('[data-view-profile]').forEach(el=>el.addEventListener('click',()=>openProfilePhoto(el.dataset.viewProfile)));
   return rows;
  }catch(e){
+  const errorMessage=String(e?.message||e||'Could not load chat list');
+  // If the session token went missing during OAuth/account setup, renew it once
+  // and retry the chat RPC instead of leaving the user with a broken chat list.
+  if(!options.sessionRetried&&/(permission denied|42501|401|jwt|not authenticated|session expired|invalid token)/i.test(errorMessage)){
+   const expectedUserId=me?.id;
+   try{
+    const {data:renewed,error:renewError}=await supa.auth.refreshSession();
+    if(!renewError&&renewed?.session&&renewed.session.user?.id===expectedUserId){
+     me=renewed.session.user;
+     console.warn('Chat list session renewed; retrying chat load');
+     return await loadRecentChats({sessionRetried:true});
+    }
+    if(renewError)console.warn('Chat list session renewal failed',renewError.message||renewError);
+   }catch(renewFailure){console.warn('Chat list session renewal failed',renewFailure?.message||renewFailure)}
+  }
   $('recentList').innerHTML='';$('recentEmpty').classList.remove('hidden');
-  $('recentEmpty').textContent='Could not load chat list: '+(e.message||String(e));return [];
+  $('recentEmpty').textContent='Could not load chat list: '+errorMessage+' — use Try again or log in again if the session expired.';
+  return [];
  }
 }
 function scheduleRecentChatRefresh(delay=120){

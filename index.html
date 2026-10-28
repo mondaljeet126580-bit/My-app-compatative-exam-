@@ -1241,6 +1241,13 @@ async function showAccountBlocked(state){
 }
 async function routeSignedInSession(session,options={}){
  if(!session?.access_token||!session?.user){showPanel('authPanel');return}
+ if(hasManualLogoutIntent()){
+  // Explicit logout wins over any browser session that may still be present.
+  try{await supa.auth.signOut({scope:'local'})}catch{}
+  me=null;profile=null;
+  showPanel('authPanel');setConn('Please log in');
+  return;
+ }
  const recoveryHint=readGoogleRecoveryHint();
  if(recoveryHint?.userId&&recoveryHint.userId!==session.user.id&&!hasManualLogoutIntent()){
   // Never let silent Google recovery open a different account than the one whose

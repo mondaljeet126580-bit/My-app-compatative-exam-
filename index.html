@@ -6,6 +6,9 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://unpkg.com" crossorigin>
 <link rel="preconnect" href="https://mtitrkspgoqaqdeiluud.supabase.co" crossorigin>
@@ -279,7 +282,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
 </head>
 <body><div id="maintenanceGate" class="maintenanceGate hidden" role="status" aria-live="polite"><section class="maintenanceGateCard"><div class="maintenanceGateIcon">🛠️</div><h1>Maintenance in progress</h1><p id="maintenanceGateMessage">Checking app status…</p><small>ChatLink · Please try again shortly</small><button id="maintenanceRetry" type="button">Check again</button></section></div><div id="appBootLoader" class="appBootLoader" role="status" aria-live="polite"><div class="appBootLoaderCard"><div class="chatLoadingDots" aria-hidden="true"><span></span><span></span><span></span></div><strong>Loading ChatLink</strong><small>Loading your chats…</small></div></div>
 <main class="app" id="chatAppShell" style="visibility:hidden">
-<header class="chatLinkHeader"><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">Private messaging</small></div><div class="headerActions"><button type="button" id="headerNewChatBtn" class="headerActionBtn" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v6"/><path d="m16 18 5-5 2 2-5 5-3 1z"/></svg></button><button type="button" id="headerMoreBtn" class="headerActionBtn" aria-label="More options" title="More options" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button></div><span class="badge hidden" id="connection">Connecting…</span></header><div id="headerMenu" class="headerMenu hidden" role="menu"><button type="button" id="menuProfileBtn" role="menuitem">👤 My profile</button><button type="button" id="menuRefreshBtn" role="menuitem">↻ Refresh chats</button><button type="button" id="menuLogoutBtn" role="menuitem">⎋ Log out from this device</button><div class="menuBuildTag">ChatLink build · 2026.10.26.3</div></div>
+<header class="chatLinkHeader"><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">Private messaging</small></div><div class="headerActions"><button type="button" id="headerNewChatBtn" class="headerActionBtn" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v6"/><path d="m16 18 5-5 2 2-5 5-3 1z"/></svg></button><button type="button" id="headerMoreBtn" class="headerActionBtn" aria-label="More options" title="More options" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button></div><span class="badge hidden" id="connection">Connecting…</span></header><div id="headerMenu" class="headerMenu hidden" role="menu"><button type="button" id="menuProfileBtn" role="menuitem">👤 My profile</button><button type="button" id="menuRefreshBtn" role="menuitem">↻ Refresh chats</button><button type="button" id="menuLogoutBtn" role="menuitem">⎋ Log out from this device</button><div class="menuBuildTag">ChatLink build · 2026.10.28.6</div></div>
 <section class="panel hidden" id="authPanel">
  <h2 class="sectionTitle">Welcome to ChatLink</h2>
  <div class="note">New users: sign in with Google, then create a name, username and password. Existing users can log in with their username or exact display name and password.</div>
@@ -287,7 +290,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
  <button id="showExistingLoginBtn" type="button" class="secondary" style="width:100%;margin-top:10px">Existing user · Log in</button>
  <div class="alert hidden" id="authError"></div>
  <div class="footerHint">Already using a guest account on this device? Connect Google in More before logging out, to keep the same account and chats.</div>
- <div style="text-align:center;font-size:11px;color:#71838d;padding:8px 0">ChatLink · build 2026.10.28.5</div>
+ <div style="text-align:center;font-size:11px;color:#71838d;padding:8px 0">ChatLink · build 2026.10.28.6</div>
  <div class="hidden" aria-hidden="true"><input id="displayName" maxlength="40"><input id="username" maxlength="30"><button id="enterBtn" type="button">Continue</button></div>
 </section>
 <section class="panel hidden" id="loginPanel">
@@ -332,7 +335,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
  <button type="button" class="moreOption" id="moreConnectGoogleBtn"><span class="moreOptionIcon">🔐</span><span class="moreOptionText"><strong>Connect Google account</strong><small id="moreGoogleLinkText">Connect Google to keep this account and chats on another device</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption" id="moreScheduleBtn"><span class="moreOptionIcon">◷</span><span class="moreOptionText"><strong>Schedule message</strong><small>Choose a chat and send a message later</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption moreLogout" id="moreLogoutBtn"><span class="moreOptionIcon">⎋</span><span class="moreOptionText"><strong>Log out</strong><small>Log out from this device</small></span><span class="moreChevron">›</span></button>
- <div class="moreBuild">ChatLink · build 2026.10.28.5</div>
+ <div class="moreBuild">ChatLink · build 2026.10.28.6</div>
 </section>
 <section class="panel hidden" id="schedulePanel">
  <div class="settingsHeader"><button type="button" class="profileBack" id="scheduleBackBtn" aria-label="Back to More">←</button><div><h1>Schedule message</h1><p>Choose a chat and a delivery time</p></div></div>
@@ -995,6 +998,11 @@ function googleRedirectUrl(){
  url.hash='';
  return url.toString();
 }
+// Keep account selection consistent for new sign-ins and linking an existing ChatLink account.
+// Do not set login_hint: it can bypass Google's account chooser.
+function googleAccountSelectionOptions(){
+ return {redirectTo:googleRedirectUrl(),queryParams:{prompt:'select_account'}};
+}
 function cleanGoogleAuthError(error){
  const message=String(error?.message||error||'Google sign-in failed.');
  if(/manual.{0,30}link|linking.{0,30}disabled/i.test(message))return 'Supabase Auth settings-e manual identity linking enable korte hobe; tarpor abar cheshta koro.';
@@ -1033,7 +1041,7 @@ async function connectGoogleFromMore(){
   const {data,error:sessionError}=await supa.auth.getSession();
   if(sessionError)throw sessionError;
   if(!data?.session?.user){throw new Error('Your ChatLink session has expired. Sign in again.');}
-  const {error}=await supa.auth.linkIdentity({provider:'google',options:{redirectTo:googleRedirectUrl(),queryParams:{prompt:'select_account'}}});
+  const {error}=await supa.auth.linkIdentity({provider:'google',options:googleAccountSelectionOptions()});
   if(error)throw error;
  }catch(error){
   text.textContent='Google connection failed: '+cleanGoogleAuthError(error);
@@ -1060,7 +1068,7 @@ async function linkGoogleToCurrentAccount(){
  if(hasGoogleIdentity()){updateGoogleLinkControls();return}
  button.disabled=true;status.textContent='Opening Google securely…';
  try{
-  const {error}=await supa.auth.linkIdentity({provider:'google',options:{redirectTo:googleRedirectUrl(),queryParams:{prompt:'select_account'}}});
+  const {error}=await supa.auth.linkIdentity({provider:'google',options:googleAccountSelectionOptions()});
   if(error)throw error;
  }catch(error){
   status.textContent='Google could not be connected: '+cleanGoogleAuthError(error);
@@ -1088,10 +1096,10 @@ async function continueWithGoogle(){
    me=restored.data?.session?.user||null;
   }
   if(me?.is_anonymous){
-   const {error}=await supa.auth.linkIdentity({provider:'google',options:{redirectTo:googleRedirectUrl(),queryParams:{prompt:'select_account'}}});
+   const {error}=await supa.auth.linkIdentity({provider:'google',options:googleAccountSelectionOptions()});
    if(error)throw error;
   }else{
-   const {error}=await supa.auth.signInWithOAuth({provider:'google',options:{redirectTo:googleRedirectUrl(),queryParams:{prompt:'select_account'}}});
+   const {error}=await supa.auth.signInWithOAuth({provider:'google',options:googleAccountSelectionOptions()});
    if(error)throw error;
   }
  }catch(error){

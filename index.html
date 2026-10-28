@@ -279,7 +279,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
 </head>
 <body><div id="maintenanceGate" class="maintenanceGate hidden" role="status" aria-live="polite"><section class="maintenanceGateCard"><div class="maintenanceGateIcon">🛠️</div><h1>Maintenance in progress</h1><p id="maintenanceGateMessage">Checking app status…</p><small>ChatLink · Please try again shortly</small><button id="maintenanceRetry" type="button">Check again</button></section></div><div id="appBootLoader" class="appBootLoader" role="status" aria-live="polite"><div class="appBootLoaderCard"><div class="chatLoadingDots" aria-hidden="true"><span></span><span></span><span></span></div><strong>Loading ChatLink</strong><small>Loading your chats…</small></div></div>
 <main class="app" id="chatAppShell" style="visibility:hidden">
-<header class="chatLinkHeader"><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">Private messaging</small></div><div class="headerActions"><button type="button" id="headerNewChatBtn" class="headerActionBtn" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v6"/><path d="m16 18 5-5 2 2-5 5-3 1z"/></svg></button><button type="button" id="headerMoreBtn" class="headerActionBtn" aria-label="More options" title="More options" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button></div><span class="badge hidden" id="connection">Connecting…</span></header><div id="headerMenu" class="headerMenu hidden" role="menu"><button type="button" id="menuProfileBtn" role="menuitem">👤 My profile</button><button type="button" id="menuLogoutBtn" role="menuitem">⎋ Log out from this device</button><div class="menuBuildTag">ChatLink build · 2026.10.28.11</div></div>
+<header class="chatLinkHeader"><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">Private messaging</small></div><div class="headerActions"><button type="button" id="headerNewChatBtn" class="headerActionBtn" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v6"/><path d="m16 18 5-5 2 2-5 5-3 1z"/></svg></button><button type="button" id="headerMoreBtn" class="headerActionBtn" aria-label="More options" title="More options" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button></div><span class="badge hidden" id="connection">Connecting…</span></header><div id="headerMenu" class="headerMenu hidden" role="menu"><button type="button" id="menuProfileBtn" role="menuitem">👤 My profile</button><button type="button" id="menuLogoutBtn" role="menuitem">⎋ Log out from this device</button><div class="menuBuildTag">ChatLink build · 2026.10.28.12</div></div>
 <section class="panel hidden" id="authPanel">
  <h2 class="sectionTitle">Welcome to ChatLink</h2>
  <div class="note">New users: continue with Google, then create a name, username and password. Existing users can log in with username/password or choose “Log in with Google” if their Google account is already connected to ChatLink.</div>
@@ -288,7 +288,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
  <button id="googleLoginBtn" type="button" class="secondary" style="width:100%;margin-top:10px">Log in with Google</button>
  <div class="alert hidden" id="authError"></div>
  <div class="footerHint">Already using a guest account on this device? Connect Google in More before logging out, to keep the same account and chats.</div>
- <div style="text-align:center;font-size:11px;color:#71838d;padding:8px 0">ChatLink · build 2026.10.28.11</div>
+ <div style="text-align:center;font-size:11px;color:#71838d;padding:8px 0">ChatLink · build 2026.10.28.12</div>
  <div class="hidden" aria-hidden="true"><input id="displayName" maxlength="40"><input id="username" maxlength="30"><button id="enterBtn" type="button">Continue</button></div>
 </section>
 <section class="panel hidden" id="loginPanel">
@@ -332,7 +332,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
  <button type="button" class="moreOption" id="moreConnectGoogleBtn"><span class="moreOptionIcon">🔐</span><span class="moreOptionText"><strong>Connect Google account</strong><small id="moreGoogleLinkText">Connect Google to keep this account and chats on another device</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption" id="moreScheduleBtn"><span class="moreOptionIcon">◷</span><span class="moreOptionText"><strong>Schedule message</strong><small>Choose a chat and send a message later</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption moreLogout" id="moreLogoutBtn"><span class="moreOptionIcon">⎋</span><span class="moreOptionText"><strong>Log out</strong><small>Log out from this device</small></span><span class="moreChevron">›</span></button>
- <div class="moreBuild">ChatLink · build 2026.10.28.11</div>
+ <div class="moreBuild">ChatLink · build 2026.10.28.12</div>
 </section>
 <section class="panel hidden" id="schedulePanel">
  <div class="settingsHeader"><button type="button" class="profileBack" id="scheduleBackBtn" aria-label="Back to More">←</button><div><h1>Schedule message</h1><p>Choose a chat and a delivery time</p></div></div>
@@ -1313,6 +1313,18 @@ async function routeSignedInSession(session,options={}){
   return;
  }
  clearManualLogoutIntent();
+ if(recoveryHint?.userId===session.user.id&&recoveryHint.status==='pending'&&hasGoogleIdentity(session.user)){
+  // The identity-link OAuth callback can leave an older access token in the
+  // browser. Refresh the SAME user session before the first RLS-protected chat call.
+  try{
+   const {data:linkedRefresh,error:linkedRefreshError}=await supa.auth.refreshSession();
+   if(!linkedRefreshError&&linkedRefresh?.session&&linkedRefresh.session.user?.id===session.user.id){
+    session=linkedRefresh.session;
+   }else if(linkedRefreshError){
+    console.warn('Post-Google-link session refresh failed',linkedRefreshError.message||linkedRefreshError);
+   }
+  }catch(linkedRefreshError){console.warn('Post-Google-link session refresh failed',linkedRefreshError?.message||linkedRefreshError)}
+ }
  rememberGoogleRecoverySession(session.user);
  // Fast path for older/current users: an RLS-protected profile row means this
  // account can read its own profile and is not blocked by the profile policy.
@@ -2205,9 +2217,19 @@ initialSessionPromise.then(async({data,error})=>{
  if(error){
   console.warn('Initial session restore failed',error?.message||error);
   if(!authUiTouched){
+   if(!hasManualLogoutIntent()&&readGoogleRecoveryHint()){
+    try{
+     const startedRecovery=await attemptAutomaticGoogleRestore();
+     if(startedRecovery)return;
+    }catch(recoveryError){console.warn('Google session recovery after auth error failed',recoveryError?.message||recoveryError)}
+   }
    showPanel('authPanel');
    setConn('Auth check failed');
-   alertBox('authError','Could not restore the saved session. Please continue with Google or log in.');
+   if(!hasManualLogoutIntent()&&readGoogleRecoveryHint()){
+    alertBox('authError','Saved session could not be restored. Tap “Log in with Google” and choose your previously connected Google account; a password is not required if that Google account is already signed in.');
+   }else{
+    alertBox('authError','Could not restore the saved session. Please continue with Google or log in.');
+   }
   }
   return;
  }

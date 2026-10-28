@@ -1241,6 +1241,16 @@ async function showAccountBlocked(state){
 }
 async function routeSignedInSession(session,options={}){
  if(!session?.access_token||!session?.user){showPanel('authPanel');return}
+ const recoveryHint=readGoogleRecoveryHint();
+ if(recoveryHint?.userId&&recoveryHint.userId!==session.user.id&&!hasManualLogoutIntent()){
+  // Never let silent Google recovery open a different account than the one whose
+  // chats were previously active on this device.
+  try{await supa.auth.signOut({scope:'local'})}catch{}
+  showPanel('authPanel');
+  setConn('Choose the original Google account');
+  alertBox('authError','Google returned a different ChatLink account. The previous account and its chats are unchanged. Tap Continue with Google and choose the original account, or use the login option intentionally.');
+  return;
+ }
  // Keep Supabase JS's persisted Auth state aligned with the session that this
  // routing function is actually validating (OAuth/setup/password login).
  try{
@@ -1340,6 +1350,9 @@ async function loginWithUsernamePassword(event){
   const result=await callAccountAuth('login',{identifier,password});
   if(result.status==='banned'||result.status==='deleted'){await showAccountBlocked(result);return}
   if(result.status==='ok'&&result.session){
+   // The user intentionally chose password login, so don't auto-restore a
+   // different Google identity if this login is for another account.
+   beginExplicitGoogleSignIn();
    const {data,error}=await supa.auth.setSession({access_token:result.session.access_token,refresh_token:result.session.refresh_token});
    if(error)throw error;
    await routeSignedInSession(data.session);return;

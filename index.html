@@ -39,7 +39,7 @@ header{background:var(--header);box-shadow:0 2px 5px #00000012}
 .profileAvatarInitial{display:grid;place-items:center;background:#d9fdd3;color:#075e54;font-size:44px;font-weight:750;border:3px solid #f9fffc;box-shadow:0 2px 7px #00000012}
 .profileHero h2{font-size:23px;margin:0 0 4px;text-align:center;overflow-wrap:anywhere}
 .profileUsername{font-size:14px;color:#667781}.profileOnline{font-size:12px;margin-top:8px;color:#667781}
-.profileInfoBlock,.profileEditBlock{margin:16px 0 0;padding:17px;background:#fff;border:1px solid #e3e8eb;border-radius:14px}
+.profileInfoBlock,.profileEditBlock{margin:16px 0 0;padding:17px;background:#fff;border:1px solid #e3e8eb;border-radius:14px}.profileAuthSummary{margin-top:14px;padding-top:12px;border-top:1px solid #eff1f2}.profileAuthBadge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:16px;background:#e3f6e9;color:#17643f;font-size:12px;font-weight:700}.profileAuthBadge.notConnected{background:#f2f4f5;color:#667781}
 .profileInfoLabel{color:#008069;font-size:12px;margin:8px 0 3px}.profileInfoValue{font-size:15px;font-weight:600;overflow-wrap:anywhere;padding-bottom:8px;border-bottom:1px solid #eff1f2}
 .profileEditBlock .sectionTitle{margin-bottom:13px}.profileEditBlock label{margin-top:12px}.profileEditBlock input{background:#fff}
 #profileSuccess{background:#e3f6e9;color:#17643f}
@@ -279,7 +279,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
 </head>
 <body><div id="maintenanceGate" class="maintenanceGate hidden" role="status" aria-live="polite"><section class="maintenanceGateCard"><div class="maintenanceGateIcon">🛠️</div><h1>Maintenance in progress</h1><p id="maintenanceGateMessage">Checking app status…</p><small>ChatLink · Please try again shortly</small><button id="maintenanceRetry" type="button">Check again</button></section></div><div id="appBootLoader" class="appBootLoader" role="status" aria-live="polite"><div class="appBootLoaderCard"><div class="chatLoadingDots" aria-hidden="true"><span></span><span></span><span></span></div><strong>Loading ChatLink</strong><small>Loading your chats…</small></div></div>
 <main class="app" id="chatAppShell" style="visibility:hidden">
-<header class="chatLinkHeader"><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">Private messaging</small></div><div class="headerActions"><button type="button" id="headerNewChatBtn" class="headerActionBtn" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v6"/><path d="m16 18 5-5 2 2-5 5-3 1z"/></svg></button><button type="button" id="headerMoreBtn" class="headerActionBtn" aria-label="More options" title="More options" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button></div><span class="badge hidden" id="connection">Connecting…</span></header><div id="headerMenu" class="headerMenu hidden" role="menu"><button type="button" id="menuProfileBtn" role="menuitem">👤 My profile</button><button type="button" id="menuLogoutBtn" role="menuitem">⎋ Log out from this device</button><div class="menuBuildTag">ChatLink build · 2026.10.28.8</div></div>
+<header class="chatLinkHeader"><div class="headtxt"><strong>ChatLink</strong><small id="headerSub">Private messaging</small></div><div class="headerActions"><button type="button" id="headerNewChatBtn" class="headerActionBtn" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v6"/><path d="m16 18 5-5 2 2-5 5-3 1z"/></svg></button><button type="button" id="headerMoreBtn" class="headerActionBtn" aria-label="More options" title="More options" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button></div><span class="badge hidden" id="connection">Connecting…</span></header><div id="headerMenu" class="headerMenu hidden" role="menu"><button type="button" id="menuProfileBtn" role="menuitem">👤 My profile</button><button type="button" id="menuLogoutBtn" role="menuitem">⎋ Log out from this device</button><div class="menuBuildTag">ChatLink build · 2026.10.28.9</div></div>
 <section class="panel hidden" id="authPanel">
  <h2 class="sectionTitle">Welcome to ChatLink</h2>
  <div class="note">New users: sign in with Google, then create a name, username and password. Existing users can log in with their username or exact display name and password.</div>
@@ -287,7 +287,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
  <button id="showExistingLoginBtn" type="button" class="secondary" style="width:100%;margin-top:10px">Existing user · Log in</button>
  <div class="alert hidden" id="authError"></div>
  <div class="footerHint">Already using a guest account on this device? Connect Google in More before logging out, to keep the same account and chats.</div>
- <div style="text-align:center;font-size:11px;color:#71838d;padding:8px 0">ChatLink · build 2026.10.28.8</div>
+ <div style="text-align:center;font-size:11px;color:#71838d;padding:8px 0">ChatLink · build 2026.10.28.9</div>
  <div class="hidden" aria-hidden="true"><input id="displayName" maxlength="40"><input id="username" maxlength="30"><button id="enterBtn" type="button">Continue</button></div>
 </section>
 <section class="panel hidden" id="loginPanel">
@@ -331,7 +331,7 @@ button.dpCameraBadge:active{transform:scale(.92);background:#00a884}
  <button type="button" class="moreOption" id="moreConnectGoogleBtn"><span class="moreOptionIcon">🔐</span><span class="moreOptionText"><strong>Connect Google account</strong><small id="moreGoogleLinkText">Connect Google to keep this account and chats on another device</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption" id="moreScheduleBtn"><span class="moreOptionIcon">◷</span><span class="moreOptionText"><strong>Schedule message</strong><small>Choose a chat and send a message later</small></span><span class="moreChevron">›</span></button>
  <button type="button" class="moreOption moreLogout" id="moreLogoutBtn"><span class="moreOptionIcon">⎋</span><span class="moreOptionText"><strong>Log out</strong><small>Log out from this device</small></span><span class="moreChevron">›</span></button>
- <div class="moreBuild">ChatLink · build 2026.10.28.8</div>
+ <div class="moreBuild">ChatLink · build 2026.10.28.9</div>
 </section>
 <section class="panel hidden" id="schedulePanel">
  <div class="settingsHeader"><button type="button" class="profileBack" id="scheduleBackBtn" aria-label="Back to More">←</button><div><h1>Schedule message</h1><p>Choose a chat and a delivery time</p></div></div>
@@ -428,7 +428,7 @@ Content-Type: application/json</code></pre>
   <h2 id="profileDisplayLabel">ChatLink User</h2><div class="profileUsername" id="profileUsernameLabel">@username</div>
   <div class="profileOnline" id="profileOnlineLabel"><span class="online"></span> Online</div>
  </div>
- <div class="profileAboutCard"><div class="profileAboutHeading"><span>About</span><span id="profileAboutCount">0/139</span></div><p id="profileAboutPreview">Hey there! I am using ChatLink.</p></div><div class="profileInfoBlock"><div class="profileInfoLabel">Name</div><div id="profileInfoName" class="profileInfoValue">—</div><div class="profileInfoLabel">Username</div><div id="profileInfoUsername" class="profileInfoValue">—</div><div class="profileInfoLabel">Account created</div><div id="profileCreatedLabel" class="profileInfoValue">—</div><div class="profileInfoLabel">Account type</div><div class="profileInfoValue">ChatLink Personal</div></div>
+ <div class="profileAboutCard"><div class="profileAboutHeading"><span>About</span><span id="profileAboutCount">0/139</span></div><p id="profileAboutPreview">Hey there! I am using ChatLink.</p></div><div class="profileInfoBlock"><div class="profileInfoLabel">Name</div><div id="profileInfoName" class="profileInfoValue">—</div><div class="profileInfoLabel">Username</div><div id="profileInfoUsername" class="profileInfoValue">—</div><div class="profileInfoLabel">Account created</div><div id="profileCreatedLabel" class="profileInfoValue">—</div><div class="profileInfoLabel">Account type</div><div class="profileInfoValue">ChatLink Personal</div><div id="profileGoogleAuthSummary" class="profileAuthSummary hidden"><div class="profileInfoLabel">Authentication</div><div id="profileGoogleAuthStatus" class="profileInfoValue"><span class="profileAuthBadge notConnected">Google not connected</span></div><div id="profileGoogleAuthEmailLabel" class="profileInfoLabel hidden">Google account email</div><div id="profileGoogleAuthEmail" class="profileInfoValue hidden">—</div></div></div>
  <form id="profileEditForm" class="profileEditBlock">
   <div class="sectionTitle">Edit my profile</div>
   <div class="dpEditRow"><div><b>Profile photo / DP</b><small>Other ChatLink users can see this.</small></div><div class="dpButtons"><input id="avatarFileInput" class="hidden" type="file" accept="image/jpeg,image/png,image/webp"><button id="chooseAvatarBtn" class="secondary" type="button">📷 Change profile photo</button><button id="removeAvatarBtn" class="secondary" type="button">Remove photo</button></div></div>
@@ -598,9 +598,9 @@ function setConn(s,ok=false){$('connection').textContent=s;$('connection').style
   void target.offsetWidth;
   target.classList.add(id==='chatPanel'?'chatEnterAnimation':'panelEnterAnimation');
  }
- if(id==='morePanel'){refreshMoreAccount();updateMoreGoogleLinkStatus();}
+ if(id==='morePanel'){refreshMoreAccount();updateMoreGoogleLinkStatus();void refreshGoogleIdentitySnapshot().then(()=>{if(currentPanel==='morePanel')updateMoreGoogleLinkStatus();if(currentPanel==='profilePanel')updateGoogleLinkControls()});}
  if(id==='apiPanel')loadPublicApiDetails();
- if(id==='profilePanel')updateAboutCounters();
+ if(id==='profilePanel'){updateAboutCounters();void refreshGoogleIdentitySnapshot().then(()=>{if(currentPanel==='profilePanel')updateGoogleLinkControls();if(currentPanel==='morePanel')updateMoreGoogleLinkStatus()});}
 }function timeStr(t){try{return new Intl.DateTimeFormat('en-IN',{hour:'numeric',minute:'2-digit'}).format(new Date(t))}catch{return ''}}
 function localDayKey(t){const d=new Date(t);return [d.getFullYear(),d.getMonth()+1,d.getDate()].join('-')}
 function localDayDifference(t){
@@ -775,6 +775,7 @@ async function openUserProfile(userId){
  if(!me){showPanel('authPanel');return}
  const own=userId===me.id;
  try{
+  if(own)await refreshGoogleIdentitySnapshot();
   const record=own?profile:await getProfile(userId);
   if(!record)throw new Error('This user’s profile was not found.');
   if(avatarPreviewUrl){try{URL.revokeObjectURL(avatarPreviewUrl)}catch{}avatarPreviewUrl=null}
@@ -1005,38 +1006,56 @@ function cleanGoogleAuthError(error){
  if(/identity.{0,30}already|already.{0,30}linked/i.test(message))return 'Ei Google account-ti onno ChatLink account-er sathe jukto ache. Alada account auto-merge hobe na.';
  return message;
 }
+function googleIdentityFor(user=me){
+ const identities=Array.isArray(user?.identities)?user.identities:[];
+ return identities.find(item=>item?.provider==='google')||null;
+}
 function hasGoogleIdentity(user=me){
  const identities=Array.isArray(user?.identities)?user.identities:[];
  const providers=Array.isArray(user?.app_metadata?.providers)?user.app_metadata.providers:[];
  return identities.some(item=>item?.provider==='google')||providers.includes('google')||user?.app_metadata?.provider==='google';
 }
+function googleIdentityEmail(user=me){
+ const identity=googleIdentityFor(user);
+ const identityData=identity?.identity_data&&typeof identity.identity_data==='object'?identity.identity_data:{};
+ const identityEmail=String(identityData.email||identityData.email_address||'').trim();
+ if(identityEmail.includes('@'))return identityEmail;
+ const providers=Array.isArray(user?.app_metadata?.providers)?user.app_metadata.providers:[];
+ if(user?.app_metadata?.provider==='google'||(!user?.is_anonymous&&providers.includes('google')&&user?.app_metadata?.provider!=='email')){
+  const email=String(user?.email||'').trim();if(email.includes('@'))return email;
+ }
+ return '';
+}
+async function refreshGoogleIdentitySnapshot(){
+ try{
+  const {data,error}=await supa.auth.getUser();
+  if(!error&&data?.user&&me&&data.user.id===me.id)me=data.user;
+ }catch(error){console.warn('Google identity refresh failed',error?.message||error)}
+ return me;
+}
 function updateMoreGoogleLinkStatus(){
  const button=$('moreConnectGoogleBtn'),text=$('moreGoogleLinkText');
  if(!button||!text)return;
- if(!me){
-  text.textContent='Sign in to connect Google';button.disabled=true;return;
- }
+ if(!me){button.classList.remove('hidden');text.textContent='Sign in to connect Google';button.disabled=true;return}
  if(hasGoogleIdentity()){
-  text.textContent='Google account connected';button.disabled=true;return;
+  button.classList.add('hidden');text.textContent='Google account connected';button.disabled=true;return;
  }
+ button.classList.remove('hidden');
  text.textContent='Connect Google to keep this account and chats on another device';
  button.disabled=false;
 }
 async function connectGoogleFromMore(){
  const button=$('moreConnectGoogleBtn'),text=$('moreGoogleLinkText');
  if(!button||!text)return;
- if(!me){
-  text.textContent='Please sign in to ChatLink first';
-  showPanel('authPanel');return;
- }
- if(hasGoogleIdentity()){
-  updateMoreGoogleLinkStatus();return;
- }
+ await refreshGoogleIdentitySnapshot();
+ updateMoreGoogleLinkStatus();
+ if(hasGoogleIdentity())return;
+ if(!me){text.textContent='Please sign in to ChatLink first';showPanel('authPanel');return}
  button.disabled=true;text.textContent='Opening Google securely…';
  try{
   const {data,error:sessionError}=await supa.auth.getSession();
   if(sessionError)throw sessionError;
-  if(!data?.session?.user){throw new Error('Your ChatLink session has expired. Sign in again.');}
+  if(!data?.session?.user)throw new Error('Your ChatLink session has expired. Sign in again.');
   const {error}=await supa.auth.linkIdentity({provider:'google',options:googleAccountSelectionOptions()});
   if(error)throw error;
  }catch(error){
@@ -1046,20 +1065,26 @@ async function connectGoogleFromMore(){
 }
 function updateGoogleLinkControls(){
  const status=$('googleLinkStatus'),button=$('linkGoogleBtn');
+ const summary=$('profileGoogleAuthSummary'),summaryStatus=$('profileGoogleAuthStatus');
+ const emailLabel=$('profileGoogleAuthEmailLabel'),emailValue=$('profileGoogleAuthEmail');
  if(!status||!button)return;
- const identities=Array.isArray(me?.identities)?me.identities:[];
- const providers=Array.isArray(me?.app_metadata?.providers)?me.app_metadata.providers:[];
- const linked=identities.some(item=>item?.provider==='google')||providers.includes('google')||me?.app_metadata?.provider==='google';
+ const linked=hasGoogleIdentity(),own=Boolean(me&&viewedProfileId===me.id);
+ const googleEmail=linked?googleIdentityEmail(me):'';
+ if(summary)summary.classList.toggle('hidden',!own);
+ if(summaryStatus)summaryStatus.innerHTML=linked?'<span class="profileAuthBadge">✓ Google authenticated</span>':'<span class="profileAuthBadge notConnected">Google not connected</span>';
+ if(emailLabel)emailLabel.classList.toggle('hidden',!linked||!googleEmail||!own);
+ if(emailValue){emailValue.classList.toggle('hidden',!linked||!googleEmail||!own);emailValue.textContent=googleEmail||''}
  if(linked){
-  status.textContent='Google account connected. You can use this Google account to sign in on another device.';
-  button.textContent='Google connected';button.disabled=true;return;
+  status.textContent=googleEmail?'Google connected · '+googleEmail:'Google account connected. Google email could not be read from the linked identity.';
+  button.textContent='Google connected';button.disabled=true;button.classList.add('hidden');return;
  }
  status.textContent='Connect Google to keep this current account and its chats when using another device.';
- button.textContent='Connect Google account';button.disabled=false;
+ button.textContent='Connect Google account';button.disabled=false;button.classList.toggle('hidden',!own);
 }
 async function linkGoogleToCurrentAccount(){
  const button=$('linkGoogleBtn'),status=$('googleLinkStatus');
  if(!button||!status)return;
+ await refreshGoogleIdentitySnapshot();
  if(!me){status.textContent='Please sign in to ChatLink first.';return}
  if(hasGoogleIdentity()){updateGoogleLinkControls();return}
  button.disabled=true;status.textContent='Opening Google securely…';

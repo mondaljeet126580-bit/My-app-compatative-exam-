@@ -181,7 +181,7 @@ Deno.serve(async (req: Request) => {
       }, 200, origin);
     }
 
-    if (action === "status" || action === "setup") {
+    if (action === "status" || action === "setup" || action === "set_password") {
       const { user, error: userError, deletedState } = await requireUser(req);
       if (deletedState) return out(deletedState, 200, origin);
       if (userError || !user) return out({ status: "unauthenticated", message: userError }, 401, origin);
@@ -189,6 +189,53 @@ Deno.serve(async (req: Request) => {
       const state = await accountState(user);
       if (state.status !== "ok") return out(state, 200, origin);
       if (action === "status") return out(state, 200, origin);
+
+      if (action === "set_password") {
+        const currentPassword = typeof input.currentPassword === "string" ? input.currentPassword : "";
+        const newPassword = typeof input.newPassword === "string" ? input.newPassword : "";
+        const passwordAlreadySet = state.profile?.password_login_enabled === true;
+        if (newPassword.length < 8 || newPassword.length > 72) {
+          return out({ status: "validation_error", message: "Password কমপক্ষে ৮ এবং সর্বোচ্চ ৭২ অক্ষর হতে হবে।" }, 200, origin);
+        }
+        if (!user.email) {
+          return out({ status: "account_email_required", message: "এই অ্যাকাউন্টে password login চালু করার জন্য verified Google account দরকার।" }, 200, origin);
+        }
+        if (passwordAlreadySet) {
+          if (!currentPassword) return out({ status: "current_password_required", message: "বর্তমান password লিখুন।" }, 200, origin);
+          const { data: verifiedLogin, error: verifyError } = await publicAuth.auth.signInWithPassword({ email: user.email, password: currentPassword });
+          if (verifyError || verifiedLogin.user?.id !== user.id) {
+            return out({ status: "invalid_current_password", message: "বর্তমান password সঠিক নয়।" }, 200, origin);
+          }
+        } else if (!hasGoogle(user) || !user.email_confirmed_at) {
+          return out({ status: "google_required", message: "প্রথমে verified Google account connect করুন, তারপর password সেট করতে পারবেন।" }, 200, origin);
+        }
+        const { error: passwordError } = await admin.auth.admin.updateUserById(user.id, { password: newPassword });
+        if (passwordError) return out({ status: "password_update_failed", message: "নতুন password save করা যায়নি। আবার চেষ্টা করুন।" }, 400, origin);
+        const { data: savedProfile, error: saveProfileError } = await admin.from("profiles")
+          .update({ password_login_enabled: true, updated_at: new Date().toISOString() })
+          .eq("id", user.id)
+          .select("id,username,display_name,is_banned,ban_reason,banned_at,password_login_enabled")
+          .single();
+        if (saveProfileError) throw saveProfileError;
+        if (savedProfile.is_banned) return out({ status: "banned", message: bannedMessage, reason: savedProfile.ban_reason ?? null }, 200, origin);
+        const { data: refreshedLogin, error: refreshedLoginError } = await publicAuth.auth.signInWithPassword({ email: user.email, password: newPassword });
+        if (refreshedLoginError || !refreshedLogin.session || refreshedLogin.user?.id !== user.id) {
+          console.error("set-password session renewal failed", refreshedLoginError?.message ?? "no session or user ID mismatch");
+          return out({ status: "session_refresh_required", message: "Password save হয়েছে। Username ও নতুন password দিয়ে একবার লগইন করুন।", profile: savedProfile }, 200, origin);
+        }
+        const fresh = refreshedLogin.session;
+        return out({
+          status: "ok",
+          profile: savedProfile,
+          session: {
+            access_token: fresh.access_token,
+            refresh_token: fresh.refresh_token,
+            expires_at: fresh.expires_at,
+            expires_in: fresh.expires_in,
+            token_type: fresh.token_type
+          }
+        }, 200, origin);
+      }
 
       if (!hasGoogle(user)) {
         return out({ status: "google_required", message: "প্রথমে Google দিয়ে লগইন বা Connect Google account করুন।" }, 200, origin);

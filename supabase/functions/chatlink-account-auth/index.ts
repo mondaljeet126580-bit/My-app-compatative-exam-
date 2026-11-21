@@ -191,7 +191,6 @@ Deno.serve(async (req: Request) => {
       if (action === "status") return out(state, 200, origin);
 
       if (action === "set_password") {
-        const currentPassword = typeof input.currentPassword === "string" ? input.currentPassword : "";
         const newPassword = typeof input.newPassword === "string" ? input.newPassword : "";
         const passwordAlreadySet = state.profile?.password_login_enabled === true;
         if (newPassword.length < 8 || newPassword.length > 72) {
@@ -200,13 +199,7 @@ Deno.serve(async (req: Request) => {
         if (!user.email) {
           return out({ status: "account_email_required", message: "এই অ্যাকাউন্টে password login চালু করার জন্য verified Google account দরকার।" }, 200, origin);
         }
-        if (passwordAlreadySet) {
-          if (!currentPassword) return out({ status: "current_password_required", message: "বর্তমান password লিখুন।" }, 200, origin);
-          const { data: verifiedLogin, error: verifyError } = await publicAuth.auth.signInWithPassword({ email: user.email, password: currentPassword });
-          if (verifyError || verifiedLogin.user?.id !== user.id) {
-            return out({ status: "invalid_current_password", message: "বর্তমান password সঠিক নয়।" }, 200, origin);
-          }
-        } else if (!hasGoogle(user) || !user.email_confirmed_at) {
+        if (!passwordAlreadySet && (!hasGoogle(user) || !user.email_confirmed_at)) {
           return out({ status: "google_required", message: "প্রথমে verified Google account connect করুন, তারপর password সেট করতে পারবেন।" }, 200, origin);
         }
         const { error: passwordError } = await admin.auth.admin.updateUserById(user.id, { password: newPassword });

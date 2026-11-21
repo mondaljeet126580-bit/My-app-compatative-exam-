@@ -459,7 +459,7 @@ Content-Type: application/json</code></pre>
   <div class="profileOnline" id="profileOnlineLabel"><span class="online"></span> Online</div>
  </div>
  <div class="profileAboutCard"><div class="profileAboutHeading"><span>About</span><span id="profileAboutCount">0/139</span></div><p id="profileAboutPreview">Hey there! I am using ChatLink.</p></div><div class="profileInfoBlock"><div class="profileInfoLabel">Name</div><div id="profileInfoName" class="profileInfoValue">—</div><div class="profileInfoLabel">Username</div><div id="profileInfoUsername" class="profileInfoValue">—</div><div id="profilePasswordSummary" class="profileAuthSummary hidden"><div class="profileInfoLabel">Password</div><div id="profilePasswordStatus" class="profileInfoValue">Checking…</div></div><div class="profileInfoLabel">Account created</div><div id="profileCreatedLabel" class="profileInfoValue">—</div><div class="profileInfoLabel">Account type</div><div class="profileInfoValue">ChatLink Personal</div><div id="profileGoogleAuthSummary" class="profileAuthSummary hidden"><div class="profileInfoLabel">Authentication</div><div id="profileGoogleAuthStatus" class="profileInfoValue"><span class="profileAuthBadge notConnected">Google not connected</span></div><div id="profileGoogleAuthEmailLabel" class="profileInfoLabel hidden">Google account email</div><div id="profileGoogleAuthEmail" class="profileInfoValue hidden">—</div></div></div>
- <div id="profilePasswordCard" class="profileEditBlock hidden" style="margin-top:13px"><div class="sectionTitle">Password</div><p id="profilePasswordHint" class="footerHint" style="text-align:left;padding:0 0 6px">Your password is never displayed.</p><div id="profileCurrentPasswordWrap"><label for="profileCurrentPasswordInput">Current password</label><input id="profileCurrentPasswordInput" type="password" autocomplete="current-password" placeholder="Enter current password"></div><label for="profileNewPasswordInput">New password</label><input id="profileNewPasswordInput" type="password" autocomplete="new-password" minlength="8" maxlength="72" placeholder="At least 8 characters"><label for="profileConfirmPasswordInput">Confirm new password</label><input id="profileConfirmPasswordInput" type="password" autocomplete="new-password" minlength="8" maxlength="72" placeholder="Re-enter new password"><button id="profilePasswordSaveBtn" type="button" style="width:100%;margin-top:14px">Change password</button><div id="profilePasswordError" class="alert hidden"></div><div id="profilePasswordSuccess" class="note hidden" style="margin-top:10px"></div></div>
+ <div id="profilePasswordCard" class="profileEditBlock hidden" style="margin-top:13px"><div class="sectionTitle">Password</div><p id="profilePasswordHint" class="footerHint" style="text-align:left;padding:0 0 6px">Your password is never displayed.</p><label for="profileNewPasswordInput">New password</label><input id="profileNewPasswordInput" type="password" autocomplete="new-password" minlength="8" maxlength="72" placeholder="At least 8 characters"><label for="profileConfirmPasswordInput">Confirm new password</label><input id="profileConfirmPasswordInput" type="password" autocomplete="new-password" minlength="8" maxlength="72" placeholder="Re-enter new password"><button id="profilePasswordSaveBtn" type="button" style="width:100%;margin-top:14px">Change password</button><div id="profilePasswordError" class="alert hidden"></div><div id="profilePasswordSuccess" class="note hidden" style="margin-top:10px"></div></div>
  <form id="profileEditForm" class="profileEditBlock">
   <div class="sectionTitle">Edit my profile</div>
   <div class="dpEditRow"><div><b>Profile photo / DP</b><small>Other ChatLink users can see this.</small></div><div class="dpButtons"><input id="avatarFileInput" class="hidden" type="file" accept="image/jpeg,image/png,image/webp"><button id="chooseAvatarBtn" class="secondary" type="button">📷 Change profile photo</button><button id="removeAvatarBtn" class="secondary" type="button">Remove photo</button></div></div>
@@ -843,11 +843,10 @@ function updateProfilePasswordControls(record,own){
  if(!own||!record)return;
  const isSet=record.password_login_enabled===true;
  if(status)status.textContent=isSet?'Password login is enabled':'Password is not set';
- $('profileCurrentPasswordWrap').classList.toggle('hidden',!isSet);
  $('profilePasswordSaveBtn').textContent=isSet?'Change password':'Set password';
  $('profilePasswordSaveBtn').disabled=!isSet&&!hasGoogleIdentity();
  $('profilePasswordHint').textContent=isSet
-  ?'Enter your current password and choose a new one. Your password is never shown here.'
+  ?'Enter a new password and confirm it. You must be signed in to change your password.'
   :(hasGoogleIdentity()
     ?'Set a password to enable username/password login for this existing Google account.'
     :'Connect a Google account first. Then you can set a password for this account.');
@@ -962,13 +961,11 @@ function avatarStoragePath(url){
 function avatarExtension(file){return file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg'}
 async function saveProfilePassword(){
  if(!me||!profile||viewedProfileId!==me.id)return;
- const currentPassword=$('profileCurrentPasswordInput').value;
  const newPassword=$('profileNewPasswordInput').value;
  const confirmPassword=$('profileConfirmPasswordInput').value;
  const isSet=profile.password_login_enabled===true;
  $('profilePasswordError').classList.add('hidden');
  $('profilePasswordSuccess').classList.add('hidden');
- if(isSet&&!currentPassword){$('profilePasswordError').textContent='Enter your current password.';$('profilePasswordError').classList.remove('hidden');return}
  if(newPassword.length<8||newPassword.length>72){$('profilePasswordError').textContent='New password must be 8–72 characters.';$('profilePasswordError').classList.remove('hidden');return}
  if(newPassword!==confirmPassword){$('profilePasswordError').textContent='The new passwords do not match.';$('profilePasswordError').classList.remove('hidden');return}
  if(!isSet&&!hasGoogleIdentity()){$('profilePasswordError').textContent='Connect a Google account first to set a password.';$('profilePasswordError').classList.remove('hidden');return}
@@ -977,7 +974,7 @@ async function saveProfilePassword(){
   const {data:sessionData,error:sessionError}=await supa.auth.getSession();
   if(sessionError)throw sessionError;
   if(!sessionData?.session?.access_token)throw new Error('Your session has expired. Please log in again.');
-  const result=await callAccountAuth('set_password',{currentPassword,newPassword},sessionData.session.access_token);
+  const result=await callAccountAuth('set_password',{newPassword},sessionData.session.access_token);
   if(result.status==='banned'||result.status==='deleted'){await showAccountBlocked(result);return}
   if(result.status==='session_refresh_required'){
    $('loginIdentifier').value=result.profile?.username||profile.username||'';
@@ -989,7 +986,7 @@ async function saveProfilePassword(){
   const {data:restored,error:restoreError}=await supa.auth.setSession({access_token:result.session.access_token,refresh_token:result.session.refresh_token});
   if(restoreError||!restored?.session)throw new Error('Password was saved, but the new session could not be restored. Log in again with your username and new password.');
   me=restored.session.user;profile=result.profile||await getProfile(me.id);
-  $('profileCurrentPasswordInput').value='';$('profileNewPasswordInput').value='';$('profileConfirmPasswordInput').value='';
+  $('profileNewPasswordInput').value='';$('profileConfirmPasswordInput').value='';
   fillProfileView(profile,true);updateGoogleLinkControls();
   $('profilePasswordSuccess').textContent=isSet?'Password changed successfully.':'Password set successfully. Username/password login is now enabled.';
   $('profilePasswordSuccess').classList.remove('hidden');
